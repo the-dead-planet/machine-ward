@@ -76,7 +76,10 @@ test("reuses grouping projections for expanded marker hits and invalidates them 
             },
         ],
     };
-    const { result, unmount } = await renderHook(() => useImageMarkerSource(map, source, false));
+    const { result, rerender, unmount } = await renderHook(
+        ({ currentSource }) => useImageMarkerSource(map, currentSource, false),
+        { initialProps: { currentSource: source } },
+    );
     try {
         await act(() => jest.advanceTimersByTimeAsync(100));
         expect(project).toHaveBeenCalledTimes(1);
@@ -97,6 +100,21 @@ test("reuses grouping projections for expanded marker hits and invalidates them 
         await act(() => map.cameraMoving$.next(false));
         await act(() => jest.advanceTimersByTimeAsync(100));
         expect(result.current.hitTargets.current).toHaveLength(2);
+        const movedSource: typeof source = {
+            ...source,
+            features: source.features.map((feature) => ({
+                ...feature,
+                geometry: { type: "Point", coordinates: [2, 0] },
+            })),
+        };
+        expect(result.current.groupedSource.features[0].geometry.coordinates).toEqual([1, 0]);
+        await rerender({ currentSource: movedSource });
+        expect(result.current.groupedSource).toBe(movedSource);
+        expect(result.current.hitTargets.current).toEqual([]);
+        await act(() => jest.advanceTimersByTimeAsync(99));
+        expect(result.current.groupedSource).toBe(movedSource);
+        await act(() => jest.advanceTimersByTimeAsync(1));
+        expect(result.current.groupedSource).not.toBe(movedSource);
     } finally {
         await unmount();
         jest.useRealTimers();

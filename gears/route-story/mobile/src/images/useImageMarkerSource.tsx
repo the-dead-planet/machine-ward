@@ -19,7 +19,7 @@ export const useImageMarkerSource = (
     const { cartomancer } = useMobileMachineWard();
     const [selectedImageId] = useSubjectState(selectedImageId$);
     const [expandedImageGroupId] = useSubjectState(expandedImageGroupId$);
-    const [groupedSource, setGroupedSource] = useState(source);
+    const [grouping, setGrouping] = useState({ source, groupedSource: source });
     const hitTargets = useRef<MapImageHitTarget[]>([]);
 
     useEffect(() => {
@@ -79,7 +79,7 @@ export const useImageMarkerSource = (
                                     : [];
                             },
                         );
-                        setGroupedSource(grouped);
+                        setGrouping({ source, groupedSource: grouped });
                     }
                 } catch {
                     // Projection can finish after the native map has been detached.
@@ -92,5 +92,8 @@ export const useImageMarkerSource = (
         };
     }, [map, source, cartomancer, selectedImageId, expandedImageGroupId, isDisplayingImage]);
 
-    return { groupedSource, hitTargets };
+    return {
+        groupedSource: grouping.source === source ? grouping.groupedSource : source,
+        hitTargets,
+    };
 };
