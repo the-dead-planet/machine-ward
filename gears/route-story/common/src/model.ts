@@ -120,6 +120,8 @@ export interface RouteStoryFile {
 }
 
 export enum RouteStoryTranslationKey {
+    PreviousImages = 'previous-images',
+    NextImages = 'next-images',
     FitBounds = 'fit-bounds',
     Player = 'player',
     NoName = 'no-name',

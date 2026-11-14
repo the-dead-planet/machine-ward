@@ -2,6 +2,8 @@ import { GearTranslationKey, TranslationTable } from "@apparatus";
 import { RouteStoryTranslationKey } from "../model";
 
 const jp: TranslationTable<GearTranslationKey | RouteStoryTranslationKey>['jp'] = {
+    "previous-images": '前の画像',
+    "next-images": '次の画像',
     "gear-name": 'ルートストーリー',
     "gear-short-name": 'ストーリー',
     "gear-description": 'GPSトレースと画像データから動画ストーリーを作成する',

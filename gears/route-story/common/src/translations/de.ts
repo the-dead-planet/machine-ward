@@ -3,6 +3,8 @@ import { RouteStoryTranslationKey } from "../model";
 
 const de: TranslationTable<GearTranslationKey | RouteStoryTranslationKey>['de'] = {
     "gear-name": 'Routengeschichte',
+    "previous-images": 'Vorherige Bilder',
+    "next-images": 'Nächste Bilder',
     "gear-short-name": 'Geschichte',
     "gear-description": 'Erstellen Sie eine Videogeschichte aus Ihren GPS-Spuren und Bilddaten',
     "fit-bounds": 'Ziel erfassen',
