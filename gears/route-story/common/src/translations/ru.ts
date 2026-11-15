@@ -2,7 +2,7 @@ import { GearTranslationKey, TranslationTable } from "@apparatus";
 import { RouteStoryTranslationKey } from "../model";
 
 const ru: TranslationTable<GearTranslationKey | RouteStoryTranslationKey>['ru'] = {
-    "description": 'Немного необычный творческий механизм, который собирает разрозненные фрагменты мира в визуальные истории.',
+    "description": 'Немного необычный творческий механизм, который собирает разрозненные фрагменты мира в анимированные визуальные истории.',
     "previous-images": 'Предыдущие изображения',
     "next-images": 'Следующие изображения',
     "gear-name": 'История маршрута',
