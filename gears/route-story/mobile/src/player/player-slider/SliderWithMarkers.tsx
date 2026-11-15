@@ -70,7 +70,11 @@ export const SliderWithMarkers: FC<Props> = ({
     };
 
     return (
-        <View style={[styles.sliderContainer, style]}>
+        <View
+            nativeID="route-story-player-slider"
+            collapsable={false}
+            style={[styles.sliderContainer, style]}
+        >
             {showImageMarkers ? (
                 <SliderMarkers
                     gearId={gearId}

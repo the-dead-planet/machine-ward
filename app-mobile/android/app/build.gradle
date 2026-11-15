@@ -78,6 +78,14 @@ android {
     compileSdk rootProject.ext.compileSdkVersion
 
     namespace "com.app"
+    sourceSets {
+        file("../../../gears").eachDir { gearDirectory ->
+            def nativeSourceDirectory = new File(gearDirectory, "mobile/android/src/main/java")
+            if (nativeSourceDirectory.isDirectory()) {
+                main.java.srcDir(nativeSourceDirectory)
+            }
+        }
+    }
     defaultConfig {
         applicationId "com.app"
         minSdkVersion rootProject.ext.minSdkVersion
