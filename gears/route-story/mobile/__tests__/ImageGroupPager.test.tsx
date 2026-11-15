@@ -15,11 +15,9 @@ jest.mock("@apparatus", () => ({
 jest.mock("@the-dead-planet/nav-gauge-gears-route-story-common", () => ({
     shiftImageGroup: jest.fn(),
     RouteStoryTranslationKey: {},
-    MAP_IMAGE_GROUP_PAGER_BUTTON_SIZE: 44,
 }));
 jest.mock("@ui", () => ({
     FontType: { Numeric: "numeric" },
-    DEFAULT_SIZE: "sm",
     Icons: { NounProject: { Previous: () => null, Next: () => null } },
 }));
 jest.mock("@maplibre/maplibre-react-native", () => ({
@@ -45,7 +43,7 @@ jest.mock("@mobile-ui", () => {
     };
 });
 
-test("shows a filled count chip above default-size inverse buttons and reports its touch bounds", async () => {
+test("matches the web pager's filled chip and rounded translucent buttons and reports its touch bounds", async () => {
     const pagination: ImageGroupPagination = {
         lngLat: [0, 0],
         offset: 0,
@@ -70,12 +68,12 @@ test("shows a filled count chip above default-size inverse buttons and reports i
         FontType.Numeric,
     );
     await fireEvent(screen.getByTestId("pager-chip"), "layout", {
-        nativeEvent: { layout: { x: 0, y: 0, width: 92, height: 72 } },
+        nativeEvent: { layout: { x: 0, y: 0, width: 65, height: 54 } },
     });
-    expect(dimensions.current).toEqual({ x: 0, y: 0, width: 92, height: 72 });
+    expect(dimensions.current).toEqual({ x: 0, y: 0, width: 65, height: 54 });
     expect(
         StyleSheet.flatten(screen.getByText("+10").props.style).fontSize,
-    ).toBe(16);
+    ).toBe(14);
     expect(screen.getByLabelText("Previous images").props.icon).toBe(
         Icons.NounProject.Previous,
     );
@@ -83,9 +81,25 @@ test("shows a filled count chip above default-size inverse buttons and reports i
         Icons.NounProject.Next,
     );
     for (const label of ["Previous images", "Next images"]) {
-        expect(screen.getByLabelText(label).props.size).toBe("sm");
-        expect(screen.getByLabelText(label).props.variant).toBe("fill-inverse");
+        expect(screen.getByLabelText(label).props.size).toBe("md");
+        expect(screen.getByLabelText(label).props.variant).toBe(
+            "fill-translucent",
+        );
     }
+    expect(
+        StyleSheet.flatten(
+            screen.getByLabelText("Previous images").props.style,
+        ),
+    ).toEqual({
+        borderTopLeftRadius: "50%",
+        borderBottomLeftRadius: "50%",
+    });
+    expect(
+        StyleSheet.flatten(screen.getByLabelText("Next images").props.style),
+    ).toEqual({
+        borderTopRightRadius: "50%",
+        borderBottomRightRadius: "50%",
+    });
     await fireEvent.press(screen.getByLabelText("Previous images"));
     expect(shiftImageGroup).toHaveBeenLastCalledWith(pagination, -1);
     await fireEvent.press(screen.getByLabelText("Next images"));
