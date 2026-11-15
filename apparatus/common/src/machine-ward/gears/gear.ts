@@ -1,10 +1,12 @@
 import { BehaviorSubject, Subscription } from "rxjs";
 import { GearApparatus, GearTranslationKey, GearTranslationTable } from "./model";
 import { ChronoLens } from "../chrono-lens";
+import { TranslationId } from "../translatron";
 
 export abstract class Gear<TMap, TChronoLens extends ChronoLens> {
     public abstract id: string;
     public icon?: string;
+    public description?: TranslationId;
     public abstract translations: GearTranslationTable;
     public translationKey = GearTranslationKey;
 
