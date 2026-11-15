@@ -89,7 +89,7 @@ export const ImageGroupPager = ({ map, pagination, gearId }: Props) => {
                     className={classNames(styles.arrow, styles.left)}
                     icon={Icons.NounProject.Previous}
                     size="md"
-                    variant="fill-inverse"
+                    variant="fill-translucent"
                     color="tertiary"
                     aria-label={previousLabel}
                     onClick={() => shiftImageGroup(pagination, -1)}
@@ -98,7 +98,7 @@ export const ImageGroupPager = ({ map, pagination, gearId }: Props) => {
                     className={classNames(styles.arrow, styles.right)}
                     icon={Icons.NounProject.Next}
                     size="md"
-                    variant="fill-inverse"
+                    variant="fill-translucent"
                     color="tertiary"
                     aria-label={nextLabel}
                     onClick={() => shiftImageGroup(pagination, 1)}
