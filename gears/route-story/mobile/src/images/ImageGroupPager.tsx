@@ -3,12 +3,11 @@ import { StyleSheet, View } from "react-native";
 import { Marker } from "@maplibre/maplibre-react-native";
 import { useMultipleTranslations } from "@apparatus";
 import { Button, Chip, Text } from "@mobile-ui";
-import { DEFAULT_SIZE, FontType, Icons } from "@ui";
+import { FontType, Icons } from "@ui";
 import {
     shiftImageGroup,
     ImageGroupPagination,
     RouteStoryTranslationKey,
-    MAP_IMAGE_GROUP_PAGER_BUTTON_SIZE,
 } from "@the-dead-planet/nav-gauge-gears-route-story-common";
 import { ImageGroupPagerDimensions } from "./model";
 
@@ -17,19 +16,23 @@ const styles = StyleSheet.create({
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        gap: 4,
+        gap: 0,
     },
     controls: {
         flexDirection: "row",
-        gap: 4,
+        gap: 1,
     },
     counter: {
         textAlign: "center",
-        fontSize: 16,
+        fontSize: 14,
     },
-    arrow: {
-        width: MAP_IMAGE_GROUP_PAGER_BUTTON_SIZE,
-        minHeight: MAP_IMAGE_GROUP_PAGER_BUTTON_SIZE,
+    previous: {
+        borderTopLeftRadius: "50%",
+        borderBottomLeftRadius: "50%",
+    },
+    next: {
+        borderTopRightRadius: "50%",
+        borderBottomRightRadius: "50%",
     },
 });
 
@@ -77,19 +80,19 @@ export const ImageGroupPager = ({ pagination, gearId, dimensions }: Props) => {
                 </View>
                 <View style={styles.controls}>
                     <Button
-                        style={styles.arrow}
+                        style={styles.previous}
                         icon={Icons.NounProject.Previous}
-                        size={DEFAULT_SIZE}
-                        variant="fill-inverse"
+                        size="md"
+                        variant="fill-translucent"
                         color="tertiary"
                         accessibilityLabel={previousLabel}
                         onPress={() => shiftImageGroup(pagination, -1)}
                     />
                     <Button
-                        style={styles.arrow}
+                        style={styles.next}
                         icon={Icons.NounProject.Next}
-                        size={DEFAULT_SIZE}
-                        variant="fill-inverse"
+                        size="md"
+                        variant="fill-translucent"
                         color="tertiary"
                         accessibilityLabel={nextLabel}
                         onPress={() => shiftImageGroup(pagination, 1)}

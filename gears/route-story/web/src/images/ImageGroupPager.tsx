@@ -3,7 +3,7 @@ import { createPortal } from "react-dom";
 import { Map, Marker } from "maplibre-gl";
 import { useMultipleTranslations } from "@apparatus";
 import { Button, Chip, Span } from "@web-ui";
-import { DEFAULT_SIZE, FontType, Icons } from "@ui";
+import { FontType, Icons } from "@ui";
 import {
     shiftImageGroup,
     ImageGroupPagination,
@@ -86,22 +86,22 @@ export const ImageGroupPager = ({ map, pagination, gearId }: Props) => {
             </div>
             <div className={styles.controls}>
                 <Button
-                    className={classNames(styles.arrow, styles.left)}
                     icon={Icons.NounProject.Previous}
                     size="md"
                     variant="fill-translucent"
                     color="tertiary"
                     aria-label={previousLabel}
                     onClick={() => shiftImageGroup(pagination, -1)}
+                    className={classNames(styles.arrow, styles.left)}
                 />
                 <Button
-                    className={classNames(styles.arrow, styles.right)}
                     icon={Icons.NounProject.Next}
                     size="md"
                     variant="fill-translucent"
                     color="tertiary"
                     aria-label={nextLabel}
                     onClick={() => shiftImageGroup(pagination, 1)}
+                    className={classNames(styles.arrow, styles.right)}
                 />
             </div>
         </section>,
