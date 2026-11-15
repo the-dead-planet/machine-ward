@@ -11,6 +11,7 @@ import {
     MAP_IMAGE_GROUP_PAGER_BUTTON_SIZE,
 } from "@the-dead-planet/nav-gauge-gears-route-story-common";
 import styles from "./image-group-pager.module.css";
+import classNames from "classnames";
 
 interface Props {
     map: Map;
@@ -85,18 +86,18 @@ export const ImageGroupPager = ({ map, pagination, gearId }: Props) => {
             </div>
             <div className={styles.controls}>
                 <Button
-                    className={styles.arrow}
+                    className={classNames(styles.arrow, styles.left)}
                     icon={Icons.NounProject.Previous}
-                    size={DEFAULT_SIZE}
+                    size="md"
                     variant="fill-inverse"
                     color="tertiary"
                     aria-label={previousLabel}
                     onClick={() => shiftImageGroup(pagination, -1)}
                 />
                 <Button
-                    className={styles.arrow}
+                    className={classNames(styles.arrow, styles.right)}
                     icon={Icons.NounProject.Next}
-                    size={DEFAULT_SIZE}
+                    size="md"
                     variant="fill-inverse"
                     color="tertiary"
                     aria-label={nextLabel}

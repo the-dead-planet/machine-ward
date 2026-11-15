@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { describe, it } from "mocha";
 import { imageLayerIds } from "@the-dead-planet/nav-gauge-gears-route-story-common";
-import { findMapImageFeature } from "../src/images/findMapImageFeature";
+import { findMapImageFeature } from "../../src/images/tinkers";
 
 const feature = (imageId: number, x: number, y: number, selected: boolean) => {
     const geometry: GeoJSON.Point = { type: "Point", coordinates: [x, y] };

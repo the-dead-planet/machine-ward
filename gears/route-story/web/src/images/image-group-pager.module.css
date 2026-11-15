@@ -12,7 +12,8 @@
 
 .controls {
     display: flex;
-    gap: 4px;
+    row-gap: 4px;
+    column-gap: 2px;
 }
 
 .counter {
@@ -22,7 +23,12 @@
     pointer-events: none;
 }
 
-.arrow {
-    width: var(--pager-button-size);
-    min-height: var(--pager-button-size);
+.arrow.left {
+    border-top-left-radius: 50%;
+    border-bottom-left-radius: 50%;
+}
+
+.arrow.right {
+    border-top-right-radius: 50%;
+    border-bottom-right-radius: 50%;
 }
