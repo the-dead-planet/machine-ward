@@ -34,7 +34,7 @@ export const ImageDragPreview = ({
             <Layer
                 type="symbol"
                 id={imageLayerIds.dragAnchor}
-                afterId={imageLayerIds.thumbnails}
+                afterId={imageLayerIds.thumbnailsSelected}
                 filter={ImagesLayers.anchors.filter}
                 layout={ImagesLayers.anchors.layout}
                 paint={ImagesLayers.anchors.getPaint(
@@ -44,10 +44,11 @@ export const ImageDragPreview = ({
                 )}
             />
             <Layer
-                type="circle"
+                type="symbol"
                 id={imageLayerIds.thumbnailsHighlightOutline}
                 afterId={imageLayerIds.dragAnchor}
                 filter={ImagesLayers.thumbnailsHighlightOutline.filter}
+                layout={ImagesLayers.thumbnailsHighlightOutline.layout}
                 paint={ImagesLayers.thumbnailsHighlightOutline.getPaint(
                     activeColor,
                 )}

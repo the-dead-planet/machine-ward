@@ -8,6 +8,7 @@ import {
     getImageSource,
     getImageSourceWithAnchors,
     selectedImageId$,
+    imageGroupOffset$,
 } from "@the-dead-planet/nav-gauge-gears-route-story-common";
 import { MapImageHitTarget } from "./model";
 
@@ -19,8 +20,10 @@ export const useImageMarkerSource = (
     const { cartomancer } = useMobileMachineWard();
     const [selectedImageId] = useSubjectState(selectedImageId$);
     const [expandedImageGroupId] = useSubjectState(expandedImageGroupId$);
+    const [offset] = useSubjectState(imageGroupOffset$);
     const [grouping, setGrouping] = useState({ source, groupedSource: source });
     const hitTargets = useRef<MapImageHitTarget[]>([]);
+    const paginationTarget = useRef<[number, number] | null>(null);
 
     useEffect(() => {
         let active = true;
@@ -36,6 +39,9 @@ export const useImageMarkerSource = (
                 tap(() => {
                     revision++;
                     hitTargets.current = [];
+                    if (map.cameraMoving$.value) {
+                        paginationTarget.current = null;
+                    }
                 }),
                 debounceTime(100),
             )
@@ -62,6 +68,7 @@ export const useImageMarkerSource = (
                         },
                         selectedImageId,
                         isDisplayingImage ? null : expandedImageGroupId,
+                        offset,
                     );
                     if (active && revision === currentRevision) {
                         const routePositions = new Map(
@@ -78,7 +85,10 @@ export const useImageMarkerSource = (
                                     ? [{ feature, point, routePoint }]
                                     : [];
                             },
-                        );
+                        ).sort((left, right) => Number(!!left.feature.properties.markerSelected) - Number(!!right.feature.properties.markerSelected));
+                        paginationTarget.current = grouped.pagination
+                            ? positions.get(grouped.pagination.lngLat.join(",")) ?? null
+                            : null;
                         setGrouping({ source, groupedSource: grouped });
                     }
                 } catch {
@@ -90,10 +100,11 @@ export const useImageMarkerSource = (
             hitTargets.current = [];
             subscription.unsubscribe();
         };
-    }, [map, source, cartomancer, selectedImageId, expandedImageGroupId, isDisplayingImage]);
+    }, [map, source, cartomancer, selectedImageId, expandedImageGroupId, offset, isDisplayingImage]);
 
     return {
         groupedSource: grouping.source === source ? grouping.groupedSource : source,
         hitTargets,
+        paginationTarget,
     };
 };

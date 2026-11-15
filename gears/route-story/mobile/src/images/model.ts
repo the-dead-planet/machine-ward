@@ -5,3 +5,8 @@ export interface MapImageHitTarget {
     point: [number, number];
     routePoint: [number, number];
 }
+
+export interface ImageGroupPagerDimensions {
+    width: number;
+    height: number;
+}

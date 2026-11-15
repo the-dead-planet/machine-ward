@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { BehaviorSubject } from "rxjs";
 import { MarkerImage, useMultipleTranslations } from "@apparatus";
-import { ParsingResultWithError, useSubjectState } from "@tinker-chest";
+import { clamp, ParsingResultWithError, useSubjectState } from "@tinker-chest";
 import {
     draggingImage$,
     draggingPlacement$,
@@ -201,7 +201,10 @@ export const SliderMarkers: FC<Props> = ({
         if (metrics.width <= 0) {
             return;
         }
-        const positionPercent = ((pageX - metrics.pageX) / metrics.width) * 100;
+        const positionPercent = clamp(
+            ((pageX - metrics.pageX) / metrics.width) * 100,
+            [0, 100],
+        );
         draggingPositionRef.current.setValue(positionPercent);
         const placement = getRoutePlacementAtPercent(
             positionPercent,

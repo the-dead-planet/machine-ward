@@ -4,7 +4,10 @@ export const MAP_THUMBNAIL_SIZE = 3 * THUMBNAIL_IMAGE_SIZE;
 export const MAP_IMAGE_ANCHOR_SIDE = 4;
 export const MAP_IMAGE_ANCHOR_GAP = 4;
 export const MAP_IMAGE_MARKER_OFFSET_Y = -(THUMBNAIL_IMAGE_SIZE / 2 + 2 + MAP_IMAGE_ANCHOR_GAP + MAP_IMAGE_ANCHOR_SIDE);
-export const MAP_IMAGE_COUNT_BADGE_OFFSET: [number, number] = [20, MAP_IMAGE_MARKER_OFFSET_Y - 20];
+export const MAP_IMAGE_COUNT_BADGE_OFFSET: [number, number] = [20, -20];
+
+export const getMapImageThumbnailOffsetY = (groupSize: number | undefined, scale = 1): number =>
+    MAP_IMAGE_MARKER_OFFSET_Y - (groupSize === 1 ? (scale - 1) * THUMBNAIL_IMAGE_SIZE / 2 : 0);
 
 export const getImageIconSize = (
     imageSize: number,
@@ -14,7 +17,16 @@ export const getImageIconSize = (
 };
 
 export const MAP_IMAGE_GROUP_RADIUS = THUMBNAIL_IMAGE_SIZE;
-export const IMAGE_GROUP_MAX_ROUTE_DISTANCE_METERS = 50;
+export const MAP_IMAGE_GROUP_SLOT_COUNT = 6;
+export const MAP_IMAGE_MARKER_OUTLINE_WIDTH = 2;
+export const MAP_IMAGE_GROUP_PAGE_SIZE = MAP_IMAGE_GROUP_SLOT_COUNT - 1;
+export const MAP_IMAGE_GROUP_UNSELECTED_SCALE = 0.9;
+export const MAP_IMAGE_GROUP_SELECTED_SCALE = 1.1;
+export const MAP_IMAGE_GROUP_PAGER_BUTTON_SIZE = 44;
+export const MAP_IMAGE_GROUP_RING_RADIUS =
+    (THUMBNAIL_IMAGE_SIZE + 8) /
+    (2 * Math.sin(Math.PI / MAP_IMAGE_GROUP_SLOT_COUNT));
+export const IMAGE_GROUP_MAX_ROUTE_DISTANCE_METERS = 100;
 export const SLIDER_IMAGE_GROUP_RADIUS = 12;
 
 export const formatImageMarkerCount = (count: number): string =>

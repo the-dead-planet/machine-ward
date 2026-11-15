@@ -1,4 +1,4 @@
-import { FC, useMemo } from "react";
+import { FC, useMemo, useRef } from "react";
 import {
     Layer,
     Images,
@@ -16,14 +16,19 @@ import {
     getImageSourceWithAnchors,
     IMAGE_MARKER_ANCHOR_ID,
     IMAGE_MARKER_ANCHOR_SDF_URI,
-    getImageMarkerConnections,
+    IMAGE_MARKER_OUTLINE_ID,
+    IMAGE_MARKER_OUTLINE_SDF_URI,
+    useImageMarkerConnections,
+    selectedImageId$,
     ImagesLayers,
     routeLayerIds,
     imageLayerIds,
     imageSourceIds,
     draggingImage$,
+    useAnimatedImageMarkerSource,
 } from "@the-dead-planet/nav-gauge-gears-route-story-common";
 import { MobileMap } from "@mobile-apparatus";
+import { useReducedMotion } from "@mobile-ui";
 import { useLoadedMobileImages } from "./useLoadedMobileImages";
 import { useImageInDisplay } from "./useImageInDisplay";
 import { useImageMarkerSource } from "./useImageMarkerSource";
@@ -32,11 +37,14 @@ import { ImageDragPreview } from "./ImageDragPreview";
 import { MobileRouteStoryProps } from "../model";
 import { CircularMapThumbnail } from "./CircularMapThumbnail";
 import { ImageCountBadges } from './ImageCountBadges';
+import { ImageGroupPager } from "./ImageGroupPager";
+import { ImageGroupPagerDimensions } from "./model";
 
 export const ImagesLayer: FC<
     OverlayComponentProps<MobileMap> & MobileRouteStoryProps
 > = ({
     map,
+    gearId,
     animatrix,
     data$,
     state$,
@@ -53,18 +61,23 @@ export const ImagesLayer: FC<
     const [images] = useSubjectState(images$);
     const [{ markerLayerVisibility }] = useSubjectState(state$);
     const [draggingImage] = useSubjectState(draggingImage$);
+    const [selectedImageId] = useSubjectState(selectedImageId$);
     const loadedImages = useLoadedMobileImages(images);
     const originalSource = useMemo(
         () => getImageSource(loadedImages, geojson, routeGeometryData),
         [loadedImages, geojson, routeGeometryData],
     );
-    const { groupedSource, hitTargets } = useImageMarkerSource(
+    const { groupedSource: targetSource, hitTargets, paginationTarget } = useImageMarkerSource(
         map,
         originalSource,
         displayImageId !== null,
     );
+    const reducedMotion = useReducedMotion();
+    const paginationDimensions = useRef<ImageGroupPagerDimensions | null>(null);
+    const groupedSource = useAnimatedImageMarkerSource(targetSource, reducedMotion);
     const visibleSource = useMemo(() => getImageSourceWithMarkerVisibility(groupedSource, markerLayerVisibility), [groupedSource, markerLayerVisibility]);
-    useMapImageInteraction(map, images$, geojson, routeGeometryData, markerLayerVisibility, hitTargets);
+    const connections = useImageMarkerConnections(originalSource, visibleSource);
+    useMapImageInteraction(map, images$, geojson, routeGeometryData, markerLayerVisibility, hitTargets, paginationTarget, paginationDimensions);
     const renderedSource = useMemo(
         () =>
             getImageSourceWithDraggingState(
@@ -89,6 +102,10 @@ export const ImagesLayer: FC<
         source: { uri: IMAGE_MARKER_ANCHOR_SDF_URI, scale: 4 },
         sdf: true,
     };
+    imageSources[IMAGE_MARKER_OUTLINE_ID] = {
+        source: { uri: IMAGE_MARKER_OUTLINE_SDF_URI },
+        sdf: true,
+    };
     const imageInDisplayIconSize = useImageInDisplay(
         map,
         animatrix,
@@ -98,23 +115,29 @@ export const ImagesLayer: FC<
     return (
         <>
             <Images images={imageSources} />
-            <ImageCountBadges backgroundColor={imageColor} textColor={badgeAppearance.glyphs} />
+            <ImageCountBadges
+                backgroundColor={imageColor}
+                textColor={badgeAppearance.glyphs}
+            />
             {loadedImages.map((image) => (
                 <CircularMapThumbnail
                     key={`${image.id}:${image.data.thumbnail}`}
                     imageId={getIconImageId(image, { thumbnail: true })}
                     uri={image.data.thumbnail}
+                    outlineColors={[imageColor, imageHoverColor]}
                 />
             ))}
-            <GeoJSONSource
-                id={imageSourceIds.connections}
-                data={getImageMarkerConnections(originalSource, visibleSource)}
-            >
+            <GeoJSONSource id={imageSourceIds.connections} data={connections}>
                 <Layer
                     type="line"
                     id={imageLayerIds.connections}
                     afterId={routeLayerIds.currentPoint}
-                    paint={ImagesLayers.connections.paint}
+                    paint={ImagesLayers.connections.getPaint(
+                        imageColor,
+                        imageHoverColor,
+                        imageActiveColor,
+                        selectedImageId,
+                    )}
                 />
             </GeoJSONSource>
             <GeoJSONSource id={imageSourceIds.thumbnails} data={renderedSource}>
@@ -122,9 +145,13 @@ export const ImagesLayer: FC<
                     type="symbol"
                     id={imageLayerIds.anchors}
                     afterId={imageLayerIds.connections}
-                    filter={ImagesLayers.anchors.filter}
+                    filter={ImagesLayers.anchorsUnselected.filter}
                     layout={ImagesLayers.anchors.layout}
-                    paint={ImagesLayers.anchors.getPaint(imageColor, imageHoverColor, imageActiveColor)}
+                    paint={ImagesLayers.anchors.getPaint(
+                        imageColor,
+                        imageHoverColor,
+                        imageActiveColor,
+                    )}
                 />
                 <Layer
                     type="symbol"
@@ -136,30 +163,27 @@ export const ImagesLayer: FC<
                 <Layer
                     type="symbol"
                     id={imageLayerIds.thumbnailsStackFront}
+                    afterId={imageLayerIds.thumbnailsStackBack}
                     {...ImagesLayers.thumbnailsStackFront}
                     layout={ImagesLayers.thumbnailsStackFront.layout}
                 />
                 <Layer
-                    type="circle"
-                    id={imageLayerIds.thumbnailsOutline}
-                    filter={ImagesLayers.thumbnailsOutline.filter}
-                    paint={ImagesLayers.thumbnailsOutline.getPaint(
-                        imageColor,
-                        imageHoverColor,
-                        imageActiveColor,
-                    )}
-                />
-                <Layer
                     type="symbol"
                     id={imageLayerIds.thumbnails}
-                    filter={ImagesLayers.thumbnails.filter}
-                    layout={ImagesLayers.thumbnails.layout}
-                    paint={ImagesLayers.thumbnails.paint}
+                    afterId={imageLayerIds.thumbnailsStackFront}
+                    filter={ImagesLayers.thumbnailsOutlined.filter}
+                    layout={ImagesLayers.thumbnailsOutlined.getLayout(
+                        imageColor,
+                        imageHoverColor,
+                    )}
+                    paint={ImagesLayers.thumbnailsOutlined.paint}
                 />
                 <Layer
                     type="symbol"
                     id={imageLayerIds.countBadge}
+                    afterId={imageLayerIds.thumbnails}
                     filter={ImagesLayers.countBadge.filter}
+                    paint={ImagesLayers.countBadge.paint}
                     layout={ImagesLayers.countBadge.getLayout(
                         imageColor,
                         badgeAppearance.glyphs,
@@ -167,7 +191,40 @@ export const ImagesLayer: FC<
                 />
                 <Layer
                     type="symbol"
+                    id={imageLayerIds.anchorsSelected}
+                    afterId={imageLayerIds.countBadge}
+                    filter={ImagesLayers.anchorsSelected.filter}
+                    layout={ImagesLayers.anchorsSelected.layout}
+                    paint={ImagesLayers.anchorsSelected.getPaint(
+                        imageColor,
+                        imageHoverColor,
+                        imageActiveColor,
+                    )}
+                />
+                <Layer
+                    type="symbol"
+                    id={imageLayerIds.thumbnailsSelectedOutline}
+                    afterId={imageLayerIds.anchorsSelected}
+                    filter={ImagesLayers.thumbnailsSelectedOutline.filter}
+                    layout={ImagesLayers.thumbnailsSelectedOutline.layout}
+                    paint={ImagesLayers.thumbnailsSelectedOutline.getPaint(
+                        imageColor,
+                        imageHoverColor,
+                        imageActiveColor,
+                    )}
+                />
+                <Layer
+                    type="symbol"
+                    id={imageLayerIds.thumbnailsSelected}
+                    afterId={imageLayerIds.thumbnailsSelectedOutline}
+                    filter={ImagesLayers.thumbnailsSelected.filter}
+                    layout={ImagesLayers.thumbnailsSelected.layout}
+                    paint={ImagesLayers.thumbnailsSelected.paint}
+                />
+                <Layer
+                    type="symbol"
                     id={imageLayerIds.imageInDisplay}
+                    afterId={imageLayerIds.thumbnailsHighlight}
                     filter={ImagesLayers.imageInDisplay.getFilter(
                         displayImageId,
                     )}
@@ -177,7 +234,17 @@ export const ImagesLayer: FC<
                     }}
                 />
             </GeoJSONSource>
-            <ImageDragPreview source={groupedSource} visible={markerLayerVisibility} />
+            <ImageDragPreview
+                source={groupedSource}
+                visible={markerLayerVisibility}
+            />
+            {markerLayerVisibility && groupedSource.pagination && (
+                <ImageGroupPager
+                    pagination={groupedSource.pagination}
+                    gearId={gearId}
+                    dimensions={paginationDimensions}
+                />
+            )}
         </>
     );
 };

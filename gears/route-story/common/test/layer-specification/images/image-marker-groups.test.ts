@@ -3,24 +3,24 @@ import { describe, it } from "mocha";
 import {
     getSliderImageMarkers,
     groupImageMarkers,
-} from "../src/tinkers/images";
+} from "../../../src/tinkers/images";
 import {
     getGroupedImageSource,
     getImageMarkerConnections,
-} from "../src/layer-specification/grouped-image-source";
+} from "../../../src/layer-specification/images/grouped-image-source";
 import {
     getImageDragPreviewSource,
     getImageSourceWithDraggingState,
     getImageSourceWithAnchors,
     ImageFeature,
-} from "../src/layer-specification/images-sources";
+} from "../../../src/layer-specification/images/images-sources";
 import {
     expandedImageGroupId$,
     selectedImageId$,
     toggleImageMarkerGroup,
     selectMapImageMarker,
     clearImageMarkerSelection,
-} from "../src/layer-specification/images-layers";
+} from "../../../src/layer-specification/images/images-layers";
 
 describe("Image marker groups", () => {
     it("uses map groups as persistent pickers and slider groups as open/close toggles", () => {
@@ -90,7 +90,7 @@ describe("Image marker groups", () => {
     });
 
     it("does not count separate route passes together on a narrow slider", () => {
-        const images = [0.004, 0, 0.005, 0.0051, 0.8].map(
+        const images = [0.008, 0, 0.01, 0.0101, 0.8].map(
             (distanceFraction, id) => ({ id, distanceFraction }),
         );
         const markers = getSliderImageMarkers(
@@ -171,7 +171,7 @@ describe("Image marker groups", () => {
         expect(expanded.features[0].geometry.coordinates).not.to.deep.equal(
             expanded.features[1].geometry.coordinates,
         );
-        expect(expanded.features[0].properties.markerOpacity).to.equal(0.45);
+        expect(expanded.features[0].properties.markerOpacity).to.equal(1);
         expect(expanded.features[1].properties.markerSelected).to.equal(true);
         expect(source.features[0].geometry.coordinates).to.deep.equal([0, 0]);
         expect(
@@ -189,11 +189,27 @@ describe("Image marker groups", () => {
         expect(dragging.features[0].geometry.coordinates).to.deep.equal([1, 1]);
         expect(dragging.features[1].properties.markerAnchor).to.equal(true);
         expect(dragging.features[1].geometry.coordinates).to.deep.equal([1, 1]);
-        const anchors = getImageSourceWithAnchors(source, expanded).features.filter(({ properties }) => properties.markerAnchor);
+        const anchors = getImageSourceWithAnchors(
+            source,
+            expanded,
+        ).features.filter(({ properties }) => properties.markerAnchor);
         const combined = getImageSourceWithAnchors(source, expanded).features;
-        expect(new Set(combined.map(({ id }) => id)).size).to.equal(combined.length);
-        expect(combined.every(({ id }) => typeof id === 'number' && Number.isSafeInteger(id) && id > 0)).to.equal(true);
-        expect(anchors.map(({ geometry }) => geometry.coordinates)).to.deep.equal(source.features.map(({ geometry }) => geometry.coordinates));
+        expect(new Set(combined.map(({ id }) => id)).size).to.equal(
+            combined.length,
+        );
+        expect(
+            combined.every(
+                ({ id }) =>
+                    typeof id === "number" &&
+                    Number.isSafeInteger(id) &&
+                    id > 0,
+            ),
+        ).to.equal(true);
+        expect(
+            anchors.map(({ geometry }) => geometry.coordinates),
+        ).to.deep.equal(
+            source.features.map(({ geometry }) => geometry.coordinates),
+        );
         expect(anchors[1].properties.markerSelected).to.equal(true);
         expect(
             getImageSourceWithDraggingState(grouped, 2).features,
@@ -201,8 +217,8 @@ describe("Image marker groups", () => {
         expect(grouped.features).to.have.length(2);
     });
 
-    it("keeps separate route passes apart and limits each stack to a 50-metre route span at any zoom", async () => {
-        const features: ImageFeature[] = [20, 0, 50, 51, 1000].map(
+    it("keeps separate route passes apart and limits each stack to a 100-metre route span at any zoom", async () => {
+        const features: ImageFeature[] = [40, 0, 100, 101, 1000].map(
             (distanceFromStartMeters, imageId) => ({
                 type: "Feature",
                 id: imageId,
@@ -239,8 +255,8 @@ describe("Image marker groups", () => {
                     properties.markerCount,
                 ]),
             ).to.deep.equal([
-                [20, 3],
-                [51, 1],
+                [40, 3],
+                [101, 1],
                 [1000, 1],
             ]);
         }

@@ -1,8 +1,9 @@
-import { FC, useEffect, useMemo, useRef } from "react";
+import { FC, useEffect, useMemo, useRef, useState } from "react";
 import * as maplibregl from "maplibre-gl";
 import { OverlayComponentProps, FeatureStateProps } from "@apparatus";
 import { useSubjectState } from "@tinker-chest";
 import { MapLayerData, MapSourceAndLayers } from "@web-apparatus";
+import { useReducedMotion } from "@web-ui";
 import { resolveMapImageMarkerColors, useTheme } from "@ui";
 import { useLoadedWebImages } from "../hooks/useLoadedWebImages";
 import { useImageInDisplay } from "./useImageInDisplay";
@@ -17,10 +18,9 @@ import {
     draggingPlacement$,
     updateImageDistanceFraction,
     highlightIdsBySourceId$,
-    selectedImageId$,
-    expandedImageGroupId$,
     imageLayerIds,
-    getImageMarkerConnections,
+    useImageMarkerConnections,
+    selectedImageId$,
     ImagesLayers,
     DRAGGED_IMAGE_ID,
     selectMapImageMarker,
@@ -34,16 +34,25 @@ import {
     getImageMarkerFeatureId,
     IMAGE_MARKER_ANCHOR_ID,
     IMAGE_MARKER_ANCHOR_SDF_URI,
+    IMAGE_MARKER_OUTLINE_ID,
+    IMAGE_MARKER_OUTLINE_SDF_URI,
+    IMAGE_MARKER_OUTLINE_SIZE,
+    useAnimatedImageMarkerSource,
+    getOutlinedThumbnailId,
 } from "@the-dead-planet/nav-gauge-gears-route-story-common";
 import { useImageMarkerSource } from "./useImageMarkerSource";
 import { getImagesLayers } from "./images-layers";
 import { ImageDragPreview } from "./ImageDragPreview";
 import { WebRouteStoryProps } from "../model";
+import { ImageGroupPager } from "./ImageGroupPager";
+import { findMapImageFeature } from "./findMapImageFeature";
+import { getOutlinedThumbnail } from "./outlined-thumbnail";
 
 export const ImagesLayer: FC<
     OverlayComponentProps<maplibregl.Map> & WebRouteStoryProps
 > = ({
     map,
+    gearId,
     animatrix,
     data$,
     state$,
@@ -64,16 +73,34 @@ export const ImagesLayer: FC<
         highlightIdsBySourceId$,
     );
     const [draggingImage, setDraggingImage] = useSubjectState(draggingImage$);
-    const markerHighlightIds = useMemo(() => new Map([...highlightIdsBySourceId].map(([sourceId, ids]): [string, Set<string>] => [
-        sourceId,
-        sourceId === imageSourceIds.thumbnails ? new Set([...ids].flatMap((id) => [String(getImageMarkerFeatureId(id)), String(getImageMarkerAnchorId(id))])) : ids,
-    ])), [highlightIdsBySourceId]);
+    const [selectedImageId] = useSubjectState(selectedImageId$);
+    const markerHighlightIds = useMemo(() => {
+        const highlights = new Map(highlightIdsBySourceId);
+        const imageIds = highlights.get(imageSourceIds.thumbnails);
+        if (imageIds) {
+            highlights.set(imageSourceIds.connections, imageIds);
+            highlights.set(imageSourceIds.thumbnails, new Set([...imageIds].flatMap((id) => [
+                String(getImageMarkerFeatureId(id)),
+                String(getImageMarkerAnchorId(id)),
+            ])));
+        }
+        return highlights;
+    }, [highlightIdsBySourceId]);
     const dragStartPoint = useRef<{ x: number; y: number } | null>(null);
     const dragAnchorOffset = useRef({ x: 0, y: 0 });
     const didDrag = useRef(false);
 
     const mapImages = useMemo(
         (): MapImageData[] => [
+            {
+                iconImageName: IMAGE_MARKER_OUTLINE_ID,
+                data: {
+                    data: IMAGE_MARKER_OUTLINE_SDF_URI,
+                    width: IMAGE_MARKER_OUTLINE_SIZE,
+                    height: IMAGE_MARKER_OUTLINE_SIZE,
+                },
+                metadata: { sdf: true },
+            },
             {
                 iconImageName: IMAGE_MARKER_ANCHOR_ID,
                 data: { data: IMAGE_MARKER_ANCHOR_SDF_URI, width: 64, height: 64 },
@@ -93,6 +120,23 @@ export const ImagesLayer: FC<
         [loadedImages],
     );
     useRouteLayerImages(map, mapImages);
+    const outlinedImages = useMemo(
+        (): MapImageData[] =>
+            loadedImages.flatMap((image) =>
+                [...new Set([imageColor, imageHoverColor])].map((color) => ({
+                    iconImageName: getOutlinedThumbnailId(
+                        getIconImageId(image, { thumbnail: true }),
+                        color,
+                    ),
+                    data: getOutlinedThumbnail(
+                        image.data.thumbnailBitmap!,
+                        color,
+                    ),
+                })),
+            ),
+        [loadedImages, imageColor, imageHoverColor],
+    );
+    useRouteLayerImages(map, outlinedImages);
     const badgeImages = useMemo((): MapImageData[] =>
         getImageCountBadges(imageColor, badgeTextColor).map(({ id, svg }) => ({
             iconImageName: id,
@@ -111,33 +155,42 @@ export const ImagesLayer: FC<
         () => getImageSource(loadedImages, geojson, routeGeometryData),
         [loadedImages, geojson, routeGeometryData],
     );
-    const groupedSource = useImageMarkerSource(
+    const targetSource = useImageMarkerSource(
         map,
         sourceDataGeojson,
         displayImageId !== null,
     );
+    const reducedMotion = useReducedMotion();
+    const groupedSource = useAnimatedImageMarkerSource(targetSource, reducedMotion);
     const visibleSource = useMemo(() => getImageSourceWithMarkerVisibility(groupedSource, markerLayerVisibility), [groupedSource, markerLayerVisibility]);
-    const connectionsLayerData = useMemo(
-        (): MapLayerData => ({
+    const connections = useImageMarkerConnections(sourceDataGeojson, visibleSource);
+    const connectionsUpdate = useMemo(() => ({
+        sourceId: imageSourceIds.connections,
+        data: connections,
+    }), [connections]);
+    const [connectionsLayerData] = useState<MapLayerData>(
+        () => ({
             sourceId: imageSourceIds.connections,
             source: {
                 type: "geojson",
-                data: getImageMarkerConnections(
-                    sourceDataGeojson,
-                    visibleSource,
-                ),
+                data: { type: "FeatureCollection", features: [] },
             },
             layers: [
                 {
                     id: imageLayerIds.connections,
                     type: "line",
                     source: imageSourceIds.connections,
-                    paint: ImagesLayers.connections.paint,
+                    paint: ImagesLayers.connections.getPaint(imageColor, imageHoverColor, imageActiveColor, null),
                 },
             ],
         }),
-        [sourceDataGeojson, visibleSource],
     );
+    useEffect(() => {
+        if (map.getLayer(imageLayerIds.connections)) {
+            const paint = ImagesLayers.connections.getPaint(imageColor, imageHoverColor, imageActiveColor, selectedImageId);
+            map.setPaintProperty(imageLayerIds.connections, "line-color", paint["line-color"]);
+        }
+    }, [map, imageColor, imageHoverColor, imageActiveColor, selectedImageId]);
 
     const mapLayerData = useMemo(
         (): MapLayerData => ({
@@ -155,24 +208,18 @@ export const ImagesLayer: FC<
             ),
             handlers: {
                 options: {
-                    buffer: 12,
+                    buffer: 0,
                     isHoverEnabled: () =>
                         state$.value.markerLayerVisibility && draggingImage$.value?.interaction !== "map", // prevent lag when dragging
                 },
                 onMouseDown: ({ features, isTopRelated }, event) => {
-                    const feature = features.find(
-                        ({ properties }) =>
-                            properties.imageId !== DRAGGED_IMAGE_ID,
-                    );
+                    const feature = findMapImageFeature(features, event.point, (coordinate) => map.project(coordinate));
                     didDrag.current = false;
                     map.getCanvas().style.cursor = "grabbing";
                     if (!state$.value.markerLayerVisibility || !isTopRelated || !feature) {
                         return;
                     }
                     dragStartPoint.current = event.point;
-                    if (feature.properties.markerCount > 1) {
-                        return;
-                    }
                     const original = sourceDataGeojson.features.find(({ properties }) => properties.imageId === feature.properties.imageId);
                     if (original) {
                         const point = map.project([original.geometry.coordinates[0], original.geometry.coordinates[1]]);
@@ -209,6 +256,15 @@ export const ImagesLayer: FC<
                             )
                             .map((feature) => String(feature.properties.imageId)),
                     );
+                    const previous = highlightIdsBySourceId$.value.get(
+                        imageSourceIds.thumbnails,
+                    );
+                    if (
+                        previous?.size === ids.size &&
+                        [...ids].every((id) => previous.has(id))
+                    ) {
+                        return;
+                    }
                     setHighlightIdsBySourceId(
                         new Map([[imageSourceIds.thumbnails, ids]]),
                     );
@@ -220,23 +276,20 @@ export const ImagesLayer: FC<
                     }
                     map.dragPan.enable();
                 },
-                onClick: ({ features, isTopRelated }) => {
-                    const feature = features.find(
-                        ({ properties }) =>
-                            properties.imageId !== DRAGGED_IMAGE_ID,
-                    );
+                onClick: ({ features, isTopRelated }, event) => {
+                    const feature = findMapImageFeature(features, event.point, (coordinate) => map.project(coordinate));
                     if (didDrag.current) {
                         return;
                     }
                     if (!isTopRelated || !feature) {
-                        selectedImageId$.next(null);
-                        expandedImageGroupId$.next(null);
+                        clearImageMarkerSelection();
                         return;
                     }
                     const imageId = Number(feature.properties.imageId);
                     selectMapImageMarker(
                         imageId,
                         Number(feature.properties.markerGroupSize ?? 1),
+                        Number(feature.properties.markerGroupId ?? imageId),
                     );
                 },
             },
@@ -350,11 +403,32 @@ export const ImagesLayer: FC<
     }, [draggingImage, loadedImages, geojson, routeGeometryData]);
 
     const updatedData = useMemo(() => {
+        const source = getImageSourceWithAnchors(
+            sourceDataGeojson,
+            visibleSource,
+        );
+        const highlighted = highlightIdsBySourceId.get(
+            imageSourceIds.thumbnails,
+        );
         return {
             sourceId: imageSourceIds.thumbnails,
-            data: getImageSourceWithAnchors(sourceDataGeojson, visibleSource),
+            data: {
+                ...source,
+                features: source.features.map((feature) => ({
+                    ...feature,
+                    properties: {
+                        ...feature.properties,
+                        [FeatureStateProps.Highlight]:
+                            feature.properties.markerSelected ||
+                            highlighted?.has(
+                                String(feature.properties.imageId),
+                            ) ||
+                            false,
+                    },
+                })),
+            },
         };
-    }, [sourceDataGeojson, visibleSource]);
+    }, [sourceDataGeojson, visibleSource, highlightIdsBySourceId]);
 
     useImageInDisplay(map, animatrix, playerOperator);
 
@@ -364,6 +438,7 @@ export const ImagesLayer: FC<
                 map={map}
                 mapLayerData={connectionsLayerData}
                 layerOrder={layerOrder}
+                updatedData={connectionsUpdate}
             />
             <MapSourceAndLayers
                 map={map}
@@ -373,6 +448,13 @@ export const ImagesLayer: FC<
                 updatedData={updatedData}
             />
             <ImageDragPreview map={map} source={groupedSource} visible={markerLayerVisibility} />
+            {markerLayerVisibility && groupedSource.pagination && (
+                <ImageGroupPager
+                    map={map}
+                    pagination={groupedSource.pagination}
+                    gearId={gearId}
+                />
+            )}
         </>
     );
 };

@@ -1,0 +1,101 @@
+import { RefObject } from "react";
+import { StyleSheet, View } from "react-native";
+import { Marker } from "@maplibre/maplibre-react-native";
+import { useMultipleTranslations } from "@apparatus";
+import { Button, Chip, Text } from "@mobile-ui";
+import { DEFAULT_SIZE, FontType, Icons } from "@ui";
+import {
+    shiftImageGroup,
+    ImageGroupPagination,
+    RouteStoryTranslationKey,
+    MAP_IMAGE_GROUP_PAGER_BUTTON_SIZE,
+} from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { ImageGroupPagerDimensions } from "./model";
+
+const styles = StyleSheet.create({
+    pager: {
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 4,
+    },
+    controls: {
+        flexDirection: "row",
+        gap: 4,
+    },
+    counter: {
+        textAlign: "center",
+        fontSize: 16,
+    },
+    arrow: {
+        width: MAP_IMAGE_GROUP_PAGER_BUTTON_SIZE,
+        minHeight: MAP_IMAGE_GROUP_PAGER_BUTTON_SIZE,
+    },
+});
+
+interface Props {
+    pagination: ImageGroupPagination;
+    gearId: string;
+    dimensions: RefObject<ImageGroupPagerDimensions | null>;
+}
+
+export const ImageGroupPager = ({ pagination, gearId, dimensions }: Props) => {
+    const [previousLabel, nextLabel] = useMultipleTranslations([
+        { n: gearId, t: RouteStoryTranslationKey.PreviousImages },
+        { n: gearId, t: RouteStoryTranslationKey.NextImages },
+    ]);
+    return (
+        <Marker
+            id="route-story-image-group-pager"
+            lngLat={pagination.lngLat}
+            anchor="center"
+        >
+            <View
+                style={styles.pager}
+                onLayout={({ nativeEvent: { layout } }) => {
+                    dimensions.current = layout;
+                }}
+                onTouchStart={(event) => event.stopPropagation()}
+                onTouchEnd={(event) => event.stopPropagation()}
+            >
+                <View pointerEvents="none" accessibilityLiveRegion="polite">
+                    <Chip
+                        color="tertiary"
+                        variant="fill"
+                        fontType={FontType.Numeric}
+                    >
+                        <Text
+                            style={styles.counter}
+                            fontType={FontType.Numeric}
+                            variant="fill"
+                            color="tertiary"
+                            numberOfLines={1}
+                        >
+                            +{pagination.hiddenCount}
+                        </Text>
+                    </Chip>
+                </View>
+                <View style={styles.controls}>
+                    <Button
+                        style={styles.arrow}
+                        icon={Icons.NounProject.Previous}
+                        size={DEFAULT_SIZE}
+                        variant="fill-inverse"
+                        color="tertiary"
+                        accessibilityLabel={previousLabel}
+                        onPress={() => shiftImageGroup(pagination, -1)}
+                    />
+                    <Button
+                        style={styles.arrow}
+                        icon={Icons.NounProject.Next}
+                        size={DEFAULT_SIZE}
+                        variant="fill-inverse"
+                        color="tertiary"
+                        accessibilityLabel={nextLabel}
+                        onPress={() => shiftImageGroup(pagination, 1)}
+                    />
+                </View>
+            </View>
+        </Marker>
+    );
+};
