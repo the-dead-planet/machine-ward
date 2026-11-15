@@ -3,19 +3,11 @@ import { it } from "mocha";
 import { act, createElement } from "react";
 import { createRoot } from "test-renderer";
 import type { Map as MapLibreMap } from "maplibre-gl";
-import {
-    expandedImageGroupId$,
-    imageGroupOffset$,
-    ImageMarkerSource,
-    selectedImageId$,
-} from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { expandedImageGroupId$, imageGroupOffset$, ImageMarkerSource, selectedImageId$ } from "@the-dead-planet/nav-gauge-gears-route-story-common";
 import { useImageMarkerSource } from "../src/images/useImageMarkerSource";
 
 it("caches projections and group membership across selection and scrolling, not camera or source changes", async () => {
-    const environment = Object.getOwnPropertyDescriptor(
-        globalThis,
-        "IS_REACT_ACT_ENVIRONMENT",
-    );
+    const environment = Object.getOwnPropertyDescriptor(globalThis, "IS_REACT_ACT_ENVIRONMENT");
     Object.defineProperty(globalThis, "IS_REACT_ACT_ENVIRONMENT", {
         value: true,
         configurable: true,
@@ -59,28 +51,20 @@ it("caches projections and group membership across selection and scrolling, not 
             callbacks.add(handler);
             handlers.set(event, callbacks);
         },
-        off: (event: string, handler: () => void) =>
-            handlers.get(event)?.delete(handler),
+        off: (event: string, handler: () => void) => handlers.get(event)?.delete(handler),
     } as unknown as MapLibreMap;
     let rendered: ImageMarkerSource = source;
     const Probe = ({ images }: { images: ImageMarkerSource }) => {
         rendered = useImageMarkerSource(map, images, false);
         return null;
     };
-    const emit = (event: string) =>
-        handlers.get(event)?.forEach((handler) => handler());
+    const emit = (event: string) => handlers.get(event)?.forEach((handler) => handler());
     const root = createRoot();
     try {
-        await act(async () =>
-            root.render(createElement(Probe, { images: source })),
-        );
+        await act(async () => root.render(createElement(Probe, { images: source })));
         expect(projections).to.equal(7);
         expect(unprojections).to.equal(6);
-        expect(
-            rendered.features.filter(
-                ({ properties }) => properties.markerVisible,
-            ),
-        ).to.have.length(5);
+        expect(rendered.features.filter(({ properties }) => properties.markerVisible)).to.have.length(5);
         await act(async () => {
             selectedImageId$.next(2);
         });
@@ -98,22 +82,14 @@ it("caches projections and group membership across selection and scrolling, not 
             emit("movestart");
         });
         expect(projections).to.equal(14);
-        expect(
-            rendered.features.filter(
-                ({ properties }) => properties.markerVisible,
-            ),
-        ).to.have.length(1);
+        expect(rendered.features.filter(({ properties }) => properties.markerVisible)).to.have.length(1);
         moving = false;
         projectionScale = 200;
         await act(async () => {
             emit("moveend");
         });
         expect(projections).to.equal(21);
-        expect(
-            rendered.features.filter(
-                ({ properties }) => properties.markerVisible,
-            ),
-        ).to.have.length(5);
+        expect(rendered.features.filter(({ properties }) => properties.markerVisible)).to.have.length(5);
         const moved: ImageMarkerSource = {
             ...source,
             features: source.features.map((feature, index) =>
@@ -125,15 +101,9 @@ it("caches projections and group membership across selection and scrolling, not 
                     : feature,
             ),
         };
-        await act(async () =>
-            root.render(createElement(Probe, { images: moved })),
-        );
+        await act(async () => root.render(createElement(Probe, { images: moved })));
         expect(projections).to.equal(28);
-        expect(
-            rendered.features.filter(
-                ({ properties }) => properties.markerVisible,
-            ),
-        ).to.have.length(2);
+        expect(rendered.features.filter(({ properties }) => properties.markerVisible)).to.have.length(2);
         await act(async () => {
             emit("resize");
         });
@@ -144,11 +114,7 @@ it("caches projections and group membership across selection and scrolling, not 
         expandedImageGroupId$.next(previousGroup);
         imageGroupOffset$.next(previousOffset);
         if (environment) {
-            Object.defineProperty(
-                globalThis,
-                "IS_REACT_ACT_ENVIRONMENT",
-                environment,
-            );
+            Object.defineProperty(globalThis, "IS_REACT_ACT_ENVIRONMENT", environment);
         } else {
             Reflect.deleteProperty(globalThis, "IS_REACT_ACT_ENVIRONMENT");
         }

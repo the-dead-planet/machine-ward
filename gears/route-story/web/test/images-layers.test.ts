@@ -1,9 +1,6 @@
 import { expect } from "chai";
 import { describe, it } from "mocha";
-import {
-    createExpression,
-    validateStyleMin,
-} from "@maplibre/maplibre-gl-style-spec";
+import { createExpression, validateStyleMin } from "@maplibre/maplibre-gl-style-spec";
 import {
     DRAGGED_IMAGE_ID,
     imageLayerIds,
@@ -18,20 +15,13 @@ import {
     OUTLINED_MAP_THUMBNAIL_SIZE,
     getMapImageThumbnailOffsetY,
 } from "@the-dead-planet/nav-gauge-gears-route-story-common";
-import {
-    getImagesLayers,
-    getImageDragPreviewLayers,
-} from "../src/images/images-layers";
+import { getImagesLayers, getImageDragPreviewLayers } from "../src/images/images-layers";
 
 describe("Image marker layers", () => {
     it("stacks each default photo and its baked outline as one symbol, including hover", () => {
         const layers = getImagesLayers(null, "red", "blue", "green", "white");
-        expect(
-            layers.some(({ id }) => id === imageLayerIds.thumbnailsOutline),
-        ).to.equal(false);
-        const thumbnail = layers.find(
-            ({ id }) => id === imageLayerIds.thumbnails,
-        );
+        expect(layers.some(({ id }) => id === imageLayerIds.thumbnailsOutline)).to.equal(false);
+        const thumbnail = layers.find(({ id }) => id === imageLayerIds.thumbnails);
         const parsed = createExpression(
             thumbnail?.type === "symbol"
                 ? thumbnail.layout?.["icon-image"]
@@ -79,22 +69,10 @@ describe("Image marker layers", () => {
                 markerScale: scale,
                 markerSelected: true,
             };
-            const imageSize = evaluate(
-                ImagesLayers.thumbnails.layout["icon-size"],
-                properties,
-            );
-            const imageOffset = evaluate(
-                ImagesLayers.thumbnails.layout["icon-offset"],
-                properties,
-            );
-            const outlineSize = evaluate(
-                ImagesLayers.thumbnailsOutline.layout["icon-size"],
-                properties,
-            );
-            const outlineOffset = evaluate(
-                ImagesLayers.thumbnailsOutline.layout["icon-offset"],
-                properties,
-            );
+            const imageSize = evaluate(ImagesLayers.thumbnails.layout["icon-size"], properties);
+            const imageOffset = evaluate(ImagesLayers.thumbnails.layout["icon-offset"], properties);
+            const outlineSize = evaluate(ImagesLayers.thumbnailsOutline.layout["icon-size"], properties);
+            const outlineOffset = evaluate(ImagesLayers.thumbnailsOutline.layout["icon-offset"], properties);
             if (
                 typeof imageSize !== "number" ||
                 typeof outlineSize !== "number" ||
@@ -104,13 +82,8 @@ describe("Image marker layers", () => {
                 throw new Error("Invalid thumbnail geometry");
             }
             const centerShift = Number(imageOffset[1]) * imageSize;
-            expect(
-                centerShift + (THUMBNAIL_IMAGE_SIZE * scale) / 2,
-            ).to.be.closeTo(THUMBNAIL_IMAGE_SIZE / 2, 0.00001);
-            expect(Number(outlineOffset[1]) * outlineSize).to.be.closeTo(
-                centerShift,
-                0.00001,
-            );
+            expect(centerShift + (THUMBNAIL_IMAGE_SIZE * scale) / 2).to.be.closeTo(THUMBNAIL_IMAGE_SIZE / 2, 0.00001);
+            expect(Number(outlineOffset[1]) * outlineSize).to.be.closeTo(centerShift, 0.00001);
             expect(
                 getMapImageThumbnailOffsetY(1, scale) -
                     MAP_IMAGE_MARKER_OFFSET_Y,
@@ -132,18 +105,10 @@ describe("Image marker layers", () => {
             "#567890",
             "#ffffff",
         );
-        const photo = layers.findIndex(
-            ({ id }) => id === imageLayerIds.thumbnails,
-        );
-        const selectedOutline = layers.findIndex(
-            ({ id }) => id === imageLayerIds.thumbnailsSelectedOutline,
-        );
-        const selectedAnchor = layers.findIndex(
-            ({ id }) => id === imageLayerIds.anchorsSelected,
-        );
-        const selectedPhoto = layers.findIndex(
-            ({ id }) => id === imageLayerIds.thumbnailsSelected,
-        );
+        const photo = layers.findIndex(({ id }) => id === imageLayerIds.thumbnails);
+        const selectedOutline = layers.findIndex(({ id }) => id === imageLayerIds.thumbnailsSelectedOutline);
+        const selectedAnchor = layers.findIndex(({ id }) => id === imageLayerIds.anchorsSelected);
+        const selectedPhoto = layers.findIndex(({ id }) => id === imageLayerIds.thumbnailsSelected);
         expect(selectedOutline).to.be.greaterThan(photo);
         expect(selectedAnchor).to.be.greaterThan(photo);
         expect(selectedAnchor).to.be.lessThan(selectedOutline);
@@ -187,17 +152,13 @@ describe("Image marker layers", () => {
             "#567890",
             "#ffffff",
         );
-        const outline = layers.find(
-            ({ id }) => id === imageLayerIds.thumbnailsSelectedOutline,
-        );
+        const outline = layers.find(({ id }) => id === imageLayerIds.thumbnailsSelectedOutline);
         const anchor = layers.find(({ id }) => id === imageLayerIds.anchors);
         const paint =
             outline?.type === "symbol"
                 ? outline.paint?.["icon-color"]
                 : undefined;
-        expect(
-            anchor?.type === "symbol" && anchor.paint?.["icon-color"],
-        ).to.deep.equal(paint);
+        expect(anchor?.type === "symbol" && anchor.paint?.["icon-color"]).to.deep.equal(paint);
         const parsed = createExpression(paint, "icon-color");
         expect(parsed.result).to.equal("success");
         if (parsed.result !== "success") {
@@ -215,12 +176,8 @@ describe("Image marker layers", () => {
         expect(evaluate({}, {})).to.equal("#123456");
         expect(evaluate({}, { highlight: true })).to.equal("#345678");
         expect(evaluate({ highlight: true }, {})).to.equal("#345678");
-        expect(
-            evaluate({ markerSelected: true }, { highlight: true }),
-        ).to.equal("#567890");
-        expect(evaluate({}, { highlight: true, dragging: true })).to.equal(
-            "#567890",
-        );
+        expect(evaluate({ markerSelected: true }, { highlight: true })).to.equal("#567890");
+        expect(evaluate({}, { highlight: true, dragging: true })).to.equal("#567890");
         expect(evaluate({ dragging: true }, {})).to.equal("#567890");
         const connections = createExpression(
             ImagesLayers.connections.getPaint(
@@ -260,10 +217,7 @@ describe("Image marker layers", () => {
                 { specification: ImagesLayers.anchorsSelected, selected: true },
             ];
             for (const variant of variants) {
-                const parsed = createExpression(
-                    variant.specification.filter,
-                    "filter",
-                );
+                const parsed = createExpression(variant.specification.filter, "filter");
                 if (parsed.result !== "success") {
                     throw new Error("Invalid route anchor filter");
                 }
@@ -315,10 +269,7 @@ describe("Image marker layers", () => {
             (OUTLINED_MAP_THUMBNAIL_SIZE * THUMBNAIL_IMAGE_SIZE) /
                 MAP_THUMBNAIL_SIZE,
         ).to.equal(THUMBNAIL_IMAGE_SIZE + 4);
-        const parsed = createExpression(
-            image?.type === "symbol" ? image.layout?.["icon-size"] : undefined,
-            "thumbnail-size",
-        );
+        const parsed = createExpression(image?.type === "symbol" ? image.layout?.["icon-size"] : undefined, "thumbnail-size");
         if (parsed.result !== "success") {
             throw new Error("Invalid thumbnail size expression");
         }
@@ -372,17 +323,11 @@ describe("Image marker layers", () => {
             "#567890",
             "#ffffff",
         );
-        expect(
-            layers.findIndex(({ id }) => id === imageLayerIds.countBadge),
-        ).to.be.lessThan(
+        expect(layers.findIndex(({ id }) => id === imageLayerIds.countBadge)).to.be.lessThan(
             layers.findIndex(({ id }) => id === imageLayerIds.imageInDisplay),
         );
-        const layer = layers.find(
-            ({ id }) => id === imageLayerIds.imageInDisplay,
-        );
-        expect(
-            layer && "filter" in layer ? layer.filter : undefined,
-        ).not.to.deep.equal(["==", ["get", "imageId"], DRAGGED_IMAGE_ID]);
+        const layer = layers.find(({ id }) => id === imageLayerIds.imageInDisplay);
+        expect(layer && "filter" in layer ? layer.filter : undefined).not.to.deep.equal(["==", ["get", "imageId"], DRAGGED_IMAGE_ID]);
     });
 
     it("keeps anchors map-aligned and moves the photo, border, and badge together toward viewport top", () => {
@@ -395,9 +340,7 @@ describe("Image marker layers", () => {
         );
         const anchor = layers.find(({ id }) => id === imageLayerIds.anchors);
         const image = layers.find(({ id }) => id === imageLayerIds.thumbnails);
-        const outline = layers.find(
-            ({ id }) => id === imageLayerIds.thumbnailsSelectedOutline,
-        );
+        const outline = layers.find(({ id }) => id === imageLayerIds.thumbnailsSelectedOutline);
         const badge = layers.find(({ id }) => id === imageLayerIds.countBadge);
         expect(
             anchor?.type === "symbol" &&
@@ -407,21 +350,11 @@ describe("Image marker layers", () => {
             anchor?.type === "symbol" &&
                 anchor.layout?.["icon-rotation-alignment"],
         ).to.equal("map");
-        expect(
-            image?.type === "symbol" && image.paint?.["icon-translate"],
-        ).to.deep.equal([0, 0]);
-        expect(
-            image?.type === "symbol" && image.paint?.["icon-translate-anchor"],
-        ).to.equal("viewport");
-        expect(
-            outline?.type === "symbol" && outline.paint?.["icon-translate"],
-        ).to.deep.equal([0, 0]);
-        expect(
-            badge?.type === "symbol" && badge.layout?.["icon-offset"],
-        ).to.deep.equal([20, -20]);
-        expect(
-            badge?.type === "symbol" && badge.paint?.["icon-translate"],
-        ).to.equal(undefined);
+        expect(image?.type === "symbol" && image.paint?.["icon-translate"]).to.deep.equal([0, 0]);
+        expect(image?.type === "symbol" && image.paint?.["icon-translate-anchor"]).to.equal("viewport");
+        expect(outline?.type === "symbol" && outline.paint?.["icon-translate"]).to.deep.equal([0, 0]);
+        expect(badge?.type === "symbol" && badge.layout?.["icon-offset"]).to.deep.equal([20, -20]);
+        expect(badge?.type === "symbol" && badge.paint?.["icon-translate"]).to.equal(undefined);
         for (const layer of [image, outline, badge]) {
             expect(
                 layer?.type === "symbol" &&
@@ -432,12 +365,7 @@ describe("Image marker layers", () => {
                     layer.layout?.["icon-rotation-alignment"],
             ).to.equal("viewport");
         }
-        expect(
-            layers.some(
-                (layer) =>
-                    layer.type === "symbol" && layer.layout?.["text-field"],
-            ),
-        ).to.equal(false);
+        expect(layers.some((layer) => layer.type === "symbol" && layer.layout?.["text-field"])).to.equal(false);
         expect(
             -MAP_IMAGE_MARKER_OFFSET_Y -
                 THUMBNAIL_IMAGE_SIZE / 2 -

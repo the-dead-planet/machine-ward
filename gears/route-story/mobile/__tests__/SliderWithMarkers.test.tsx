@@ -17,15 +17,12 @@ import { MobilePlayerOperator } from "../src/model";
 jest.mock("@apparatus", () => ({}));
 jest.mock("@mobile-apparatus", () => ({}));
 jest.mock("@the-dead-planet/nav-gauge-gears-route-story-common", () => ({
-    ...jest.requireActual(
-        "@the-dead-planet/nav-gauge-gears-route-story-common/src/animatrix/animatrix",
-    ),
+    ...jest.requireActual("@the-dead-planet/nav-gauge-gears-route-story-common/src/animatrix/animatrix"),
     RouteStoryTranslationKey: {},
     getRouteDistanceFraction: () => 0,
 }));
 jest.mock("@mobile-ui", () => {
-    const { View } =
-        jest.requireActual<typeof import("react-native")>("react-native");
+    const { View } = jest.requireActual<typeof import("react-native")>("react-native");
     return { Slider: () => <View testID="player-slider-track" /> };
 });
 jest.mock("../src/layers/RouteLayer", () => ({
@@ -33,13 +30,11 @@ jest.mock("../src/layers/RouteLayer", () => ({
     linesRef$: {},
 }));
 jest.mock("../src/player/player-slider/SliderMarkers", () => {
-    const { View } =
-        jest.requireActual<typeof import("react-native")>("react-native");
+    const { View } = jest.requireActual<typeof import("react-native")>("react-native");
     return { SliderMarkers: () => <View testID="player-image-markers" /> };
 });
 jest.mock("../src/player/player-slider/PlayerSliderLabels", () => {
-    const { View } =
-        jest.requireActual<typeof import("react-native")>("react-native");
+    const { View } = jest.requireActual<typeof import("react-native")>("react-native");
     return { PlayerSliderLabels: () => <View testID="player-slider-labels" /> };
 });
 
@@ -70,9 +65,7 @@ test("keeps a native exclusion target around the player controls even when image
     expect(container?.props.nativeID).toBe("route-story-player-slider");
     expect(container?.props.collapsable).toBe(false);
     expect(screen.getByTestId("player-image-markers").parent).toBe(container);
-    await act(() =>
-        state$.next({ ...state$.value, markerPlayerVisibility: false }),
-    );
+    await act(() => state$.next({ ...state$.value, markerPlayerVisibility: false }));
     expect(screen.queryByTestId("player-image-markers")).toBeNull();
     expect(screen.getByTestId("player-slider-track").parent).toBe(container);
     await screen.unmount();

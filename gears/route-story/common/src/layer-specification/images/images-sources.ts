@@ -1,21 +1,13 @@
 import { FeatureStateProps, LoadedImageData } from "@apparatus";
 import { GeoJson } from "@tinker-chest";
-import {
-    getIconImageId,
-    getRouteLngLatAtDistanceFraction,
-    RouteGeometryData,
-    RoutePlacement,
-} from "../../tinkers";
+import { getIconImageId, getRouteLngLatAtDistanceFraction, RouteGeometryData, RoutePlacement } from "../../tinkers";
 
 export const IMAGE_ANIMATION_DURATION = 250;
 export const IMAGE_PROPERTY = "iconImageId";
 export const IMAGE_THUMBNAIL_PROPERTY = "iconImageThumbnailId";
 export const DRAGGED_IMAGE_ID = -1;
 
-export type ImageFeature = GeoJSON.Feature<
-    GeoJSON.Point,
-    ImageFeatureProperties
->;
+export type ImageFeature = GeoJSON.Feature<GeoJSON.Point, ImageFeatureProperties>;
 export interface ImageFeatureProperties {
     imageId: number;
     distanceFromStartMeters: number;
@@ -63,11 +55,7 @@ export function getImageSource<TImageData>(
     return {
         type: "FeatureCollection",
         features: loadedImages.map((image) => {
-            const lngLat = getRouteLngLatAtDistanceFraction(
-                geojson,
-                routeGeometryData,
-                image.distanceFraction,
-            );
+            const lngLat = getRouteLngLatAtDistanceFraction(geojson, routeGeometryData, image.distanceFraction);
 
             return {
                 type: "Feature",
@@ -157,9 +145,7 @@ export function getImageDragPreviewSource(
     imageId: number | null,
     placement: RoutePlacement | null,
 ): typeof source {
-    const image = source.features.find(
-        (feature) => feature.properties.imageId === imageId,
-    );
+    const image = source.features.find((feature) => feature.properties.imageId === imageId);
     if (!image || !placement) {
         return { type: "FeatureCollection", features: [] };
     }

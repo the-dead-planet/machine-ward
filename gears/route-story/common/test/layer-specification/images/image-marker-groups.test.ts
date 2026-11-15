@@ -1,19 +1,8 @@
 import { expect } from "chai";
 import { describe, it } from "mocha";
-import {
-    getSliderImageMarkers,
-    groupImageMarkers,
-} from "../../../src/tinkers/images";
-import {
-    getGroupedImageSource,
-    getImageMarkerConnections,
-} from "../../../src/layer-specification/images/grouped-image-source";
-import {
-    getImageDragPreviewSource,
-    getImageSourceWithDraggingState,
-    getImageSourceWithAnchors,
-    ImageFeature,
-} from "../../../src/layer-specification/images/images-sources";
+import { getSliderImageMarkers, groupImageMarkers } from "../../../src/tinkers/images";
+import { getGroupedImageSource, getImageMarkerConnections } from "../../../src/layer-specification/images/grouped-image-source";
+import { getImageDragPreviewSource, getImageSourceWithDraggingState, getImageSourceWithAnchors, ImageFeature } from "../../../src/layer-specification/images/images-sources";
 import {
     expandedImageGroupId$,
     selectedImageId$,
@@ -57,9 +46,7 @@ describe("Image marker groups", () => {
             ],
             10,
         );
-        expect(
-            groups.map((group) => group.map(({ item }) => item)),
-        ).to.deep.equal([[1, 2], [3], [4]]);
+        expect(groups.map((group) => group.map(({ item }) => item))).to.deep.equal([[1, 2], [3], [4]]);
     });
 
     it("regroups slider markers on resize and keeps the selected image available for dragging", () => {
@@ -90,9 +77,7 @@ describe("Image marker groups", () => {
     });
 
     it("does not count separate route passes together on a narrow slider", () => {
-        const images = [0.008, 0, 0.01, 0.0101, 0.8].map(
-            (distanceFraction, id) => ({ id, distanceFraction }),
-        );
+        const images = [0.008, 0, 0.01, 0.0101, 0.8].map((distanceFraction, id) => ({ id, distanceFraction }));
         const markers = getSliderImageMarkers(
             images,
             (fraction) => fraction * 100,
@@ -119,10 +104,7 @@ describe("Image marker groups", () => {
                 iconImageThumbnailId: `image-${index + 1}-thumbnail`,
             },
         }));
-        const source: GeoJSON.FeatureCollection<
-            GeoJSON.Point,
-            ImageFeature["properties"]
-        > = { type: "FeatureCollection", features };
+        const source: GeoJSON.FeatureCollection<GeoJSON.Point, ImageFeature["properties"]> = { type: "FeatureCollection", features };
         const unproject = ([x, y]: [number, number]): [number, number] => [
             x / 100,
             y / 100,
@@ -135,15 +117,9 @@ describe("Image marker groups", () => {
             null,
         );
         expect(grouped.features).to.have.length(2);
-        expect(
-            grouped.features.filter(
-                ({ properties }) => properties.markerVisible,
-            ),
-        ).to.have.length(1);
+        expect(grouped.features.filter(({ properties }) => properties.markerVisible)).to.have.length(1);
         expect(grouped.features[0].properties.markerCount).to.equal(2);
-        expect(grouped.features[1].geometry).to.deep.equal(
-            features[1].geometry,
-        );
+        expect(grouped.features[1].geometry).to.deep.equal(features[1].geometry);
 
         const zoomed = await getGroupedImageSource(
             source,
@@ -152,9 +128,7 @@ describe("Image marker groups", () => {
             null,
             null,
         );
-        expect(
-            zoomed.features.every(({ properties }) => properties.markerVisible),
-        ).to.equal(true);
+        expect(zoomed.features.every(({ properties }) => properties.markerVisible)).to.equal(true);
 
         const expanded = await getGroupedImageSource(
             source,
@@ -163,23 +137,13 @@ describe("Image marker groups", () => {
             2,
             1,
         );
-        expect(
-            expanded.features.every(
-                ({ properties }) => properties.markerVisible,
-            ),
-        ).to.equal(true);
-        expect(expanded.features[0].geometry.coordinates).not.to.deep.equal(
-            expanded.features[1].geometry.coordinates,
-        );
+        expect(expanded.features.every(({ properties }) => properties.markerVisible)).to.equal(true);
+        expect(expanded.features[0].geometry.coordinates).not.to.deep.equal(expanded.features[1].geometry.coordinates);
         expect(expanded.features[0].properties.markerOpacity).to.equal(1);
         expect(expanded.features[1].properties.markerSelected).to.equal(true);
         expect(source.features[0].geometry.coordinates).to.deep.equal([0, 0]);
-        expect(
-            getImageMarkerConnections(source, expanded).features,
-        ).to.have.length(2);
-        expect(
-            getImageMarkerConnections(source, grouped).features,
-        ).to.have.length(0);
+        expect(getImageMarkerConnections(source, expanded).features).to.have.length(2);
+        expect(getImageMarkerConnections(source, grouped).features).to.have.length(0);
 
         const dragging = getImageDragPreviewSource(grouped, 2, {
             lngLat: { lng: 1, lat: 1 },
@@ -189,14 +153,9 @@ describe("Image marker groups", () => {
         expect(dragging.features[0].geometry.coordinates).to.deep.equal([1, 1]);
         expect(dragging.features[1].properties.markerAnchor).to.equal(true);
         expect(dragging.features[1].geometry.coordinates).to.deep.equal([1, 1]);
-        const anchors = getImageSourceWithAnchors(
-            source,
-            expanded,
-        ).features.filter(({ properties }) => properties.markerAnchor);
+        const anchors = getImageSourceWithAnchors(source, expanded).features.filter(({ properties }) => properties.markerAnchor);
         const combined = getImageSourceWithAnchors(source, expanded).features;
-        expect(new Set(combined.map(({ id }) => id)).size).to.equal(
-            combined.length,
-        );
+        expect(new Set(combined.map(({ id }) => id)).size).to.equal(combined.length);
         expect(
             combined.every(
                 ({ id }) =>
@@ -205,15 +164,9 @@ describe("Image marker groups", () => {
                     id > 0,
             ),
         ).to.equal(true);
-        expect(
-            anchors.map(({ geometry }) => geometry.coordinates),
-        ).to.deep.equal(
-            source.features.map(({ geometry }) => geometry.coordinates),
-        );
+        expect(anchors.map(({ geometry }) => geometry.coordinates)).to.deep.equal(source.features.map(({ geometry }) => geometry.coordinates));
         expect(anchors[1].properties.markerSelected).to.equal(true);
-        expect(
-            getImageSourceWithDraggingState(grouped, 2).features,
-        ).to.have.length(2);
+        expect(getImageSourceWithDraggingState(grouped, 2).features).to.have.length(2);
         expect(grouped.features).to.have.length(2);
     });
 
@@ -231,10 +184,7 @@ describe("Image marker groups", () => {
                 },
             }),
         );
-        const source: GeoJSON.FeatureCollection<
-            GeoJSON.Point,
-            ImageFeature["properties"]
-        > = {
+        const source: GeoJSON.FeatureCollection<GeoJSON.Point, ImageFeature["properties"]> = {
             type: "FeatureCollection",
             features,
         };
@@ -246,9 +196,7 @@ describe("Image marker groups", () => {
                 null,
                 null,
             );
-            const visible = grouped.features.filter(
-                ({ properties }) => properties.markerVisible,
-            );
+            const visible = grouped.features.filter(({ properties }) => properties.markerVisible);
             expect(
                 visible.map(({ properties }) => [
                     properties.distanceFromStartMeters,

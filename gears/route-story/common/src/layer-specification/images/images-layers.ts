@@ -1,10 +1,5 @@
 import { FeatureStateProps } from "@apparatus";
-import {
-    DRAGGED_IMAGE_ID,
-    IMAGE_PROPERTY,
-    IMAGE_THUMBNAIL_PROPERTY,
-    ImageGroupPagination,
-} from "./images-sources";
+import { DRAGGED_IMAGE_ID, IMAGE_PROPERTY, IMAGE_THUMBNAIL_PROPERTY, ImageGroupPagination } from "./images-sources";
 import {
     getImageIconSize,
     FULL_SIZE_IMAGE_SIZE,
@@ -14,16 +9,11 @@ import {
     MAP_IMAGE_COUNT_BADGE_OFFSET,
     MAP_IMAGE_MARKER_OUTLINE_WIDTH,
 } from "../../tinkers/images";
-import { ComparisonProperty, GetProperty } from "../model";
+import { GetProperty } from "../model";
 import { BehaviorSubject } from "rxjs";
 import type { RoutePlacement } from "../../tinkers";
 import { getImageCountBadgeImageName } from "./image-count-badges";
-import type {
-    ExpressionSpecification,
-    FilterSpecification,
-    SymbolLayerSpecification,
-    LineLayerSpecification,
-} from "@maplibre/maplibre-gl-style-spec";
+import type { ExpressionSpecification, FilterSpecification, SymbolLayerSpecification, LineLayerSpecification } from "@maplibre/maplibre-gl-style-spec";
 
 export const imageSourceIds = {
     dragPreview: "route-story-image-drag-preview",
@@ -51,16 +41,12 @@ export const imageLayerIds = {
     imageInDisplay: "route-story-image-in-display",
 };
 
-export const highlightIdsBySourceId$ = new BehaviorSubject<
-    Map<string, Set<string>>
->(new Map());
+export const highlightIdsBySourceId$ = new BehaviorSubject<Map<string, Set<string>>>(new Map());
 export const draggingImage$ = new BehaviorSubject<{
     interaction: "map" | "player";
     id: number;
 } | null>(null);
-export const draggingPlacement$ = new BehaviorSubject<RoutePlacement | null>(
-    null,
-);
+export const draggingPlacement$ = new BehaviorSubject<RoutePlacement | null>(null);
 export const selectedImageId$ = new BehaviorSubject<number | null>(null);
 export const IMAGE_MARKER_ANCHOR_ID = "route-story-image-anchor-hexagon";
 export const IMAGE_MARKER_OUTLINE_ID = "route-story-image-outline-circle";
@@ -117,9 +103,7 @@ export const selectMapImageMarker = (
     if (expandedImageGroupId$.value !== groupId || groupSize <= 1) {
         imageGroupOffset$.next(0);
     }
-    selectedImageId$.next(
-        groupSize > 1 || selectedImageId$.value !== imageId ? imageId : null,
-    );
+    selectedImageId$.next(groupSize > 1 || selectedImageId$.value !== imageId ? imageId : null);
     expandedImageGroupId$.next(groupSize > 1 ? groupId : null);
 };
 
@@ -135,10 +119,7 @@ const groupFilter: FilterSpecification = [
     [">", ["get", "markerCount"], 1],
 ];
 const thumbnailIconImage: GetProperty = ["get", IMAGE_THUMBNAIL_PROPERTY];
-const thumbnailIconSize: number = getImageIconSize(
-    MAP_THUMBNAIL_SIZE,
-    THUMBNAIL_IMAGE_SIZE,
-);
+const thumbnailIconSize: number = getImageIconSize(MAP_THUMBNAIL_SIZE, THUMBNAIL_IMAGE_SIZE);
 const thumbnailScale: ExpressionSpecification = [
     "coalesce",
     ["get", "markerScale"],
@@ -227,10 +208,7 @@ const thumbnailsHighlightFilter: FilterSpecification = [
 
 const inDisplayIconImage: GetProperty = ["get", IMAGE_PROPERTY];
 
-const thumbnailsStackBack: Pick<
-    SymbolLayerSpecification,
-    "filter" | "layout" | "paint"
-> = {
+const thumbnailsStackBack: Pick<SymbolLayerSpecification, "filter" | "layout" | "paint"> = {
     filter: groupFilter,
     layout: {
         "icon-image": thumbnailIconImage,
@@ -303,11 +281,7 @@ const thumbnailsOutline = {
         activeColor: string,
     ): NonNullable<SymbolLayerSpecification["paint"]> => ({
         ...thumbnailPaint,
-        "icon-color": thumbnailsOutlineStrokeColor(
-            defaultColor,
-            hoverColor,
-            activeColor,
-        ),
+        "icon-color": thumbnailsOutlineStrokeColor(defaultColor, hoverColor, activeColor),
     }),
 };
 const thumbnails = {
@@ -316,10 +290,7 @@ const thumbnails = {
         ...thumbnailViewportLayout,
         "icon-image": thumbnailIconImage,
         "icon-size": scaledThumbnailIconSize,
-        "icon-offset": thumbnailBottomOffset(
-            thumbnailDiameter,
-            THUMBNAIL_IMAGE_SIZE,
-        ),
+        "icon-offset": thumbnailBottomOffset(thumbnailDiameter, THUMBNAIL_IMAGE_SIZE),
     },
     paint: thumbnailPaint,
 };
@@ -340,11 +311,7 @@ const anchors = {
         hoverColor: string,
         activeColor: string,
     ): NonNullable<SymbolLayerSpecification["paint"]> => ({
-        "icon-color": thumbnailsOutlineStrokeColor(
-            defaultColor,
-            hoverColor,
-            activeColor,
-        ),
+        "icon-color": thumbnailsOutlineStrokeColor(defaultColor, hoverColor, activeColor),
         "icon-opacity": thumbnailDraggingOpacity,
     }),
 };
@@ -476,10 +443,7 @@ export default {
         ],
         layout: {
             "icon-image": inDisplayIconImage,
-            "icon-size": getImageIconSize(
-                FULL_SIZE_IMAGE_SIZE,
-                THUMBNAIL_IMAGE_SIZE,
-            ),
+            "icon-size": getImageIconSize(FULL_SIZE_IMAGE_SIZE, THUMBNAIL_IMAGE_SIZE),
             "icon-allow-overlap": true,
         },
     },

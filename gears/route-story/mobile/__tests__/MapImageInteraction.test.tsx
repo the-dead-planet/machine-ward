@@ -16,8 +16,7 @@ import { MobileMarkerImageData } from "../src/images/image-parser";
 import { MapImageHitTarget } from "../src/images/model";
 
 jest.mock("@the-dead-planet/nav-gauge-gears-route-story-common", () => {
-    const { BehaviorSubject } =
-        jest.requireActual<typeof import("rxjs")>("rxjs");
+    const { BehaviorSubject } = jest.requireActual<typeof import("rxjs")>("rxjs");
     return {
         draggingImage$: new BehaviorSubject(null),
         draggingPlacement$: new BehaviorSubject(null),
@@ -110,22 +109,12 @@ test("claims cached marker hits without native queries, preserves the grab offse
     );
     const id = "route-story-thumbnails-layer";
     const start = async () => {
-        expect(
-            map.onPanResponderShouldStartHandlers$.value.get(id)?.(
-                touch(100, 65),
-            ),
-        ).toBe(true);
-        await act(() =>
-            map.onPanResponderStartHandlers$.value.get(id)?.(touch(100, 65)),
-        );
+        expect(map.onPanResponderShouldStartHandlers$.value.get(id)?.(touch(100, 65))).toBe(true);
+        await act(() => map.onPanResponderStartHandlers$.value.get(id)?.(touch(100, 65)));
     };
-    expect(
-        map.onPanResponderShouldStartHandlers$.value.get(id)?.(touch(500, 500)),
-    ).toBe(false);
+    expect(map.onPanResponderShouldStartHandlers$.value.get(id)?.(touch(500, 500))).toBe(false);
     target.feature.properties.markerScale = 0.9;
-    expect(
-        map.onPanResponderShouldStartHandlers$.value.get(id)?.(touch(135, 65)),
-    ).toBe(false);
+    expect(map.onPanResponderShouldStartHandlers$.value.get(id)?.(touch(135, 65))).toBe(false);
     target.feature.properties.markerScale = 1;
     await start();
     expect(map.dragPan$.value).toBe(false);
@@ -133,24 +122,12 @@ test("claims cached marker hits without native queries, preserves the grab offse
     expect(draggingImage$.value?.id).toBe(1);
     expect(queryRenderedFeatures).not.toHaveBeenCalled();
     expect(project).not.toHaveBeenCalled();
-    await act(() =>
-        map.onPanResponderEndHandlers$.value.get(id)?.(
-            [1, 1],
-            touch(110, 65),
-            false,
-        ),
-    );
+    await act(() => map.onPanResponderEndHandlers$.value.get(id)?.([1, 1], touch(110, 65), false));
     expect(updateImageDistanceFraction).toHaveBeenCalledWith(images, 1, 0.5);
     expect(map.dragPan$.value).toBe(true);
     jest.mocked(updateImageDistanceFraction).mockClear();
     await start();
-    await act(() =>
-        map.onPanResponderEndHandlers$.value.get(id)?.(
-            [1, 1],
-            touch(110, 65),
-            true,
-        ),
-    );
+    await act(() => map.onPanResponderEndHandlers$.value.get(id)?.([1, 1], touch(110, 65), true));
     expect(updateImageDistanceFraction).not.toHaveBeenCalled();
     expect(map.dragPan$.value).toBe(true);
     hitTargets.current = [
@@ -170,13 +147,7 @@ test("claims cached marker hits without native queries, preserves the grab offse
     ];
     await start();
     expect(draggingImage$.value?.id).toBe(1);
-    await act(() =>
-        map.onPanResponderEndHandlers$.value.get(id)?.(
-            [1, 1],
-            touch(100, 65),
-            true,
-        ),
-    );
+    await act(() => map.onPanResponderEndHandlers$.value.get(id)?.([1, 1], touch(100, 65), true));
     hitTargets.current = [target];
     hitTargets.current.push({
         point: [100, 65],
@@ -193,13 +164,7 @@ test("claims cached marker hits without native queries, preserves the grab offse
     });
     await start();
     expect(draggingImage$.value?.id).toBe(2);
-    await act(() =>
-        map.onPanResponderEndHandlers$.value.get(id)?.(
-            [1, 1],
-            touch(100, 65),
-            true,
-        ),
-    );
+    await act(() => map.onPanResponderEndHandlers$.value.get(id)?.([1, 1], touch(100, 65), true));
     hitTargets.current = [target];
     target.feature.properties.markerCount = 2;
     target.feature.properties.markerGroupSize = 2;
@@ -209,33 +174,17 @@ test("claims cached marker hits without native queries, preserves the grab offse
     await start();
     await act(() => press?.(pressEvent));
     expect(clearImageMarkerSelection).not.toHaveBeenCalled();
-    await act(() =>
-        map.onPanResponderEndHandlers$.value.get(id)?.(
-            [1, 1],
-            touch(100, 65),
-            false,
-        ),
-    );
+    await act(() => map.onPanResponderEndHandlers$.value.get(id)?.([1, 1], touch(100, 65), false));
     expect(selectMapImageMarker).toHaveBeenCalledWith(1, 2, 1);
     await act(() => press?.(pressEvent));
     expect(clearImageMarkerSelection).not.toHaveBeenCalled();
-    expect(
-        map.onPanResponderShouldStartHandlers$.value.get(id)?.(touch(500, 500)),
-    ).toBe(false);
+    expect(map.onPanResponderShouldStartHandlers$.value.get(id)?.(touch(500, 500))).toBe(false);
     await act(() => press?.(pressEvent));
     expect(clearImageMarkerSelection).toHaveBeenCalledTimes(1);
     await start();
     expect(draggingImage$.value?.id).toBe(1);
-    await act(() =>
-        map.onPanResponderMoveHandlers$.value.get(id)?.([1, 1], touch(110, 65)),
-    );
-    await act(() =>
-        map.onPanResponderEndHandlers$.value.get(id)?.(
-            [1, 1],
-            touch(110, 65),
-            false,
-        ),
-    );
+    await act(() => map.onPanResponderMoveHandlers$.value.get(id)?.([1, 1], touch(110, 65)));
+    await act(() => map.onPanResponderEndHandlers$.value.get(id)?.([1, 1], touch(110, 65), false));
     expect(updateImageDistanceFraction).toHaveBeenCalledTimes(1);
     expect(updateImageDistanceFraction).toHaveBeenCalledWith(images, 1, 0.5);
     expect(map.dragPan$.value).toBe(true);
@@ -245,9 +194,7 @@ test("claims cached marker hits without native queries, preserves the grab offse
         [344, 300],
         [300, 266],
     ]) {
-        expect(
-            map.onPanResponderShouldStartHandlers$.value.get(id)?.(touch(x, y)),
-        ).toBe(false);
+        expect(map.onPanResponderShouldStartHandlers$.value.get(id)?.(touch(x, y))).toBe(false);
         await act(() => press?.(pressEvent));
         expect(clearImageMarkerSelection).toHaveBeenCalledTimes(2);
     }

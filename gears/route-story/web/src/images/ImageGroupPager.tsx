@@ -4,12 +4,7 @@ import { Map, Marker } from "maplibre-gl";
 import { useMultipleTranslations } from "@apparatus";
 import { Button, Chip, Span } from "@web-ui";
 import { FontType, Icons } from "@ui";
-import {
-    shiftImageGroup,
-    ImageGroupPagination,
-    RouteStoryTranslationKey,
-    MAP_IMAGE_GROUP_PAGER_BUTTON_SIZE,
-} from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { shiftImageGroup, ImageGroupPagination, RouteStoryTranslationKey, MAP_IMAGE_GROUP_PAGER_BUTTON_SIZE } from "@the-dead-planet/nav-gauge-gears-route-story-common";
 import styles from "./image-group-pager.module.css";
 import classNames from "classnames";
 

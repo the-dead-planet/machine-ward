@@ -25,11 +25,7 @@ export const ImageDragPreview = ({
     return (
         <GeoJSONSource
             id={imageSourceIds.dragPreview}
-            data={getImageDragPreviewSource(
-                source,
-                image?.id ?? null,
-                visible ? placement : null,
-            )}
+            data={getImageDragPreviewSource(source, image?.id ?? null, visible ? placement : null)}
         >
             <Layer
                 type="symbol"
@@ -37,11 +33,7 @@ export const ImageDragPreview = ({
                 afterId={imageLayerIds.thumbnailsSelected}
                 filter={ImagesLayers.anchors.filter}
                 layout={ImagesLayers.anchors.layout}
-                paint={ImagesLayers.anchors.getPaint(
-                    activeColor,
-                    activeColor,
-                    activeColor,
-                )}
+                paint={ImagesLayers.anchors.getPaint(activeColor, activeColor, activeColor)}
             />
             <Layer
                 type="symbol"
@@ -49,9 +41,7 @@ export const ImageDragPreview = ({
                 afterId={imageLayerIds.dragAnchor}
                 filter={ImagesLayers.thumbnailsHighlightOutline.filter}
                 layout={ImagesLayers.thumbnailsHighlightOutline.layout}
-                paint={ImagesLayers.thumbnailsHighlightOutline.getPaint(
-                    activeColor,
-                )}
+                paint={ImagesLayers.thumbnailsHighlightOutline.getPaint(activeColor)}
             />
             <Layer
                 type="symbol"

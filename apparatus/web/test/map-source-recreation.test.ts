@@ -3,17 +3,11 @@ import { it } from "mocha";
 import { act, createElement } from "react";
 import { createRoot } from "test-renderer";
 import type { Map as MapLibreMap, SourceSpecification } from "maplibre-gl";
-import {
-    MapLayerData,
-    useMapSourceAndLayers,
-} from "../src/map/hooks/useMapSourceAndLayers";
+import { MapLayerData, useMapSourceAndLayers } from "../src/map/hooks/useMapSourceAndLayers";
 import { UpdatedData } from "../src/map/hooks/useUpdateSourceData";
 
 it("reapplies unchanged expanded geometry after a theme recreates its source", async () => {
-    const environment = Object.getOwnPropertyDescriptor(
-        globalThis,
-        "IS_REACT_ACT_ENVIRONMENT",
-    );
+    const environment = Object.getOwnPropertyDescriptor(globalThis, "IS_REACT_ACT_ENVIRONMENT");
     Object.defineProperty(globalThis, "IS_REACT_ACT_ENVIRONMENT", {
         value: true,
         configurable: true,
@@ -78,9 +72,7 @@ it("reapplies unchanged expanded geometry after a theme recreates its source", a
     };
     const root = createRoot();
     try {
-        await act(async () =>
-            root.render(createElement(Probe, { configuration: data })),
-        );
+        await act(async () => root.render(createElement(Probe, { configuration: data })));
         expect(displayed).to.equal(expanded);
         const themed: MapLayerData = {
             ...data,
@@ -93,25 +85,17 @@ it("reapplies unchanged expanded geometry after a theme recreates its source", a
                 },
             ],
         };
-        await act(async () =>
-            root.render(createElement(Probe, { configuration: themed })),
-        );
+        await act(async () => root.render(createElement(Probe, { configuration: themed })));
         expect(sourceCreations).to.equal(2);
         expect(displayed).to.equal(expanded);
         expect(sourceUpdates).to.equal(2);
-        await act(async () =>
-            root.render(createElement(Probe, { configuration: themed })),
-        );
+        await act(async () => root.render(createElement(Probe, { configuration: themed })));
         expect(sourceCreations).to.equal(2);
         expect(sourceUpdates).to.equal(2);
     } finally {
         await act(async () => root.unmount());
         if (environment) {
-            Object.defineProperty(
-                globalThis,
-                "IS_REACT_ACT_ENVIRONMENT",
-                environment,
-            );
+            Object.defineProperty(globalThis, "IS_REACT_ACT_ENVIRONMENT", environment);
         } else {
             Reflect.deleteProperty(globalThis, "IS_REACT_ACT_ENVIRONMENT");
         }

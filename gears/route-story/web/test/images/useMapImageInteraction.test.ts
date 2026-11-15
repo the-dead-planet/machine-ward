@@ -2,11 +2,7 @@ import { expect } from "chai";
 import { it } from "mocha";
 import { act, createElement } from "react";
 import { createRoot } from "test-renderer";
-import type {
-    Map as MapLibreMap,
-    MapGeoJSONFeature,
-    MapMouseEvent,
-} from "maplibre-gl";
+import type { Map as MapLibreMap, MapGeoJSONFeature, MapMouseEvent } from "maplibre-gl";
 import { BehaviorSubject } from "rxjs";
 import {
     defaultRouteStoryState,
@@ -23,10 +19,7 @@ import { useMapImageInteraction } from "../../src/images/useMapImageInteraction"
 import { WebRouteStoryProps } from "../../src/model";
 
 it("keeps handlers stable, distinguishes taps from drags, preserves grab offsets, and cleans up map listeners", async () => {
-    const environment = Object.getOwnPropertyDescriptor(
-        globalThis,
-        "IS_REACT_ACT_ENVIRONMENT",
-    );
+    const environment = Object.getOwnPropertyDescriptor(globalThis, "IS_REACT_ACT_ENVIRONMENT");
     Object.defineProperty(globalThis, "IS_REACT_ACT_ENVIRONMENT", {
         value: true,
         configurable: true,
@@ -67,14 +60,11 @@ it("keeps handlers stable, distinguishes taps from drags, preserves grab offsets
             callbacks.add(handler);
             listeners.set(event, callbacks);
         },
-        off: (event: string, handler: (event: MapMouseEvent) => void) =>
-            listeners.get(event)?.delete(handler),
+        off: (event: string, handler: (event: MapMouseEvent) => void) => listeners.get(event)?.delete(handler),
     } as unknown as MapLibreMap;
     const options: Parameters<typeof useMapImageInteraction>[0] = {
         map,
-        images$: new BehaviorSubject<WebRouteStoryProps["images$"]["value"]>(
-            [],
-        ),
+        images$: new BehaviorSubject<WebRouteStoryProps["images$"]["value"]>([]),
         state$: new BehaviorSubject(defaultRouteStoryState),
         loadedImages: [],
         geojson: { type: "FeatureCollection", features: [] },
@@ -127,9 +117,7 @@ it("keeps handlers stable, distinguishes taps from drags, preserves grab offsets
         const highlights = highlightIdsBySourceId$.value;
         handlers.onMouseMove?.(hit, event(110));
         expect(highlightIdsBySourceId$.value).to.equal(highlights);
-        expect(highlights.get(imageSourceIds.thumbnails)?.has("1")).to.equal(
-            true,
-        );
+        expect(highlights.get(imageSourceIds.thumbnails)?.has("1")).to.equal(true);
         await act(async () => {
             handlers.onMouseDown?.(hit, event(110));
         });
@@ -151,9 +139,7 @@ it("keeps handlers stable, distinguishes taps from drags, preserves grab offsets
         expect(selectedImageId$.value).to.equal(1);
         await act(async () => root.unmount());
         expect(panning).to.equal(true);
-        expect(
-            [...listeners.values()].every((callbacks) => callbacks.size === 0),
-        ).to.equal(true);
+        expect([...listeners.values()].every((callbacks) => callbacks.size === 0)).to.equal(true);
         expect(draggingPlacement$.value).to.equal(null);
     } finally {
         await act(async () => root.unmount());
@@ -164,11 +150,7 @@ it("keeps handlers stable, distinguishes taps from drags, preserves grab offsets
         draggingPlacement$.next(previous.placement);
         highlightIdsBySourceId$.next(previous.highlights);
         if (environment) {
-            Object.defineProperty(
-                globalThis,
-                "IS_REACT_ACT_ENVIRONMENT",
-                environment,
-            );
+            Object.defineProperty(globalThis, "IS_REACT_ACT_ENVIRONMENT", environment);
         } else {
             Reflect.deleteProperty(globalThis, "IS_REACT_ACT_ENVIRONMENT");
         }

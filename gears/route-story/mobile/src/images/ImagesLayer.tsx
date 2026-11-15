@@ -1,10 +1,5 @@
 import { FC, useMemo, useRef } from "react";
-import {
-    Layer,
-    Images,
-    GeoJSONSource,
-    ImageEntry,
-} from "@maplibre/maplibre-react-native";
+import { Layer, Images, GeoJSONSource, ImageEntry } from "@maplibre/maplibre-react-native";
 import { resolveMapImageMarkerColors, useTheme } from "@ui";
 import { OverlayComponentProps } from "@apparatus";
 import { useSubjectState } from "@tinker-chest";
@@ -40,9 +35,7 @@ import { ImageCountBadges } from './ImageCountBadges';
 import { ImageGroupPager } from "./ImageGroupPager";
 import { ImageGroupPagerDimensions } from "./model";
 
-export const ImagesLayer: FC<
-    OverlayComponentProps<MobileMap> & MobileRouteStoryProps
-> = ({
+export const ImagesLayer: FC<OverlayComponentProps<MobileMap> & MobileRouteStoryProps> = ({
     map,
     gearId,
     animatrix,
@@ -67,11 +60,7 @@ export const ImagesLayer: FC<
         () => getImageSource(loadedImages, geojson, routeGeometryData),
         [loadedImages, geojson, routeGeometryData],
     );
-    const { groupedSource: targetSource, hitTargets, paginationTarget } = useImageMarkerSource(
-        map,
-        originalSource,
-        displayImageId !== null,
-    );
+    const { groupedSource: targetSource, hitTargets, paginationTarget } = useImageMarkerSource(map, originalSource, displayImageId !== null);
     const reducedMotion = useReducedMotion();
     const paginationDimensions = useRef<ImageGroupPagerDimensions | null>(null);
     const groupedSource = useAnimatedImageMarkerSource(targetSource, reducedMotion);
@@ -79,11 +68,7 @@ export const ImagesLayer: FC<
     const connections = useImageMarkerConnections(originalSource, visibleSource);
     useMapImageInteraction(map, images$, geojson, routeGeometryData, markerLayerVisibility, hitTargets, paginationTarget, paginationDimensions);
     const renderedSource = useMemo(
-        () =>
-            getImageSourceWithDraggingState(
-                getImageSourceWithAnchors(originalSource, visibleSource),
-                draggingImage?.id ?? null,
-            ),
+        () => getImageSourceWithDraggingState(getImageSourceWithAnchors(originalSource, visibleSource), draggingImage?.id ?? null),
         [originalSource, visibleSource, draggingImage],
     );
 
@@ -106,11 +91,7 @@ export const ImagesLayer: FC<
         source: { uri: IMAGE_MARKER_OUTLINE_SDF_URI },
         sdf: true,
     };
-    const imageInDisplayIconSize = useImageInDisplay(
-        map,
-        animatrix,
-        playerOperator,
-    );
+    const imageInDisplayIconSize = useImageInDisplay(map, animatrix, playerOperator);
 
     return (
         <>
@@ -147,11 +128,7 @@ export const ImagesLayer: FC<
                     afterId={imageLayerIds.connections}
                     filter={ImagesLayers.anchorsUnselected.filter}
                     layout={ImagesLayers.anchors.layout}
-                    paint={ImagesLayers.anchors.getPaint(
-                        imageColor,
-                        imageHoverColor,
-                        imageActiveColor,
-                    )}
+                    paint={ImagesLayers.anchors.getPaint(imageColor, imageHoverColor, imageActiveColor)}
                 />
                 <Layer
                     type="symbol"
@@ -172,10 +149,7 @@ export const ImagesLayer: FC<
                     id={imageLayerIds.thumbnails}
                     afterId={imageLayerIds.thumbnailsStackFront}
                     filter={ImagesLayers.thumbnailsOutlined.filter}
-                    layout={ImagesLayers.thumbnailsOutlined.getLayout(
-                        imageColor,
-                        imageHoverColor,
-                    )}
+                    layout={ImagesLayers.thumbnailsOutlined.getLayout(imageColor, imageHoverColor)}
                     paint={ImagesLayers.thumbnailsOutlined.paint}
                 />
                 <Layer
@@ -184,10 +158,7 @@ export const ImagesLayer: FC<
                     afterId={imageLayerIds.thumbnails}
                     filter={ImagesLayers.countBadge.filter}
                     paint={ImagesLayers.countBadge.paint}
-                    layout={ImagesLayers.countBadge.getLayout(
-                        imageColor,
-                        badgeAppearance.glyphs,
-                    )}
+                    layout={ImagesLayers.countBadge.getLayout(imageColor, badgeAppearance.glyphs)}
                 />
                 <Layer
                     type="symbol"
@@ -195,11 +166,7 @@ export const ImagesLayer: FC<
                     afterId={imageLayerIds.countBadge}
                     filter={ImagesLayers.anchorsSelected.filter}
                     layout={ImagesLayers.anchorsSelected.layout}
-                    paint={ImagesLayers.anchorsSelected.getPaint(
-                        imageColor,
-                        imageHoverColor,
-                        imageActiveColor,
-                    )}
+                    paint={ImagesLayers.anchorsSelected.getPaint(imageColor, imageHoverColor, imageActiveColor)}
                 />
                 <Layer
                     type="symbol"
@@ -207,11 +174,7 @@ export const ImagesLayer: FC<
                     afterId={imageLayerIds.anchorsSelected}
                     filter={ImagesLayers.thumbnailsSelectedOutline.filter}
                     layout={ImagesLayers.thumbnailsSelectedOutline.layout}
-                    paint={ImagesLayers.thumbnailsSelectedOutline.getPaint(
-                        imageColor,
-                        imageHoverColor,
-                        imageActiveColor,
-                    )}
+                    paint={ImagesLayers.thumbnailsSelectedOutline.getPaint(imageColor, imageHoverColor, imageActiveColor)}
                 />
                 <Layer
                     type="symbol"
@@ -225,9 +188,7 @@ export const ImagesLayer: FC<
                     type="symbol"
                     id={imageLayerIds.imageInDisplay}
                     afterId={imageLayerIds.thumbnailsHighlight}
-                    filter={ImagesLayers.imageInDisplay.getFilter(
-                        displayImageId,
-                    )}
+                    filter={ImagesLayers.imageInDisplay.getFilter(displayImageId)}
                     layout={{
                         ...ImagesLayers.imageInDisplay.layout,
                         "icon-size": imageInDisplayIconSize,

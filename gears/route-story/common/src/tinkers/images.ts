@@ -29,8 +29,7 @@ export const MAP_IMAGE_GROUP_RING_RADIUS =
 export const IMAGE_GROUP_MAX_ROUTE_DISTANCE_METERS = 100;
 export const SLIDER_IMAGE_GROUP_RADIUS = 12;
 
-export const formatImageMarkerCount = (count: number): string =>
-    count > 9 ? "9+" : String(count);
+export const formatImageMarkerCount = (count: number): string => count > 9 ? "9+" : String(count);
 
 export const canGroupImageRouteDistances = (
     candidateDistanceMeters: number,
@@ -55,10 +54,7 @@ export function groupImageMarkers<T>(
     for (const position of positions) {
         const group = groups.find(
             (members) =>
-                Math.hypot(
-                    position.x - members[0].x,
-                    position.y - members[0].y,
-                ) < radius &&
+                Math.hypot(position.x - members[0].x, position.y - members[0].y) < radius &&
                 members.every(({ item }) => canGroup(position.item, item)),
         );
         if (group) {
@@ -94,13 +90,9 @@ export function getSliderImageMarkers<
         positions,
         width > 0 ? SLIDER_IMAGE_GROUP_RADIUS : 0,
         (candidate, member) =>
-            canGroupImageRouteDistances(
-                candidate.distanceFraction! * totalDistanceMeters,
-                member.distanceFraction! * totalDistanceMeters,
-            ),
+            canGroupImageRouteDistances(candidate.distanceFraction! * totalDistanceMeters, member.distanceFraction! * totalDistanceMeters),
     ).map((group) => {
-        const lead =
-            group.find(({ item }) => item.id === selectedImageId) ?? group[0];
+        const lead = group.find(({ item }) => item.id === selectedImageId) ?? group[0];
         return {
             image: lead.item,
             percent: getPercent(lead.item.distanceFraction!),

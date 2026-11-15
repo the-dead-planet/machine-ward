@@ -79,10 +79,7 @@ export const useMapImageInteraction = (
                             locationX - x,
                             locationY -
                                 y -
-                                getMapImageThumbnailOffsetY(
-                                    feature.properties.markerGroupSize,
-                                    feature.properties.markerScale,
-                                ) +
+                                getMapImageThumbnailOffsetY(feature.properties.markerGroupSize, feature.properties.markerScale) +
                                 MAP_IMAGE_MARKER_OFFSET_Y,
                         ) <=
                             (THUMBNAIL_IMAGE_SIZE *

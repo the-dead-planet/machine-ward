@@ -34,12 +34,8 @@ describe("Map image hit selection", () => {
             },
             layer: { id: imageLayerIds.anchorsSelected },
         };
-        expect(
-            findMapImageFeature([anchor, lower], { x: 100, y: 65 }, project),
-        ).to.equal(anchor);
-        expect(
-            findMapImageFeature([anchor, lower], { x: 100, y: 75 }, project),
-        ).to.equal(lower);
+        expect(findMapImageFeature([anchor, lower], { x: 100, y: 65 }, project)).to.equal(anchor);
+        expect(findMapImageFeature([anchor, lower], { x: 100, y: 75 }, project)).to.equal(lower);
     });
 
     it("prefers the visible circle over another image's transparent bounds or outline", () => {

@@ -4,11 +4,7 @@ import { Marker } from "@maplibre/maplibre-react-native";
 import { useMultipleTranslations } from "@apparatus";
 import { Button, Chip, Text } from "@mobile-ui";
 import { FontType, Icons } from "@ui";
-import {
-    shiftImageGroup,
-    ImageGroupPagination,
-    RouteStoryTranslationKey,
-} from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { shiftImageGroup, ImageGroupPagination, RouteStoryTranslationKey } from "@the-dead-planet/nav-gauge-gears-route-story-common";
 import { ImageGroupPagerDimensions } from "./model";
 
 const styles = StyleSheet.create({

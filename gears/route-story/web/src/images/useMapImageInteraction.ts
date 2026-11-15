@@ -53,11 +53,7 @@ export const useMapImageInteraction = ({
                     draggingImage$.value?.interaction !== "map",
             },
             onMouseDown: ({ features, isTopRelated }, event) => {
-                const feature = findMapImageFeature(
-                    features,
-                    event.point,
-                    (coordinate) => map.project(coordinate),
-                );
+                const feature = findMapImageFeature(features, event.point, (coordinate) => map.project(coordinate));
                 didDrag.current = false;
                 map.getCanvas().style.cursor = "grabbing";
                 if (
@@ -68,10 +64,7 @@ export const useMapImageInteraction = ({
                     return;
                 }
                 dragStartPoint.current = event.point;
-                const original = sourceDataGeojson.features.find(
-                    ({ properties }) =>
-                        properties.imageId === feature.properties.imageId,
-                );
+                const original = sourceDataGeojson.features.find(({ properties }) => properties.imageId === feature.properties.imageId);
                 if (original) {
                     const point = map.project([
                         original.geometry.coordinates[0],
@@ -105,24 +98,17 @@ export const useMapImageInteraction = ({
                 map.getCanvas().style.cursor = "pointer";
                 const ids = new Set(
                     features
-                        .filter(
-                            ({ properties }) =>
-                                properties.imageId !== DRAGGED_IMAGE_ID,
-                        )
+                        .filter(({ properties }) => properties.imageId !== DRAGGED_IMAGE_ID)
                         .map((feature) => String(feature.properties.imageId)),
                 );
-                const previous = highlightIdsBySourceId$.value.get(
-                    imageSourceIds.thumbnails,
-                );
+                const previous = highlightIdsBySourceId$.value.get(imageSourceIds.thumbnails);
                 if (
                     previous?.size === ids.size &&
                     [...ids].every((id) => previous.has(id))
                 ) {
                     return;
                 }
-                highlightIdsBySourceId$.next(
-                    new Map([[imageSourceIds.thumbnails, ids]]),
-                );
+                highlightIdsBySourceId$.next(new Map([[imageSourceIds.thumbnails, ids]]));
             },
             onMouseUp: () => {
                 map.getCanvas().style.cursor = "grab";
@@ -132,11 +118,7 @@ export const useMapImageInteraction = ({
                 map.dragPan.enable();
             },
             onClick: ({ features, isTopRelated }, event) => {
-                const feature = findMapImageFeature(
-                    features,
-                    event.point,
-                    (coordinate) => map.project(coordinate),
-                );
+                const feature = findMapImageFeature(features, event.point, (coordinate) => map.project(coordinate));
                 if (didDrag.current) {
                     return;
                 }
@@ -200,10 +182,7 @@ export const useMapImageInteraction = ({
             }
             if (event.point && dragStartPoint.current) {
                 if (
-                    Math.hypot(
-                        event.point.x - dragStartPoint.current.x,
-                        event.point.y - dragStartPoint.current.y,
-                    ) < 4 &&
+                    Math.hypot(event.point.x - dragStartPoint.current.x, event.point.y - dragStartPoint.current.y) < 4 &&
                     !didDrag.current
                 ) {
                     return;
@@ -211,13 +190,7 @@ export const useMapImageInteraction = ({
                 didDrag.current = true;
             }
             event.preventDefault?.();
-            draggingPlacement$.next(
-                getRoutePlacement(
-                    getDragCoordinate(event),
-                    geojson,
-                    routeGeometryData,
-                ),
-            );
+            draggingPlacement$.next(getRoutePlacement(getDragCoordinate(event), geojson, routeGeometryData));
         };
         const handleDragEnd = (
             event: maplibregl.MapMouseEvent | maplibregl.MapTouchEvent,
@@ -230,23 +203,13 @@ export const useMapImageInteraction = ({
                 return;
             }
             event.preventDefault();
-            const placement = getRoutePlacement(
-                getDragCoordinate(event),
-                geojson,
-                routeGeometryData,
-            );
-            const image = loadedImages.find(
-                (image) => image.id === draggingImage.id,
-            );
+            const placement = getRoutePlacement(getDragCoordinate(event), geojson, routeGeometryData);
+            const image = loadedImages.find((image) => image.id === draggingImage.id);
             draggingPlacement$.next(null);
             if (!image || !placement) {
                 return;
             }
-            updateImageDistanceFraction(
-                images$,
-                image.id,
-                placement.distanceFraction,
-            );
+            updateImageDistanceFraction(images$, image.id, placement.distanceFraction);
         };
         map.dragPan.disable();
         map.on("mousemove", handleDrag);

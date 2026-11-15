@@ -11,11 +11,7 @@ import {
     MAP_IMAGE_MARKER_OFFSET_Y,
     ImageMarkerPosition,
 } from "../../tinkers/images";
-import {
-    ImageFeature,
-    ImageMarkerSource,
-    ImageGroupPagination,
-} from "./images-sources";
+import { ImageFeature, ImageMarkerSource, ImageGroupPagination } from "./images-sources";
 
 type Coordinate = [number, number];
 
@@ -36,10 +32,7 @@ export async function getImageMarkerGroups(
         positions,
         MAP_IMAGE_GROUP_RADIUS,
         (candidate, member) =>
-            canGroupImageRouteDistances(
-                candidate.properties.distanceFromStartMeters,
-                member.properties.distanceFromStartMeters,
-            ),
+            canGroupImageRouteDistances(candidate.properties.distanceFromStartMeters, member.properties.distanceFromStartMeters),
     );
 }
 
@@ -74,13 +67,8 @@ export async function getImageMarkerSourceFromGroups(
     for (const group of groups) {
         const expanded =
             group.length > 1 &&
-            group.some(
-                ({ item }) => item.properties.imageId === expandedImageGroupId,
-            );
-        const lead =
-            group.find(
-                ({ item }) => item.properties.imageId === selectedImageId,
-            ) ?? group[0];
+            group.some(({ item }) => item.properties.imageId === expandedImageGroupId);
+        const lead = group.find(({ item }) => item.properties.imageId === selectedImageId) ?? group[0];
         const paged = expanded && group.length > MAP_IMAGE_GROUP_SLOT_COUNT;
         const currentOffset = paged
             ? ((offset % group.length) + group.length) % group.length
@@ -137,11 +125,9 @@ export async function getImageMarkerSourceFromGroups(
         for (const [index, position] of group.entries()) {
             const feature = position.item;
             const selected = feature.properties.imageId === selectedImageId;
-            const visibleIndex =
-                (index - currentOffset + group.length) % group.length;
+            const visibleIndex = (index - currentOffset + group.length) % group.length;
             const expandedCoordinate = expandedCoordinates[visibleIndex];
-            const coordinates =
-                expandedCoordinate ?? feature.geometry.coordinates;
+            const coordinates = expandedCoordinate ?? feature.geometry.coordinates;
             const visible = expanded
                 ? visibleIndex < visibleCount
                 : position === lead;

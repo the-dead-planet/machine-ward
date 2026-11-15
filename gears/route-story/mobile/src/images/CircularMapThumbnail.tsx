@@ -3,12 +3,7 @@ import { Platform, StyleSheet, View } from "react-native";
 import Svg, { Circle, ClipPath, Defs, Image } from "react-native-svg";
 import { Images } from "@maplibre/maplibre-react-native";
 import RNFS from "react-native-fs";
-import {
-    getOutlinedThumbnailId,
-    MAP_THUMBNAIL_SIZE,
-    MAP_THUMBNAIL_BORDER_SIZE,
-    OUTLINED_MAP_THUMBNAIL_SIZE,
-} from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { getOutlinedThumbnailId, MAP_THUMBNAIL_SIZE, MAP_THUMBNAIL_BORDER_SIZE, OUTLINED_MAP_THUMBNAIL_SIZE } from "@the-dead-planet/nav-gauge-gears-route-story-common";
 import { glitchmitter } from "@apparatus";
 import { determineSize, extractFilePathFromData } from "./image-parser";
 
@@ -28,9 +23,7 @@ interface Props {
 }
 
 const useThumbnailImage = (uri: string) => {
-    const [imageUri, setImageUri] = useState(
-        Platform.OS === "android" ? null : uri,
-    );
+    const [imageUri, setImageUri] = useState(Platform.OS === "android" ? null : uri);
 
     useEffect(() => {
         if (Platform.OS !== "android") {
@@ -46,9 +39,7 @@ const useThumbnailImage = (uri: string) => {
                     setImageUri(dataUri);
                 }
             })
-            .catch((error: unknown) =>
-                glitchmitter.transmit("Error loading map thumbnail", error),
-            );
+            .catch((error: unknown) => glitchmitter.transmit("Error loading map thumbnail", error));
         return () => {
             isCurrent = false;
         };

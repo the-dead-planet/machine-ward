@@ -1,18 +1,12 @@
 import { expect } from "chai";
 import { describe, it } from "mocha";
 import { formatImageMarkerCount } from "../../../src/tinkers/images";
-import {
-    getImageCountBadges,
-    getImageCountBadgeImageName,
-} from "../../../src/layer-specification/images/image-count-badges";
+import { getImageCountBadges, getImageCountBadgeImageName } from "../../../src/layer-specification/images/image-count-badges";
 import ImagesLayers from "../../../src/layer-specification/images/images-layers";
 
 describe("Composite image count badges", () => {
     it("keeps badge colors and layer opacity fully opaque", () => {
-        const badges = getImageCountBadges(
-            "rgba(18, 52, 86, 0.4)",
-            "rgba(255, 255, 255, 0.5)",
-        );
+        const badges = getImageCountBadges("rgba(18, 52, 86, 0.4)", "rgba(255, 255, 255, 0.5)");
         for (const { svg } of badges) {
             expect(svg)
                 .to.include('fill="#123456"')
@@ -28,10 +22,7 @@ describe("Composite image count badges", () => {
         ]) {
             const badges = getImageCountBadges(background, text);
             expect(badges.map(({ id }) => id)).to.deep.equal(
-                ["1", "2", "3", "4", "5", "6", "7", "8", "9", "9+"].map(
-                    (label) =>
-                        getImageCountBadgeImageName(label, background, text),
-                ),
+                ["1", "2", "3", "4", "5", "6", "7", "8", "9", "9+"].map((label) => getImageCountBadgeImageName(label, background, text)),
             );
             for (const { svg } of badges) {
                 expect(svg)

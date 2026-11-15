@@ -2,12 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { Map } from "maplibre-gl";
 import { useSubjectState } from "@tinker-chest";
 import { MapLayerData } from "@web-apparatus";
-import {
-    imageLayerIds,
-    ImagesLayers,
-    imageSourceIds,
-    selectedImageId$,
-} from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { imageLayerIds, ImagesLayers, imageSourceIds, selectedImageId$ } from "@the-dead-planet/nav-gauge-gears-route-story-common";
 
 export const useImageConnectionsLayer = (
     map: Map,
@@ -53,11 +48,7 @@ export const useImageConnectionsLayer = (
                 imageActiveColor,
                 selectedImageId,
             );
-            map.setPaintProperty(
-                imageLayerIds.connections,
-                "line-color",
-                paint["line-color"],
-            );
+            map.setPaintProperty(imageLayerIds.connections, "line-color", paint["line-color"]);
         }
     }, [map, imageColor, imageHoverColor, imageActiveColor, selectedImageId]);
 

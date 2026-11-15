@@ -11,12 +11,8 @@ export const useAnimatedImageMarkerSource = (
 
     useEffect(() => {
         const previous = currentSource.current;
-        const previousGroup = previous.features.find(
-            ({ properties }) => properties.markerExpanded,
-        )?.properties.markerGroupId;
-        const nextGroup = source.features.find(
-            ({ properties }) => properties.markerExpanded,
-        )?.properties.markerGroupId;
+        const previousGroup = previous.features.find(({ properties }) => properties.markerExpanded)?.properties.markerGroupId;
+        const nextGroup = source.features.find(({ properties }) => properties.markerExpanded)?.properties.markerGroupId;
         const previousFeatures = new Map(
             previous.features.map((feature) => [
                 feature.properties.imageId,
@@ -44,11 +40,7 @@ export const useAnimatedImageMarkerSource = (
         let started: number | undefined;
         const update = (timestamp: number) => {
             started ??= timestamp;
-            const next = getImageMarkerTransition(
-                previous,
-                source,
-                timestamp - started,
-            );
+            const next = getImageMarkerTransition(previous, source, timestamp - started);
             currentSource.current = next;
             setRenderedSource(next);
 

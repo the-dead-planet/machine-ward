@@ -3,10 +3,7 @@ import { it } from "mocha";
 import { getOutlinedThumbnail } from "../src/images/outlined-thumbnail";
 
 it("composites the circular border before its photo into a single padded bitmap", () => {
-    const original = Object.getOwnPropertyDescriptor(
-        globalThis,
-        "OffscreenCanvas",
-    );
+    const original = Object.getOwnPropertyDescriptor(globalThis, "OffscreenCanvas");
     const calls: unknown[][] = [];
     const image = {} as ImageBitmap;
     const bitmap = {} as ImageBitmap;
@@ -15,8 +12,7 @@ it("composites the circular border before its photo into a single padded bitmap"
         beginPath: () => calls.push(["beginPath"]),
         arc: (...values: number[]) => calls.push(["arc", ...values]),
         fill: () => calls.push(["fill", context.fillStyle]),
-        drawImage: (...values: unknown[]) =>
-            calls.push(["drawImage", ...values]),
+        drawImage: (...values: unknown[]) => calls.push(["drawImage", ...values]),
     };
     Object.defineProperty(globalThis, "OffscreenCanvas", {
         configurable: true,

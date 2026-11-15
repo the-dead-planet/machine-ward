@@ -62,14 +62,8 @@ export const useImageLayerAssets = (
         (): MapImageData[] =>
             loadedImages.flatMap((image) =>
                 [...new Set([imageColor, imageHoverColor])].map((color) => ({
-                    iconImageName: getOutlinedThumbnailId(
-                        getIconImageId(image, { thumbnail: true }),
-                        color,
-                    ),
-                    data: getOutlinedThumbnail(
-                        image.data.thumbnailBitmap!,
-                        color,
-                    ),
+                    iconImageName: getOutlinedThumbnailId(getIconImageId(image, { thumbnail: true }), color),
+                    data: getOutlinedThumbnail(image.data.thumbnailBitmap!, color),
                 })),
             ),
         [loadedImages, imageColor, imageHoverColor],

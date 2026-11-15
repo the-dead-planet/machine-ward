@@ -28,9 +28,7 @@ import { useImageLayerAssets } from "./useImageLayerAssets";
 import { useImageConnectionsLayer } from "./useImageConnectionsLayer";
 import { useMapImageInteraction } from "./useMapImageInteraction";
 
-export const ImagesLayer: FC<
-    OverlayComponentProps<MapLibreMap> & WebRouteStoryProps
-> = ({
+export const ImagesLayer: FC<OverlayComponentProps<MapLibreMap> & WebRouteStoryProps> = ({
     map,
     gearId,
     animatrix,
@@ -66,28 +64,14 @@ export const ImagesLayer: FC<
         () => getImageSource(loadedImages, geojson, routeGeometryData),
         [loadedImages, geojson, routeGeometryData],
     );
-    const targetSource = useImageMarkerSource(
-        map,
-        sourceDataGeojson,
-        displayImageId !== null,
-    );
+    const targetSource = useImageMarkerSource(map, sourceDataGeojson, displayImageId !== null);
     const reducedMotion = useReducedMotion();
-    const groupedSource = useAnimatedImageMarkerSource(
-        targetSource,
-        reducedMotion,
-    );
+    const groupedSource = useAnimatedImageMarkerSource(targetSource, reducedMotion);
     const visibleSource = useMemo(
-        () =>
-            getImageSourceWithMarkerVisibility(
-                groupedSource,
-                markerLayerVisibility,
-            ),
+        () => getImageSourceWithMarkerVisibility(groupedSource, markerLayerVisibility),
         [groupedSource, markerLayerVisibility],
     );
-    const connections = useImageMarkerConnections(
-        sourceDataGeojson,
-        visibleSource,
-    );
+    const connections = useImageMarkerConnections(sourceDataGeojson, visibleSource);
     const { layerData: connectionsLayerData, updatedData: connectionsUpdate } =
         useImageConnectionsLayer(
             map,
@@ -110,10 +94,7 @@ export const ImagesLayer: FC<
             sourceId: imageSourceIds.thumbnails,
             source: {
                 type: "geojson",
-                data: getImageSourceWithAnchors(
-                    sourceDataGeojson,
-                    sourceDataGeojson,
-                ),
+                data: getImageSourceWithAnchors(sourceDataGeojson, sourceDataGeojson),
             },
             layers: getImagesLayers(
                 displayImageId,
@@ -152,13 +133,8 @@ export const ImagesLayer: FC<
         return highlights;
     }, [highlightIdsBySourceId]);
     const updatedData = useMemo(() => {
-        const source = getImageSourceWithAnchors(
-            sourceDataGeojson,
-            visibleSource,
-        );
-        const highlighted = highlightIdsBySourceId.get(
-            imageSourceIds.thumbnails,
-        );
+        const source = getImageSourceWithAnchors(sourceDataGeojson, visibleSource);
+        const highlighted = highlightIdsBySourceId.get(imageSourceIds.thumbnails);
         return {
             sourceId: imageSourceIds.thumbnails,
             data: {
@@ -169,9 +145,7 @@ export const ImagesLayer: FC<
                         ...feature.properties,
                         [FeatureStateProps.Highlight]:
                             feature.properties.markerSelected ||
-                            highlighted?.has(
-                                String(feature.properties.imageId),
-                            ) ||
+                            highlighted?.has(String(feature.properties.imageId)) ||
                             false,
                     },
                 })),

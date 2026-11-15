@@ -17,12 +17,10 @@ jest.mock("@the-dead-planet/nav-gauge-gears-route-story-common", () => ({
     MAP_THUMBNAIL_SIZE: 128,
     MAP_THUMBNAIL_BORDER_SIZE: 6,
     OUTLINED_MAP_THUMBNAIL_SIZE: 140,
-    getOutlinedThumbnailId: (imageId: string, color: string) =>
-        `${imageId}:outline:${color}`,
+    getOutlinedThumbnailId: (imageId: string, color: string) => `${imageId}:outline:${color}`,
 }));
 jest.mock("@maplibre/maplibre-react-native", () => {
-    const { View } =
-        jest.requireActual<typeof import("react-native")>("react-native");
+    const { View } = jest.requireActual<typeof import("react-native")>("react-native");
     return {
         Images: (props: { images: object }) => (
             <View
@@ -34,17 +32,12 @@ jest.mock("@maplibre/maplibre-react-native", () => {
 });
 jest.mock("react-native-svg", () => {
     const React = jest.requireActual<typeof import("react")>("react");
-    const { View } =
-        jest.requireActual<typeof import("react-native")>("react-native");
+    const { View } = jest.requireActual<typeof import("react-native")>("react-native");
     return {
         __esModule: true,
         default: React.forwardRef(
             (props: import("react-native-svg").SvgProps, ref) => {
-                React.useImperativeHandle(
-                    ref,
-                    () => ({ toDataURL: mockRasterize }),
-                    [],
-                );
+                React.useImperativeHandle(ref, () => ({ toDataURL: mockRasterize }), []);
                 return (
                     <View testID="thumbnail-svg" {...props}>
                         {props.children}
@@ -109,17 +102,12 @@ test("bakes outlines into each sprite without decoding the photo again for color
             { width: 140, height: 140 },
             { width: 140, height: 140 },
         ]);
-        await act(() =>
-            mockRasterize.mock.calls.forEach((call, index) =>
-                call[0](`sprite-${index}`),
-            ),
-        );
+        await act(() => mockRasterize.mock.calls.forEach((call, index) => call[0](`sprite-${index}`)));
         expect(
             screen
                 .getAllByTestId("map-images")
                 .map(
-                    ({ props }) =>
-                        Object.keys(JSON.parse(props.accessibilityLabel))[0],
+                    ({ props }) => Object.keys(JSON.parse(props.accessibilityLabel))[0],
                 ),
         ).toEqual([
             "thumbnail",
@@ -163,13 +151,8 @@ test("decodes Android thumbnail data before mounting and rasterizing the SVG", a
                 uri="file:///cache/photo.jpg"
             />,
         );
-        expect(RNFS.readFile).toHaveBeenCalledWith(
-            "/cache/photo.jpg",
-            "base64",
-        );
-        expect(determineSize).toHaveBeenCalledWith(
-            "data:image/jpeg;base64,photo-jpeg",
-        );
+        expect(RNFS.readFile).toHaveBeenCalledWith("/cache/photo.jpg", "base64");
+        expect(determineSize).toHaveBeenCalledWith("data:image/jpeg;base64,photo-jpeg");
         expect(screen.queryByTestId("svg-image")).toBeNull();
         expect(mockRasterize).not.toHaveBeenCalled();
         await act(() => finishDecode({ width: 256, height: 128 }));
@@ -178,9 +161,7 @@ test("decodes Android thumbnail data before mounting and rasterizing the SVG", a
         });
         expect(mockRasterize).toHaveBeenCalledTimes(1);
         await act(() => mockRasterize.mock.calls[0][0]("cached-png"));
-        expect(
-            screen.getByTestId("map-images").props.accessibilityLabel,
-        ).toContain("cached-png");
+        expect(screen.getByTestId("map-images").props.accessibilityLabel).toContain("cached-png");
         await screen.unmount();
     } finally {
         Platform.OS = originalPlatform;
@@ -194,9 +175,7 @@ test("crops to a circle and registers only the in-memory PNG after the image loa
             uri="file:///cache/photo.jpg"
         />,
     );
-    expect(screen.getByTestId("thumbnail-svg").props.viewBox).toBe(
-        "0 0 128 128",
-    );
+    expect(screen.getByTestId("thumbnail-svg").props.viewBox).toBe("0 0 128 128");
     const image = screen.getByTestId("svg-image");
     expect(image.props.preserveAspectRatio).toBe("xMidYMid slice");
     expect(image.props.clipPath).toBe("url(#thumbnail-circle)");
@@ -211,9 +190,7 @@ test("crops to a circle and registers only the in-memory PNG after the image loa
     await act(() => image.props.onLoad());
     expect(mockRasterize.mock.calls[0][1]).toEqual({ width: 128, height: 128 });
     await act(() => mockRasterize.mock.calls[0][0]("circular-png"));
-    expect(
-        JSON.parse(screen.getByTestId("map-images").props.accessibilityLabel),
-    ).toEqual({
+    expect(JSON.parse(screen.getByTestId("map-images").props.accessibilityLabel)).toEqual({
         thumbnail: { source: { uri: "data:image/png;base64,circular-png" } },
     });
     await screen.unmount();

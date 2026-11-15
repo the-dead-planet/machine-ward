@@ -160,10 +160,7 @@ export const useMapSourceAndLayers = (
     }, [map, data]);
 
     // Reapply the latest geometry whenever the source is recreated, including theme changes.
-    const currentSourceData = useMemo(
-        () => updatedData ? { ...updatedData } : undefined,
-        [data, updatedData],
-    );
+    const currentSourceData = useMemo(() => updatedData ? { ...updatedData } : undefined, [data, updatedData]);
     useUpdateSourceData(map, currentSourceData);
 
     const updateFeatureState = (

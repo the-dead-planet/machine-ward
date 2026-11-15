@@ -1,9 +1,5 @@
 import { LayerSpecification } from "maplibre-gl";
-import {
-    imageLayerIds,
-    ImagesLayers,
-    imageSourceIds,
-} from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { imageLayerIds, ImagesLayers, imageSourceIds } from "@the-dead-planet/nav-gauge-gears-route-story-common";
 
 export const getImagesLayers = (
     displayImageId: number | null,
@@ -19,11 +15,7 @@ export const getImagesLayers = (
             type: "symbol",
             filter: ImagesLayers.anchorsUnselected.filter,
             layout: ImagesLayers.anchors.layout,
-            paint: ImagesLayers.anchors.getPaint(
-                defaultColor,
-                hoverColor,
-                activeColor,
-            ),
+            paint: ImagesLayers.anchors.getPaint(defaultColor, hoverColor, activeColor),
         },
         {
             id: imageLayerIds.thumbnailsStackBack,
@@ -42,10 +34,7 @@ export const getImagesLayers = (
             source: imageSourceIds.thumbnails,
             type: "symbol",
             filter: ImagesLayers.thumbnailsOutlined.filter,
-            layout: ImagesLayers.thumbnailsOutlined.getLayout(
-                defaultColor,
-                hoverColor,
-            ),
+            layout: ImagesLayers.thumbnailsOutlined.getLayout(defaultColor, hoverColor),
             paint: ImagesLayers.thumbnailsOutlined.paint,
         },
         {
@@ -53,10 +42,7 @@ export const getImagesLayers = (
             source: imageSourceIds.thumbnails,
             type: "symbol",
             filter: ImagesLayers.countBadge.filter,
-            layout: ImagesLayers.countBadge.getLayout(
-                defaultColor,
-                badgeTextColor,
-            ),
+            layout: ImagesLayers.countBadge.getLayout(defaultColor, badgeTextColor),
             paint: ImagesLayers.countBadge.paint,
         },
         {
@@ -65,11 +51,7 @@ export const getImagesLayers = (
             type: "symbol",
             filter: ImagesLayers.anchorsSelected.filter,
             layout: ImagesLayers.anchorsSelected.layout,
-            paint: ImagesLayers.anchorsSelected.getPaint(
-                defaultColor,
-                hoverColor,
-                activeColor,
-            ),
+            paint: ImagesLayers.anchorsSelected.getPaint(defaultColor, hoverColor, activeColor),
         },
         {
             id: imageLayerIds.thumbnailsSelectedOutline,
@@ -77,11 +59,7 @@ export const getImagesLayers = (
             type: "symbol",
             filter: ImagesLayers.thumbnailsSelectedOutline.filter,
             layout: ImagesLayers.thumbnailsSelectedOutline.layout,
-            paint: ImagesLayers.thumbnailsSelectedOutline.getPaint(
-                defaultColor,
-                hoverColor,
-                activeColor,
-            ),
+            paint: ImagesLayers.thumbnailsSelectedOutline.getPaint(defaultColor, hoverColor, activeColor),
         },
         {
             id: imageLayerIds.thumbnailsSelected,
@@ -110,11 +88,7 @@ export const getImageDragPreviewLayers = (
         type: "symbol",
         filter: ImagesLayers.anchors.filter,
         layout: ImagesLayers.anchors.layout,
-        paint: ImagesLayers.anchors.getPaint(
-            highlightColor,
-            highlightColor,
-            highlightColor,
-        ),
+        paint: ImagesLayers.anchors.getPaint(highlightColor, highlightColor, highlightColor),
     },
     {
         id: imageLayerIds.thumbnailsHighlightOutline,

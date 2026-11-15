@@ -36,19 +36,14 @@ test("finishes interrupted group motion at the latest target and respects reduce
         })),
     };
     const hook = await renderHook(
-        ({ source, reducedMotion }) =>
-            useAnimatedImageMarkerSource(source, reducedMotion),
+        ({ source, reducedMotion }) => useAnimatedImageMarkerSource(source, reducedMotion),
         { initialProps: { source: collapsed, reducedMotion: false } },
     );
     try {
         await hook.rerender({ source: expanded, reducedMotion: false });
         await act(() => jest.advanceTimersByTimeAsync(64));
-        expect(
-            hook.result.current.features[0].geometry.coordinates[0],
-        ).toBeGreaterThan(0);
-        expect(
-            hook.result.current.features[0].geometry.coordinates[0],
-        ).toBeLessThan(10);
+        expect(hook.result.current.features[0].geometry.coordinates[0]).toBeGreaterThan(0);
+        expect(hook.result.current.features[0].geometry.coordinates[0]).toBeLessThan(10);
         await hook.rerender({ source: collapsed, reducedMotion: false });
         await act(() => jest.advanceTimersByTimeAsync(400));
         expect(hook.result.current).toBe(collapsed);
@@ -66,18 +61,10 @@ test("finishes interrupted group motion at the latest target and respects reduce
         };
         await hook.rerender({ source: selected, reducedMotion: false });
         await act(() => jest.advanceTimersByTimeAsync(64));
-        expect(
-            hook.result.current.features[0].properties.markerScale,
-        ).toBeGreaterThan(0.9);
-        expect(
-            hook.result.current.features[0].properties.markerScale,
-        ).toBeLessThan(1);
-        expect(
-            hook.result.current.features[1].properties.markerScale,
-        ).toBeGreaterThan(0.9);
-        expect(
-            hook.result.current.features[1].properties.markerScale,
-        ).toBeLessThan(1);
+        expect(hook.result.current.features[0].properties.markerScale).toBeGreaterThan(0.9);
+        expect(hook.result.current.features[0].properties.markerScale).toBeLessThan(1);
+        expect(hook.result.current.features[1].properties.markerScale).toBeGreaterThan(0.9);
+        expect(hook.result.current.features[1].properties.markerScale).toBeLessThan(1);
         await hook.rerender({ source: expanded, reducedMotion: false });
         await act(() => jest.advanceTimersByTimeAsync(400));
         expect(hook.result.current).toBe(expanded);
