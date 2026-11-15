@@ -10,6 +10,7 @@ const feature = (imageId: number, x: number, y: number, selected: boolean) => {
             imageId,
             markerScale: selected ? 1.1 : 0.9,
             markerGroupSize: 6,
+            markerOffsetY: 0,
         },
         geometry,
         layer: {

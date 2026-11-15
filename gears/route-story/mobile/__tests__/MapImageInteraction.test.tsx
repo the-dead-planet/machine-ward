@@ -26,10 +26,9 @@ jest.mock("@the-dead-planet/nav-gauge-gears-route-story-common", () => {
         getMapImageThumbnailOffsetY: (
             groupSize: number | undefined,
             scale = 1,
-        ) => -35 - (groupSize === 1 ? (scale - 1) * 25 : 0),
+            offsetY = -35,
+        ) => offsetY - (groupSize === 1 ? (scale - 1) * 25 : 0),
         MAP_IMAGE_COUNT_BADGE_OFFSET: [20, -20],
-        MAP_IMAGE_GROUP_PAGER_BUTTON_SIZE: 44,
-        MAP_IMAGE_GROUP_PAGER_GAP: 4,
         THUMBNAIL_IMAGE_SIZE: 50,
         getRoutePlacement: () => ({ distanceFraction: 0.5 }),
         updateImageDistanceFraction: jest.fn(),
@@ -38,7 +37,7 @@ jest.mock("@the-dead-planet/nav-gauge-gears-route-story-common", () => {
     };
 });
 
-test("claims cached marker hits without native queries, preserves the grab offset, and never commits a cancelled drag", async () => {
+test("claims cached hits only after animation, leaves the pager active, and preserves drag ownership and cancellation", async () => {
     const queryRenderedFeatures = jest.fn();
     const project = jest.fn();
     const map = {
@@ -62,6 +61,7 @@ test("claims cached marker hits without native queries, preserves the grab offse
                 distanceFromStartMeters: 0,
                 iconImageId: "image",
                 iconImageThumbnailId: "thumbnail",
+                markerOffsetY: 0,
             },
         },
     };
@@ -95,7 +95,7 @@ test("claims cached marker hits without native queries, preserves the grab offse
     };
     const hitTargets = { current: [target] };
     const paginationDimensions = { current: { width: 92, height: 72 } };
-    const { unmount } = await renderHook(() =>
+    const { unmount, rerender } = await renderHook(({ markersReady }) =>
         useMapImageInteraction(
             map,
             images,
@@ -105,7 +105,9 @@ test("claims cached marker hits without native queries, preserves the grab offse
             hitTargets,
             paginationTarget,
             paginationDimensions,
+            markersReady,
         ),
+        { initialProps: { markersReady: true } },
     );
     const id = "route-story-thumbnails-layer";
     const start = async () => {
@@ -113,6 +115,13 @@ test("claims cached marker hits without native queries, preserves the grab offse
         await act(() => map.onPanResponderStartHandlers$.value.get(id)?.(touch(100, 65)));
     };
     expect(map.onPanResponderShouldStartHandlers$.value.get(id)?.(touch(500, 500))).toBe(false);
+    target.point = [100, 100];
+    target.feature.properties.markerOffsetY = -35;
+    expect(map.onPanResponderShouldStartHandlers$.value.get(id)?.(touch(100, 65))).toBe(true);
+    await act(() => map.onPanResponderStartHandlers$.value.get(id)?.(touch(100, 65)));
+    await act(() => map.onPanResponderEndHandlers$.value.get(id)?.([1, 1], touch(100, 65), true));
+    target.point = [100, 65];
+    target.feature.properties.markerOffsetY = 0;
     target.feature.properties.markerScale = 0.9;
     expect(map.onPanResponderShouldStartHandlers$.value.get(id)?.(touch(135, 65))).toBe(false);
     target.feature.properties.markerScale = 1;
@@ -189,6 +198,9 @@ test("claims cached marker hits without native queries, preserves the grab offse
     expect(updateImageDistanceFraction).toHaveBeenCalledWith(images, 1, 0.5);
     expect(map.dragPan$.value).toBe(true);
     paginationTarget.current = [300, 300];
+    await rerender({ markersReady: false });
+    expect(map.onPanResponderShouldStartHandlers$.value.get(id)?.(touch(100, 65))).toBe(false);
+    expect(map.onPanResponderShouldStartHandlers$.value.get(id)?.(touch(100, 100))).toBe(false);
     for (const [x, y] of [
         [312, 300],
         [344, 300],
@@ -198,6 +210,7 @@ test("claims cached marker hits without native queries, preserves the grab offse
         await act(() => press?.(pressEvent));
         expect(clearImageMarkerSelection).toHaveBeenCalledTimes(2);
     }
+    await rerender({ markersReady: true });
     await start();
     expect(map.dragPan$.value).toBe(false);
     await unmount();

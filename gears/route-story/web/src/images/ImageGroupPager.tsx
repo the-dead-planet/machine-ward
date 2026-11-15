@@ -1,10 +1,10 @@
-import { CSSProperties, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { Map, Marker } from "maplibre-gl";
 import { useMultipleTranslations } from "@apparatus";
 import { Button, Chip, Span } from "@web-ui";
 import { FontType, Icons } from "@ui";
-import { shiftImageGroup, ImageGroupPagination, RouteStoryTranslationKey, MAP_IMAGE_GROUP_PAGER_BUTTON_SIZE } from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { shiftImageGroup, ImageGroupPagination, RouteStoryTranslationKey } from "@the-dead-planet/nav-gauge-gears-route-story-common";
 import styles from "./image-group-pager.module.css";
 import classNames from "classnames";
 
@@ -49,11 +49,6 @@ export const ImageGroupPager = ({ map, pagination, gearId }: Props) => {
     return createPortal(
         <section
             className={styles.pager}
-            style={
-                {
-                    "--pager-button-size": `${MAP_IMAGE_GROUP_PAGER_BUTTON_SIZE}px`,
-                } as CSSProperties
-            }
             onMouseDown={(event) => event.stopPropagation()}
             onTouchStart={(event) => event.stopPropagation()}
             onClick={(event) => event.stopPropagation()}

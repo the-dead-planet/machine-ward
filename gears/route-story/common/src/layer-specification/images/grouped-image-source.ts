@@ -119,9 +119,6 @@ export async function getImageMarkerSourceFromGroups(
                 hiddenCount: group.length - visibleCount,
             };
         }
-        const collapsedCenter = !expanded
-            ? await unproject([lead.x, lead.y + MAP_IMAGE_MARKER_OFFSET_Y])
-            : undefined;
         for (const [index, position] of group.entries()) {
             const feature = position.item;
             const selected = feature.properties.imageId === selectedImageId;
@@ -143,9 +140,8 @@ export async function getImageMarkerSourceFromGroups(
                     markerGroupId: group[0].item.properties.imageId,
                     markerExpanded: expanded && visible,
                     markerSlot: visibleIndex,
-                    markerCenter:
-                        expandedCoordinate ??
-                        (position === lead ? collapsedCenter : undefined),
+                    markerCenter: expandedCoordinate,
+                    markerOffsetY: expanded ? 0 : MAP_IMAGE_MARKER_OFFSET_Y,
                     markerOpacity:
                         expanded || selectedImageId === null || selected
                             ? 1

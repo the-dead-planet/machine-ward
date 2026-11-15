@@ -146,22 +146,18 @@ const thumbnailOutlineDiameter: ExpressionSpecification = [
     thumbnailDiameter,
     thumbnailBorderDiameter,
 ];
-const thumbnailBottomOffset = (
-    diameter: ExpressionSpecification,
-    baseDiameter: number | ExpressionSpecification,
-): ExpressionSpecification => [
-    "case",
-    ["==", ["get", "markerGroupSize"], 1],
+const thumbnailOffset = (diameter: ExpressionSpecification, baseDiameter: number | ExpressionSpecification): ExpressionSpecification => [
+    "interpolate",
+    ["linear"],
     [
-        "interpolate",
-        ["linear"],
-        ["/", baseDiameter, diameter],
-        0,
-        ["literal", [0, -MAP_THUMBNAIL_SIZE / 2]],
-        2,
-        ["literal", [0, MAP_THUMBNAIL_SIZE / 2]],
+        "/",
+        ["+", ["coalesce", ["get", "markerOffsetY"], MAP_IMAGE_MARKER_OFFSET_Y], ["case", ["==", ["get", "markerGroupSize"], 1], ["/", ["-", baseDiameter, diameter], 2], 0]],
+        diameter,
     ],
-    ["literal", [0, 0]],
+    -1,
+    ["literal", [0, -MAP_THUMBNAIL_SIZE]],
+    1,
+    ["literal", [0, MAP_THUMBNAIL_SIZE]],
 ];
 const dragOpacity = 0.4;
 const thumbnailDraggingOpacity: ExpressionSpecification = [
@@ -213,6 +209,7 @@ const thumbnailsStackBack: Pick<SymbolLayerSpecification, "filter" | "layout" | 
     layout: {
         "icon-image": thumbnailIconImage,
         "icon-size": thumbnailIconSize,
+        "icon-offset": [0, MAP_IMAGE_MARKER_OFFSET_Y / thumbnailIconSize],
         "icon-allow-overlap": true,
     },
     paint: {
@@ -253,7 +250,7 @@ const thumbnailOutlineLayout: NonNullable<SymbolLayerSpecification["layout"]> =
         ...thumbnailViewportLayout,
         "icon-image": IMAGE_MARKER_OUTLINE_ID,
         "icon-size": ["/", thumbnailOutlineDiameter, MAP_THUMBNAIL_SIZE],
-        "icon-offset": thumbnailBottomOffset(thumbnailOutlineDiameter, [
+        "icon-offset": thumbnailOffset(thumbnailOutlineDiameter, [
             "+",
             THUMBNAIL_IMAGE_SIZE,
             thumbnailBorderDiameter,
@@ -290,7 +287,7 @@ const thumbnails = {
         ...thumbnailViewportLayout,
         "icon-image": thumbnailIconImage,
         "icon-size": scaledThumbnailIconSize,
-        "icon-offset": thumbnailBottomOffset(thumbnailDiameter, THUMBNAIL_IMAGE_SIZE),
+        "icon-offset": thumbnailOffset(thumbnailDiameter, THUMBNAIL_IMAGE_SIZE),
     },
     paint: thumbnailPaint,
 };
@@ -430,7 +427,7 @@ export default {
                 countText,
             ],
             "icon-size": 1,
-            "icon-offset": MAP_IMAGE_COUNT_BADGE_OFFSET,
+            "icon-offset": [MAP_IMAGE_COUNT_BADGE_OFFSET[0], MAP_IMAGE_MARKER_OFFSET_Y + MAP_IMAGE_COUNT_BADGE_OFFSET[1]],
             "icon-allow-overlap": true,
         }),
         paint: countBadgePaint,

@@ -39,6 +39,7 @@ export const useMapImageInteraction = (
     hitTargets: RefObject<MapImageHitTarget[]>,
     paginationTarget: RefObject<[number, number] | null>,
     paginationDimensions: RefObject<ImageGroupPagerDimensions | null>,
+    markersReady: boolean,
 ) => {
     const gestureRef = useRef<MarkerGesture | null>(null);
     const pendingHits = useRef<MapImageHitTarget[]>([]);
@@ -70,7 +71,10 @@ export const useMapImageInteraction = (
 
                 return false;
             }
-            
+            if (!markersReady) {
+                return false;
+            }
+
             const findThumbnail = (padding: number) =>
                 hitTargets.current.findLast(
                     ({ feature, point: [x, y] }) =>
@@ -79,8 +83,7 @@ export const useMapImageInteraction = (
                             locationX - x,
                             locationY -
                                 y -
-                                getMapImageThumbnailOffsetY(feature.properties.markerGroupSize, feature.properties.markerScale) +
-                                MAP_IMAGE_MARKER_OFFSET_Y,
+                                getMapImageThumbnailOffsetY(feature.properties.markerGroupSize, feature.properties.markerScale, feature.properties.markerOffsetY),
                         ) <=
                             (THUMBNAIL_IMAGE_SIZE *
                                 (feature.properties.markerScale ?? 1)) /
@@ -93,6 +96,7 @@ export const useMapImageInteraction = (
                                         MAP_IMAGE_COUNT_BADGE_OFFSET[0],
                                     locationY -
                                         y -
+                                        (feature.properties.markerOffsetY ?? MAP_IMAGE_MARKER_OFFSET_Y) -
                                         MAP_IMAGE_COUNT_BADGE_OFFSET[1],
                                 ) <= 12)),
                 );
@@ -242,5 +246,5 @@ export const useMapImageInteraction = (
             removeHandler(map.onPanResponderEndHandlers$);
             removeHandler(map.onPressHandlers$);
         };
-    }, [map, images$, geojson, routeGeometryData, markerLayerVisibility, hitTargets, paginationTarget, paginationDimensions]);
+    }, [map, images$, geojson, routeGeometryData, markerLayerVisibility, hitTargets, paginationTarget, paginationDimensions, markersReady]);
 };

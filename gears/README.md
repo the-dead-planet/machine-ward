@@ -17,9 +17,11 @@ Keep gear-specific Kotlin/Java code under `<gear>/mobile/android/src/main/java/<
 - The app's Gradle configuration discovers these source folders automatically; gears without them need no special handling.
 - Keep feature implementation in the gear. Activation and Android lifecycle wiring remain explicit in the app's platform entry points, such as `MainActivity`.
 - Guard Android API requirements at runtime and clean up native listeners or system overrides when the feature is hidden, removed, or destroyed.
-- Discovery includes source code only, not native module registration, resources, manifests, or dependencies. Use an Android library module if those are needed.
+- Discovery includes `src/main/java` and instrumentation tests in `src/androidTest/java`, not native module registration, resources, manifests, or dependencies. Use an Android library module if those are needed.
 
 Kotlin/Java and Gradle changes require rebuilding and reinstalling the mobile app; Metro reload is not sufficient.
+
+Run native gear tests on a connected Android device with `./gradlew :app:connectedDebugAndroidTest` from `app-mobile/android` (`.\gradlew.bat` on Windows).
 
 ## Generating a new gear
 

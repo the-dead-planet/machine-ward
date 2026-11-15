@@ -1,5 +1,5 @@
-import { useMemo } from "react";
-import type { Map } from "maplibre-gl";
+import { useMemo, useRef } from "react";
+import type { Map as MapLibreMap } from "maplibre-gl";
 import {
     getIconImageId,
     getImageCountBadges,
@@ -17,7 +17,7 @@ import { useLoadedWebImages } from "../hooks/useLoadedWebImages";
 import { getOutlinedThumbnail } from "./outlined-thumbnail";
 
 export const useImageLayerAssets = (
-    map: Map,
+    map: MapLibreMap,
     loadedImages: ReturnType<typeof useLoadedWebImages>,
     imageColor: string,
     imageHoverColor: string,
@@ -58,16 +58,22 @@ export const useImageLayerAssets = (
     );
     useRouteLayerImages(map, mapImages);
 
-    const outlinedImages = useMemo(
-        (): MapImageData[] =>
-            loadedImages.flatMap((image) =>
-                [...new Set([imageColor, imageHoverColor])].map((color) => ({
-                    iconImageName: getOutlinedThumbnailId(getIconImageId(image, { thumbnail: true }), color),
-                    data: getOutlinedThumbnail(image.data.thumbnailBitmap!, color),
-                })),
-            ),
-        [loadedImages, imageColor, imageHoverColor],
-    );
+    const outlinedCache = useRef(new Map<string, { thumbnail: ImageBitmap; data: ImageBitmap }>());
+    const outlinedImages = useMemo((): MapImageData[] => {
+        const nextCache = new Map<string, { thumbnail: ImageBitmap; data: ImageBitmap }>();
+        const images = loadedImages.flatMap((image) =>
+            [...new Set([imageColor, imageHoverColor])].map((color) => {
+                const iconImageName = getOutlinedThumbnailId(getIconImageId(image, { thumbnail: true }), color);
+                const thumbnail = image.data.thumbnailBitmap!;
+                const cached = outlinedCache.current.get(iconImageName);
+                const data = cached?.thumbnail === thumbnail ? cached.data : getOutlinedThumbnail(thumbnail, color);
+                nextCache.set(iconImageName, { thumbnail, data });
+                return { iconImageName, data };
+            }),
+        );
+        outlinedCache.current = nextCache;
+        return images;
+    }, [loadedImages, imageColor, imageHoverColor]);
     useRouteLayerImages(map, outlinedImages);
 
     const badgeImages = useMemo(

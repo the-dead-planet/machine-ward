@@ -2,7 +2,6 @@ import {
     DRAGGED_IMAGE_ID,
     getMapImageThumbnailOffsetY,
     imageLayerIds,
-    MAP_IMAGE_MARKER_OFFSET_Y,
     MAP_IMAGE_ANCHOR_SIDE,
     THUMBNAIL_IMAGE_SIZE,
 } from "@the-dead-planet/nav-gauge-gears-route-story-common";
@@ -13,6 +12,7 @@ interface ImageHitFeature {
         markerAnchor?: boolean;
         markerScale?: number;
         markerGroupSize?: number;
+        markerOffsetY?: number;
     };
     geometry: GeoJSON.Geometry;
     layer: { id: string };
@@ -44,7 +44,7 @@ export const findMapImageFeature = <T extends ImageHitFeature>(
                         MAP_IMAGE_ANCHOR_SIDE + 2
                 );
             }
-            const offset = getMapImageThumbnailOffsetY(properties.markerGroupSize, properties.markerScale) - MAP_IMAGE_MARKER_OFFSET_Y;
+            const offset = getMapImageThumbnailOffsetY(properties.markerGroupSize, properties.markerScale, properties.markerOffsetY);
             return (
                 Math.hypot(point.x - center.x, point.y - center.y - offset) <=
                 (THUMBNAIL_IMAGE_SIZE * (properties.markerScale ?? 1)) / 2

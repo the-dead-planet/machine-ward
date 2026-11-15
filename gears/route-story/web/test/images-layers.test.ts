@@ -82,16 +82,16 @@ describe("Image marker layers", () => {
                 throw new Error("Invalid thumbnail geometry");
             }
             const centerShift = Number(imageOffset[1]) * imageSize;
-            expect(centerShift + (THUMBNAIL_IMAGE_SIZE * scale) / 2).to.be.closeTo(THUMBNAIL_IMAGE_SIZE / 2, 0.00001);
+            expect(centerShift + (THUMBNAIL_IMAGE_SIZE * scale) / 2).to.be.closeTo(MAP_IMAGE_MARKER_OFFSET_Y + THUMBNAIL_IMAGE_SIZE / 2, 0.00001);
             expect(Number(outlineOffset[1]) * outlineSize).to.be.closeTo(centerShift, 0.00001);
             expect(
-                getMapImageThumbnailOffsetY(1, scale) -
-                    MAP_IMAGE_MARKER_OFFSET_Y,
+                getMapImageThumbnailOffsetY(1, scale),
             ).to.be.closeTo(centerShift, 0.00001);
             expect(
                 evaluate(ImagesLayers.thumbnails.layout["icon-offset"], {
                     ...properties,
                     markerGroupSize: 6,
+                    markerOffsetY: 0,
                 }),
             ).to.deep.equal([0, 0]);
         }
@@ -353,7 +353,7 @@ describe("Image marker layers", () => {
         expect(image?.type === "symbol" && image.paint?.["icon-translate"]).to.deep.equal([0, 0]);
         expect(image?.type === "symbol" && image.paint?.["icon-translate-anchor"]).to.equal("viewport");
         expect(outline?.type === "symbol" && outline.paint?.["icon-translate"]).to.deep.equal([0, 0]);
-        expect(badge?.type === "symbol" && badge.layout?.["icon-offset"]).to.deep.equal([20, -20]);
+        expect(badge?.type === "symbol" && badge.layout?.["icon-offset"]).to.deep.equal([20, MAP_IMAGE_MARKER_OFFSET_Y - 20]);
         expect(badge?.type === "symbol" && badge.paint?.["icon-translate"]).to.equal(undefined);
         for (const layer of [image, outline, badge]) {
             expect(

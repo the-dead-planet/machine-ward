@@ -11,6 +11,7 @@ import ImagesLayers, {
 } from "../../../src/layer-specification/images/images-layers";
 import { getImageMarkerTransition } from "../../../src/layer-specification/images/image-marker-transition";
 import { MAP_IMAGE_GROUP_RING_RADIUS } from "../../../src/tinkers/images";
+import { createExpression } from "@maplibre/maplibre-gl-style-spec";
 
 const sourceFor = (count: number): ImageMarkerSource => ({
     type: "FeatureCollection",
@@ -38,6 +39,31 @@ const visibleIds = (source: ImageMarkerSource) =>
         .map(({ properties }) => properties.imageId);
 
 describe("Expanded map image groups", () => {
+    it("keeps collapsed photos 35 screen pixels above their anchors during zoom and rotation", async () => {
+        for (const count of [1, 3]) {
+            const source = sourceFor(count);
+            const grouped = await getGroupedImageSource(source, identity, identity, null, null);
+            const photo = getImageSourceWithAnchors(source, grouped).features.find(({ properties }) => properties.markerVisible && !properties.markerAnchor)!;
+            expect(photo.properties.markerCenter).to.equal(undefined);
+            const offset = createExpression(ImagesLayers.thumbnails.layout["icon-offset"], "icon-offset");
+            const size = createExpression(ImagesLayers.thumbnails.layout["icon-size"], "icon-size");
+            if (offset.result !== "success" || size.result !== "success") {
+                throw new Error("Invalid thumbnail layout expression");
+            }
+            for (const scale of [1, 2]) {
+                for (const bearing of [0, Math.PI / 2]) {
+                    const project = ([x, y]: number[]) => [scale * (x * Math.cos(bearing) - y * Math.sin(bearing)), scale * (x * Math.sin(bearing) + y * Math.cos(bearing))];
+                    const anchor = project(source.features[photo.properties.imageId].geometry.coordinates);
+                    const point = project(photo.geometry.coordinates);
+                    const feature: { type: "Point"; properties: typeof photo.properties } = { type: "Point", properties: photo.properties };
+                    const [offsetX, offsetY]: number[] = offset.value.evaluate({ zoom: 0 }, feature);
+                    const iconSize: number = size.value.evaluate({ zoom: 0 }, feature);
+                    expect(point[0] + offsetX * iconSize - anchor[0]).to.be.closeTo(0, 0.00001);
+                    expect(point[1] + offsetY * iconSize - anchor[1]).to.be.closeTo(-35, 0.00001);
+                }
+            }
+        }
+    });
     it("uses projected thumbnail centers so a pitched group and its counter share the viewport ring", async () => {
         const source = sourceFor(7);
         const project = ([x, y]: [number, number]): [number, number] => [
@@ -319,6 +345,8 @@ describe("Expanded map image groups", () => {
             0,
         );
         const opening = getImageMarkerTransition(collapsed, expanded, 24);
+        expect(opening.features[0].properties.markerOffsetY).to.be.greaterThan(-35).and.lessThan(0);
+        expect(opening.features[1].properties.markerOffsetY).to.equal(-35);
         expect(opening.features[0].geometry.coordinates).not.to.deep.equal(collapsed.features[0].geometry.coordinates);
         expect(opening.features[1].geometry.coordinates).to.deep.equal(collapsed.features[1].geometry.coordinates);
         expect(opening.features[2].properties.markerOpacity).to.equal(0);

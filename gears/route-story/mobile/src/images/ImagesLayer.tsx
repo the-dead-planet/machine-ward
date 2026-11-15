@@ -66,7 +66,7 @@ export const ImagesLayer: FC<OverlayComponentProps<MobileMap> & MobileRouteStory
     const groupedSource = useAnimatedImageMarkerSource(targetSource, reducedMotion);
     const visibleSource = useMemo(() => getImageSourceWithMarkerVisibility(groupedSource, markerLayerVisibility), [groupedSource, markerLayerVisibility]);
     const connections = useImageMarkerConnections(originalSource, visibleSource);
-    useMapImageInteraction(map, images$, geojson, routeGeometryData, markerLayerVisibility, hitTargets, paginationTarget, paginationDimensions);
+    useMapImageInteraction(map, images$, geojson, routeGeometryData, markerLayerVisibility, hitTargets, paginationTarget, paginationDimensions, groupedSource === targetSource);
     const renderedSource = useMemo(
         () => getImageSourceWithDraggingState(getImageSourceWithAnchors(originalSource, visibleSource), draggingImage?.id ?? null),
         [originalSource, visibleSource, draggingImage],

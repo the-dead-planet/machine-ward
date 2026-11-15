@@ -1,4 +1,5 @@
 import { ImageMarkerSource } from "./images-sources";
+import { MAP_IMAGE_MARKER_OFFSET_Y } from "../../tinkers/images";
 
 export const IMAGE_GROUP_ANIMATION_DURATION = 180;
 export const IMAGE_GROUP_ANIMATION_STAGGER = 24;
@@ -66,6 +67,8 @@ export function getImageMarkerTransition(
             : 0;
         const originalCenter = original.properties.markerCenter;
         const targetCenter = feature.properties.markerCenter;
+        const fromOffset = original.properties.markerOffsetY ?? MAP_IMAGE_MARKER_OFFSET_Y;
+        const toOffset = feature.properties.markerOffsetY ?? MAP_IMAGE_MARKER_OFFSET_Y;
         
         const interpolateCenterCoordinate = (index: number): number => {
             const offset = targetCenter
@@ -112,6 +115,7 @@ export function getImageMarkerTransition(
                 markerOpacity: fromOpacity + (toOpacity - fromOpacity) * eased,
                 markerScale: fromScale + (toScale - fromScale) * eased,
                 markerCenter,
+                markerOffsetY: fromOffset + (toOffset - fromOffset) * eased,
             },
         };
     });
