@@ -95,7 +95,7 @@ test("claims cached hits only after animation, leaves the pager active, and pres
     };
     const hitTargets = { current: [target] };
     const paginationDimensions = { current: { width: 92, height: 72 } };
-    const { unmount, rerender } = await renderHook(({ markersReady }) =>
+    const { unmount, rerender } = await renderHook(({ markersReady }: { markersReady: boolean }) =>
         useMapImageInteraction(
             map,
             images,
@@ -131,9 +131,16 @@ test("claims cached hits only after animation, leaves the pager active, and pres
     expect(draggingImage$.value?.id).toBe(1);
     expect(queryRenderedFeatures).not.toHaveBeenCalled();
     expect(project).not.toHaveBeenCalled();
+    const startHandler = map.onPanResponderStartHandlers$.value.get(id);
+    await rerender({ markersReady: false });
+    expect(map.dragPan$.value).toBe(false);
+    expect(draggingImage$.value?.id).toBe(1);
+    expect(map.panResponderOffset).toEqual([0, 35]);
+    expect(map.onPanResponderStartHandlers$.value.get(id)).toBe(startHandler);
     await act(() => map.onPanResponderEndHandlers$.value.get(id)?.([1, 1], touch(110, 65), false));
     expect(updateImageDistanceFraction).toHaveBeenCalledWith(images, 1, 0.5);
     expect(map.dragPan$.value).toBe(true);
+    await rerender({ markersReady: true });
     jest.mocked(updateImageDistanceFraction).mockClear();
     await start();
     await act(() => map.onPanResponderEndHandlers$.value.get(id)?.([1, 1], touch(110, 65), true));

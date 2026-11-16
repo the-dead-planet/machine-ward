@@ -33,7 +33,7 @@ test("keeps the line source unchanged on selection and size changes, but updates
         })),
     };
     const hook = await renderHook(
-        ({ source }) => useImageMarkerConnections(original, source),
+        ({ source }: { source: ImageMarkerSource }) => useImageMarkerConnections(original, source),
         { initialProps: { source: grouped } },
     );
     const initial = hook.result.current;

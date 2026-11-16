@@ -78,7 +78,7 @@ test("reuses grouping projections for expanded marker hits and invalidates them 
         ],
     };
     const { result, rerender, unmount } = await renderHook(
-        ({ currentSource }) => useImageMarkerSource(map, currentSource, false),
+        ({ currentSource }: { currentSource: typeof source }) => useImageMarkerSource(map, currentSource, false),
         { initialProps: { currentSource: source } },
     );
     try {

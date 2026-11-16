@@ -36,7 +36,7 @@ test("finishes interrupted group motion at the latest target and respects reduce
         })),
     };
     const hook = await renderHook(
-        ({ source, reducedMotion }) => useAnimatedImageMarkerSource(source, reducedMotion),
+        ({ source, reducedMotion }: { source: ImageMarkerSource; reducedMotion: boolean }) => useAnimatedImageMarkerSource(source, reducedMotion),
         { initialProps: { source: collapsed, reducedMotion: false } },
     );
     try {
