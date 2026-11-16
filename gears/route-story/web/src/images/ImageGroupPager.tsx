@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { Map, Marker } from "maplibre-gl";
+import classNames from "classnames";
 import { useMultipleTranslations } from "@apparatus";
-import { Button, Chip, Span } from "@web-ui";
+import { Button, Chip } from "@web-ui";
 import { FontType, Icons } from "@ui";
 import { shiftImageGroup, ImageGroupPagination, RouteStoryTranslationKey } from "@the-dead-planet/nav-gauge-gears-route-story-common";
 import styles from "./image-group-pager.module.css";
-import classNames from "classnames";
 
 interface Props {
     map: Map;
@@ -63,15 +63,9 @@ export const ImageGroupPager = ({ map, pagination, gearId }: Props) => {
                     color="tertiary"
                     variant="fill"
                     fontType={FontType.Numeric}
+                    className={styles.counter}
                 >
-                    <Span
-                        className={styles.counter}
-                        fontType={FontType.Numeric}
-                        variant="fill"
-                        color="tertiary"
-                    >
-                        +{pagination.hiddenCount}
-                    </Span>
+                    +{pagination.hiddenCount}
                 </Chip>
             </div>
             <div className={styles.controls}>
