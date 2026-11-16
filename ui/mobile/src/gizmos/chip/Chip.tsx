@@ -1,5 +1,5 @@
 import { ComponentType, FC } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, TextProps, View } from "react-native";
 import { SvgProps } from "react-native-svg";
 import {
     ChipProps,
@@ -30,6 +30,7 @@ interface Props {
      * Icon component, e.g. an icon from `@ui/icons`
      */
     icon?: ComponentType<SvgProps>;
+    textStyle?: TextProps["style"];
 }
 
 export const Chip: FC<ChipProps & Props> = ({
@@ -42,6 +43,7 @@ export const Chip: FC<ChipProps & Props> = ({
     tooltipPlacement,
     tooltipVariant = DEFAULT_FILL_VARIANT,
     showTooltipConnection,
+    textStyle,
     children,
 }) => {
     const theme = useTheme();
@@ -81,11 +83,11 @@ export const Chip: FC<ChipProps & Props> = ({
                 <Text
                     fontType={fontType}
                     fontWeight={appearance.fontWeight}
-                    style={{
+                    style={[{
                         color: appearance.glyphs,
                         fontSize: metrics.fontSize,
                         lineHeight: metrics.fontSize * 1.1,
-                    }}
+                    }, textStyle]}
                 >
                     {children}
                 </Text>

@@ -132,6 +132,7 @@ export const ImagesLayer: FC<OverlayComponentProps<MapLibreMap> & WebRouteStoryP
         }
         return highlights;
     }, [highlightIdsBySourceId]);
+    
     const updatedData = useMemo(() => {
         const source = getImageSourceWithAnchors(sourceDataGeojson, visibleSource);
         const highlighted = highlightIdsBySourceId.get(imageSourceIds.thumbnails);
