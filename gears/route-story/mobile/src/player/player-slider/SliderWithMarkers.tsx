@@ -28,6 +28,9 @@ interface Props {
 }
 
 const styles = StyleSheet.create({
+    slider: {
+        zIndex: 1,
+    },
     sliderContainer: {
         flex: 1,
         gap: 23,
@@ -96,6 +99,7 @@ export const SliderWithMarkers: FC<Props> = ({
                 color="tertiary"
                 activeGlow="glow"
                 size="sm"
+                style={styles.slider}
             />
             <PlayerSliderLabels data$={data$} routeGeometryData$={routeGeometryData$} progressMs$={progressMs$} routeTimes$={routeTimes$} animatrix={animatrix} />
         </View>

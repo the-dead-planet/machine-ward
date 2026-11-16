@@ -1,4 +1,5 @@
 import { act, render } from "@testing-library/react-native";
+import { StyleSheet, ViewStyle } from "react-native";
 import { BehaviorSubject } from "rxjs";
 import { MarkerImage } from "@apparatus";
 import { ParsingResultWithError } from "@tinker-chest";
@@ -23,7 +24,7 @@ jest.mock("@the-dead-planet/nav-gauge-gears-route-story-common", () => ({
 }));
 jest.mock("@mobile-ui", () => {
     const { View } = jest.requireActual<typeof import("react-native")>("react-native");
-    return { Slider: () => <View testID="player-slider-track" /> };
+    return { Slider: ({ style }: { style?: ViewStyle }) => <View testID="player-slider-track" style={style} /> };
 });
 jest.mock("../src/layers/RouteLayer", () => ({
     currentPointRef$: {},
@@ -64,6 +65,7 @@ test("keeps a native exclusion target around the player controls even when image
     const container = screen.getByTestId("player-slider-track").parent;
     expect(container?.props.nativeID).toBe("route-story-player-slider");
     expect(container?.props.collapsable).toBe(false);
+    expect(StyleSheet.flatten(screen.getByTestId("player-slider-track").props.style).zIndex).toBe(1);
     expect(screen.getByTestId("player-image-markers").parent).toBe(container);
     await act(() => state$.next({ ...state$.value, markerPlayerVisibility: false }));
     expect(screen.queryByTestId("player-image-markers")).toBeNull();

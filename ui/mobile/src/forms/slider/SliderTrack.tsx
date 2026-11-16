@@ -69,6 +69,9 @@ export const SliderTrack: FC<Props> = ({
     ariaLabel = "Slider",
 }) => {
     const theme = useTheme();
+    const controlSize = theme.sizes.control[size];
+    const { thumbSize, trackThickness } = controlSize;
+    const thumbRadius = thumbSize / Math.SQRT2;
     const { state, focused, width, interaction, adjustValue } =
         useSliderInteraction({
             value,
@@ -78,14 +81,13 @@ export const SliderTrack: FC<Props> = ({
             disabled,
             highlighted,
             onChange,
-        });
+        }, thumbRadius);
     const appearance = theme.resolveAppearance(
         variant,
         color,
         highlightColor,
         state,
     );
-    const controlSize = theme.sizes.control[size];
     const filledTrackColor =
         state === "hover-focus" || state === "active-pressed"
             ? variant === "fill"
@@ -97,7 +99,6 @@ export const SliderTrack: FC<Props> = ({
         state === "hover-focus" || state === "active-pressed",
         highlightColor,
     );
-    const { thumbSize, trackThickness } = controlSize;
     const unfilledTrackColor = theme.color(
         color,
         theme.mode === "light" ? 300 : 700,
@@ -135,7 +136,8 @@ export const SliderTrack: FC<Props> = ({
                     styles.hitArea,
                     {
                         height: controlSize.height,
-                        marginHorizontal: thumbSize / 2,
+                        // Expand the touch bounds without moving the track endpoints.
+                        marginHorizontal: thumbSize / 2 - thumbRadius,
                         outlineStyle: "solid",
                         outlineWidth: focused ? 2 : 0,
                         outlineOffset: 2,
@@ -149,6 +151,7 @@ export const SliderTrack: FC<Props> = ({
                         styles.track,
                         {
                             height: trackThickness,
+                            marginHorizontal: thumbRadius,
                             backgroundColor: unfilledTrackColor,
                         },
                     ]}
