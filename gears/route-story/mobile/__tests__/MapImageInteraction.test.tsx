@@ -118,8 +118,12 @@ test("claims cached hits only after animation, leaves the pager active, and pres
     target.point = [100, 100];
     target.feature.properties.markerOffsetY = -35;
     expect(map.onPanResponderShouldStartHandlers$.value.get(id)?.(touch(100, 65))).toBe(true);
+    await rerender({ markersReady: false });
     await act(() => map.onPanResponderStartHandlers$.value.get(id)?.(touch(100, 65)));
+    expect(draggingImage$.value?.id).toBe(1);
+    expect(map.dragPan$.value).toBe(false);
     await act(() => map.onPanResponderEndHandlers$.value.get(id)?.([1, 1], touch(100, 65), true));
+    await rerender({ markersReady: true });
     target.point = [100, 65];
     target.feature.properties.markerOffsetY = 0;
     target.feature.properties.markerScale = 0.9;

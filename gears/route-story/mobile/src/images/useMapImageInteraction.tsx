@@ -1,4 +1,4 @@
-import { RefObject, useEffect, useRef } from "react";
+import { RefObject, useEffect, useEffectEvent, useRef } from "react";
 import { GestureResponderEvent } from "react-native";
 import { BehaviorSubject } from "rxjs";
 import { MarkerImage } from "@apparatus";
@@ -44,6 +44,7 @@ export const useMapImageInteraction = (
     const gestureRef = useRef<MarkerGesture | null>(null);
     const pendingHits = useRef<MapImageHitTarget[]>([]);
     const markerTouchClaimed = useRef(false);
+    const canStartMarkerGesture = useEffectEvent(() => markersReady);
 
     useEffect(() => {
         const id = "route-story-thumbnails-layer";
@@ -71,7 +72,7 @@ export const useMapImageInteraction = (
 
                 return false;
             }
-            if (!markersReady) {
+            if (!canStartMarkerGesture()) {
                 return false;
             }
 
@@ -246,5 +247,5 @@ export const useMapImageInteraction = (
             removeHandler(map.onPanResponderEndHandlers$);
             removeHandler(map.onPressHandlers$);
         };
-    }, [map, images$, geojson, routeGeometryData, markerLayerVisibility, hitTargets, paginationTarget, paginationDimensions, markersReady]);
+    }, [map, images$, geojson, routeGeometryData, markerLayerVisibility, hitTargets, paginationTarget, paginationDimensions]);
 };
