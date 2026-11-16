@@ -43,6 +43,7 @@ interface Props {
     routeTimes$: BehaviorSubject<RouteTimes | null>;
     images$: BehaviorSubject<MarkerImage<MobileMarkerImageData>[]>;
     animatrix: Animatrix;
+    fitBoundsHandler: (map: MobileMap, boundingBox?: GeoJSON.BBox) => void;
 }
 
 const GRAB_RADIUS_PX = 20;
@@ -118,6 +119,7 @@ export const SliderMarkers: FC<Props> = ({
     routeTimes$,
     images$,
     animatrix,
+    fitBoundsHandler,
 }) => {
     const theme = useTheme();
     const [{ geojson }] = useSubjectState(data$);
@@ -129,9 +131,10 @@ export const SliderMarkers: FC<Props> = ({
     const [draggingImage, setDraggingImage] = useSubjectState(draggingImage$);
     const [selectedImageId] = useSubjectState(selectedImageId$);
     const [containerWidth, setContainerWidth] = useState(0);
-    const [imageLabel, panToImageLabel] = useMultipleTranslations([
+    const [imageLabel, panToImageLabel, panToWholeRouteAtEndLabel] = useMultipleTranslations([
         { n: gearId, t: translationKey.Image },
         { n: gearId, t: translationKey.PanToImage },
+        { n: animatrix.namespace, t: animatrix.translationKey.PanToWholeRouteAtEnd },
     ]);
 
     const containerRef = useRef<HostInstance>(null);
@@ -157,20 +160,20 @@ export const SliderMarkers: FC<Props> = ({
     const markerGroups =
         geojson && routeGeometryData && routeTimes
             ? getSliderImageMarkers(
-                  images,
-                  (fraction) =>
-                      getDistanceFractionPercent(
-                          fraction,
-                          geojson,
-                          routeGeometryData,
-                          routeTimes.startTimeEpoch,
-                          routeTimes.duration,
-                          animationControls.playbackPacing,
-                      ),
-                  containerWidth,
-                  routeGeometryData.totalDistanceMeters,
-                  selectedImageId,
-              )
+                images,
+                (fraction) =>
+                    getDistanceFractionPercent(
+                        fraction,
+                        geojson,
+                        routeGeometryData,
+                        routeTimes.startTimeEpoch,
+                        routeTimes.duration,
+                        animationControls.playbackPacing,
+                    ),
+                containerWidth,
+                routeGeometryData.totalDistanceMeters,
+                selectedImageId,
+            )
             : [];
 
     const beginDrag = (image: MarkerImage<MobileMarkerImageData>) => {
@@ -268,10 +271,10 @@ export const SliderMarkers: FC<Props> = ({
                     return distance <= GRAB_RADIUS_PX &&
                         (!nearest ||
                             distance <
-                                Math.abs(
-                                    (nearest.percent / 100) * metrics.width -
-                                        offsetX,
-                                ))
+                            Math.abs(
+                                (nearest.percent / 100) * metrics.width -
+                                offsetX,
+                            ))
                         ? group
                         : nearest;
                 },
@@ -324,6 +327,27 @@ export const SliderMarkers: FC<Props> = ({
             onLayout={(event) => setContainerWidth(event.nativeEvent.layout.width)}
             {...containerPanResponder.panHandlers}
         >
+            {animationControls.panToWholeRouteAtEnd && (
+                <View style={styles.routeEndMarker}>
+                    <View style={[styles.markerLine, { backgroundColor: routeEndMarkerColor }]} />
+                    <View style={[styles.markerHead, { backgroundColor: routeEndMarkerColor }]} />
+                    <Tooltip
+                        content={panToWholeRouteAtEndLabel}
+                        placement="top"
+                        size="xs"
+                    >
+                        <Button
+                            icon={Icons.NounProject.Target}
+                            size="xs"
+                            accessibilityLabel={panToWholeRouteAtEndLabel}
+                            onPress={() => {
+                                fitBoundsHandler(map, data$.value.boundingBox);
+                            }}
+                            style={styles.panToButton}
+                        />
+                    </Tooltip>
+                </View>
+            )}
             {markerGroups.map(({ image, imageIds, percent }) => {
                 const isDragged =
                     draggingImage?.id === image.id &&
@@ -354,8 +378,8 @@ export const SliderMarkers: FC<Props> = ({
                         style={[
                             styles.marker,
                             selectedImageId !== null &&
-                                !selected &&
-                                styles.unselected,
+                            !selected &&
+                            styles.unselected,
                             {
                                 left: `${percent}%`,
                             },
@@ -413,22 +437,6 @@ export const SliderMarkers: FC<Props> = ({
                     </View>
                 );
             })}
-            {animationControls.panToWholeRouteAtEnd && (
-                <View pointerEvents="none" style={styles.routeEndMarker}>
-                    <View
-                        style={[
-                            styles.markerLine,
-                            { backgroundColor: routeEndMarkerColor },
-                        ]}
-                    />
-                    <View
-                        style={[
-                            styles.markerHead,
-                            { backgroundColor: routeEndMarkerColor },
-                        ]}
-                    />
-                </View>
-            )}
             {draggingImage?.interaction === "player" ? (
                 <Animated.View
                     pointerEvents="none"
