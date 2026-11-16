@@ -1,4 +1,4 @@
-import { RefObject, useEffect, useRef } from "react";
+import { RefObject, useEffect, useEffectEvent, useRef } from "react";
 import { GestureResponderEvent } from "react-native";
 import { BehaviorSubject } from "rxjs";
 import { MarkerImage } from "@apparatus";
@@ -8,7 +8,9 @@ import {
     draggingImage$,
     draggingPlacement$,
     getRoutePlacement,
+    getMapImageThumbnailOffsetY,
     MAP_IMAGE_MARKER_OFFSET_Y,
+    MAP_IMAGE_ANCHOR_SIDE,
     MAP_IMAGE_COUNT_BADGE_OFFSET,
     THUMBNAIL_IMAGE_SIZE,
     RouteGeometryData,
@@ -17,12 +19,12 @@ import {
     clearImageMarkerSelection,
 } from "@the-dead-planet/nav-gauge-gears-route-story-common";
 import { MobileMarkerImageData } from "./image-parser";
-import { MapImageHitTarget } from "./model";
+import { ImageGroupPagerDimensions, MapImageHitTarget } from "./model";
 
 interface MarkerGesture {
     imageId: number;
-    groupCount: number;
     groupSize: number;
+    groupId: number;
     x: number;
     y: number;
     moved: boolean;
@@ -35,38 +37,92 @@ export const useMapImageInteraction = (
     routeGeometryData: RouteGeometryData | null,
     markerLayerVisibility: boolean,
     hitTargets: RefObject<MapImageHitTarget[]>,
+    paginationTarget: RefObject<[number, number] | null>,
+    paginationDimensions: RefObject<ImageGroupPagerDimensions | null>,
+    markersReady: boolean,
 ) => {
     const gestureRef = useRef<MarkerGesture | null>(null);
     const pendingHits = useRef<MapImageHitTarget[]>([]);
+    const markerTouchClaimed = useRef(false);
+    const canStartMarkerGesture = useEffectEvent(() => markersReady);
 
     useEffect(() => {
         const id = "route-story-thumbnails-layer";
         const shouldStartHandlers = new Map(map.onPanResponderShouldStartHandlers$.value);
         shouldStartHandlers.set(id, (event) => {
-            if (!map.map$.value || !markerLayerVisibility || event.nativeEvent.touches.length > 1) {
+            markerTouchClaimed.current = false;
+            if (
+                !map.map$.value ||
+                !markerLayerVisibility ||
+                event.nativeEvent.touches.length > 1
+            ) {
                 return false;
             }
             const { locationX, locationY } = event.nativeEvent;
-            const thumbnail = hitTargets.current.findLast(
-                ({ feature, point: [x, y] }) =>
-                    !feature.properties.markerAnchor &&
-                    (Math.hypot(locationX - x, locationY - y - MAP_IMAGE_MARKER_OFFSET_Y) <=
-                        THUMBNAIL_IMAGE_SIZE / 2 + 12 ||
-                        ((feature.properties.markerCount ?? 1) > 1 &&
-                            Math.hypot(
-                                locationX - x - MAP_IMAGE_COUNT_BADGE_OFFSET[0],
-                                locationY - y - MAP_IMAGE_COUNT_BADGE_OFFSET[1],
-                            ) <= 12)),
-            );
-            const target =
-                thumbnail ??
+            const pager = paginationTarget.current;
+            const dimensions = paginationDimensions.current;
+
+            if (
+                pager &&
+                dimensions &&
+                Math.abs(locationX - pager[0]) <= dimensions.width / 2 &&
+                Math.abs(locationY - pager[1]) <= dimensions.height / 2
+            ) {
+                markerTouchClaimed.current = true;
+
+                return false;
+            }
+            if (!canStartMarkerGesture()) {
+                return false;
+            }
+
+            const findThumbnail = (padding: number) =>
                 hitTargets.current.findLast(
                     ({ feature, point: [x, y] }) =>
-                        feature.properties.markerAnchor && Math.hypot(locationX - x, locationY - y) <= 12,
+                        !feature.properties.markerAnchor &&
+                        (Math.hypot(
+                            locationX - x,
+                            locationY -
+                                y -
+                                getMapImageThumbnailOffsetY(feature.properties.markerGroupSize, feature.properties.markerScale, feature.properties.markerOffsetY),
+                        ) <=
+                            (THUMBNAIL_IMAGE_SIZE *
+                                (feature.properties.markerScale ?? 1)) /
+                                2 +
+                                padding ||
+                            ((feature.properties.markerCount ?? 1) > 1 &&
+                                Math.hypot(
+                                    locationX -
+                                        x -
+                                        MAP_IMAGE_COUNT_BADGE_OFFSET[0],
+                                    locationY -
+                                        y -
+                                        (feature.properties.markerOffsetY ?? MAP_IMAGE_MARKER_OFFSET_Y) -
+                                        MAP_IMAGE_COUNT_BADGE_OFFSET[1],
+                                ) <= 12)),
+                );
+            const thumbnail = findThumbnail(0);
+            const selectedAnchor = hitTargets.current.findLast(
+                ({ feature, point: [x, y] }) =>
+                    feature.properties.markerAnchor &&
+                    feature.properties.markerSelected &&
+                    Math.hypot(locationX - x, locationY - y) <=
+                        MAP_IMAGE_ANCHOR_SIDE + 2,
+            );
+            const target =
+                (thumbnail?.feature.properties.markerSelected
+                    ? thumbnail
+                    : (selectedAnchor ?? thumbnail)) ??
+                findThumbnail(12) ??
+                hitTargets.current.findLast(
+                    ({ feature, point: [x, y] }) =>
+                        feature.properties.markerAnchor &&
+                        Math.hypot(locationX - x, locationY - y) <= 12,
                 ) ??
                 null;
             if (target) {
                 pendingHits.current.push(target);
+                markerTouchClaimed.current = true;
             }
             return target !== null;
         });
@@ -80,8 +136,8 @@ export const useMapImageInteraction = (
             const properties = target.feature.properties;
             const gesture: MarkerGesture = {
                 imageId: properties.imageId,
-                groupCount: properties.markerCount ?? 1,
                 groupSize: properties.markerGroupSize ?? 1,
+                groupId: properties.markerGroupId ?? properties.imageId,
                 x: event.nativeEvent.pageX,
                 y: event.nativeEvent.pageY,
                 moved: false,
@@ -89,21 +145,19 @@ export const useMapImageInteraction = (
             gestureRef.current = gesture;
             const { locationX, locationY } = event.nativeEvent;
             map.dragPan$.next(false);
-            if (gesture.groupCount === 1) {
-                const image = images$.value.find(({ id }) => id === gesture.imageId);
-                if (!geojson || !routeGeometryData || image?.distanceFraction === undefined) {
-                    return;
-                }
-                const [routeX, routeY] = target.routePoint;
-                map.panResponderOffset = [routeX - locationX, routeY - locationY];
-                draggingImage$.next({
-                    id: gesture.imageId,
-                    interaction: "map",
-                });
-                const handlers = new Map(map.onPanResponderMoveHandlers$.value);
-                handlers.set(id, moveHandler);
-                map.onPanResponderMoveHandlers$.next(handlers);
+            const image = images$.value.find(({ id }) => id === gesture.imageId);
+            if (!geojson || !routeGeometryData || image?.distanceFraction === undefined) {
+                return;
             }
+            const [routeX, routeY] = target.routePoint;
+            map.panResponderOffset = [routeX - locationX, routeY - locationY];
+            draggingImage$.next({
+                id: gesture.imageId,
+                interaction: "map",
+            });
+            const handlers = new Map(map.onPanResponderMoveHandlers$.value);
+            handlers.set(id, moveHandler);
+            map.onPanResponderMoveHandlers$.next(handlers);
         });
         map.onPanResponderStartHandlers$.next(startHandlers);
 
@@ -115,7 +169,7 @@ export const useMapImageInteraction = (
             const x = event.nativeEvent.pageX;
             const y = event.nativeEvent.pageY;
             gesture.moved ||= Math.hypot(x - gesture.x, y - gesture.y) >= 4;
-            if (!geojson || !gesture.moved || gesture.groupCount > 1) {
+            if (!geojson || !gesture.moved) {
                 return;
             }
             const placement = getRoutePlacement({ lng: coordinate[0], lat: coordinate[1] }, geojson, routeGeometryData);
@@ -142,15 +196,15 @@ export const useMapImageInteraction = (
                 draggingImage$.next(null);
             }
             draggingPlacement$.next(null);
-            if (gesture.moved && gesture.groupCount === 1) {
+            if (gesture.moved) {
                 clearImageMarkerSelection();
             }
             if (cancelled) {
                 return;
             }
             if (!gesture.moved) {
-                selectMapImageMarker(gesture.imageId, gesture.groupSize);
-            } else if (geojson && gesture.groupCount === 1) {
+                selectMapImageMarker(gesture.imageId, gesture.groupSize, gesture.groupId);
+            } else if (geojson) {
                 const placement = getRoutePlacement(
                     { lng: coordinate[0], lat: coordinate[1] },
                     geojson,
@@ -163,7 +217,11 @@ export const useMapImageInteraction = (
         });
         map.onPanResponderEndHandlers$.next(endHandlers);
         const pressHandlers = new Map(map.onPressHandlers$.value);
-        pressHandlers.set(id, async () => clearImageMarkerSelection());
+        pressHandlers.set(id, async () => {
+            if (!markerTouchClaimed.current) {
+                clearImageMarkerSelection();
+            }
+        });
         map.onPressHandlers$.next(pressHandlers);
 
         return () => {
@@ -189,5 +247,5 @@ export const useMapImageInteraction = (
             removeHandler(map.onPanResponderEndHandlers$);
             removeHandler(map.onPressHandlers$);
         };
-    }, [map, images$, geojson, routeGeometryData, markerLayerVisibility, hitTargets]);
+    }, [map, images$, geojson, routeGeometryData, markerLayerVisibility, hitTargets, paginationTarget, paginationDimensions]);
 };

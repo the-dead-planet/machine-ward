@@ -18,6 +18,7 @@ jest.mock("@the-dead-planet/nav-gauge-gears-route-story-common", () => {
     return {
         selectedImageId$: new BehaviorSubject(null),
         expandedImageGroupId$: new BehaviorSubject(null),
+        imageGroupOffset$: new BehaviorSubject(0),
         getGroupedImageSource: async (
             source: MockSource,
             project: (point: [number, number]) => Promise<[number, number]>,
@@ -27,12 +28,12 @@ jest.mock("@the-dead-planet/nav-gauge-gears-route-story-common", () => {
             const coordinates = await unproject([point[0] + 40, point[1]]);
             return {
                 ...source,
-                features: [
+                features: source.features.map((feature) => (
                     {
-                        ...source.features[0],
+                        ...feature,
                         geometry: { type: "Point", coordinates },
-                    },
-                ],
+                    }
+                )),
             };
         },
         getImageSourceWithAnchors: (original: MockSource, grouped: MockSource) => ({
@@ -76,7 +77,10 @@ test("reuses grouping projections for expanded marker hits and invalidates them 
             },
         ],
     };
-    const { result, unmount } = await renderHook(() => useImageMarkerSource(map, source, false));
+    const { result, rerender, unmount } = await renderHook(
+        ({ currentSource }: { currentSource: typeof source }) => useImageMarkerSource(map, currentSource, false),
+        { initialProps: { currentSource: source } },
+    );
     try {
         await act(() => jest.advanceTimersByTimeAsync(100));
         expect(project).toHaveBeenCalledTimes(1);
@@ -97,6 +101,32 @@ test("reuses grouping projections for expanded marker hits and invalidates them 
         await act(() => map.cameraMoving$.next(false));
         await act(() => jest.advanceTimersByTimeAsync(100));
         expect(result.current.hitTargets.current).toHaveLength(2);
+        const movedSource: typeof source = {
+            ...source,
+            features: source.features.map((feature) => ({
+                ...feature,
+                geometry: { type: "Point", coordinates: [2, 0] },
+            })),
+        };
+        expect(result.current.groupedSource.features[0].geometry.coordinates).toEqual([1, 0]);
+        await rerender({ currentSource: movedSource });
+        expect(result.current.groupedSource).toBe(movedSource);
+        expect(result.current.hitTargets.current).toEqual([]);
+        await act(() => jest.advanceTimersByTimeAsync(99));
+        expect(result.current.groupedSource).toBe(movedSource);
+        await act(() => jest.advanceTimersByTimeAsync(1));
+        expect(result.current.groupedSource).not.toBe(movedSource);
+        const selectedSource: typeof source = {
+            ...source,
+            features: [
+                { ...source.features[0], properties: { ...source.features[0].properties, markerSelected: true } },
+                { ...source.features[0], properties: { ...source.features[0].properties, imageId: 2, markerSelected: false } },
+            ],
+        };
+        await rerender({ currentSource: selectedSource });
+        await act(() => jest.advanceTimersByTimeAsync(100));
+        expect(result.current.hitTargets.current.filter(({ feature }) => !feature.properties.markerAnchor)
+            .map(({ feature }) => feature.properties.imageId)).toEqual([2, 1]);
     } finally {
         await unmount();
         jest.useRealTimers();

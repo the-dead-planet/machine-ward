@@ -28,6 +28,9 @@ interface Props {
 }
 
 const styles = StyleSheet.create({
+    slider: {
+        zIndex: 1,
+    },
     sliderContainer: {
         flex: 1,
         gap: 23,
@@ -55,9 +58,7 @@ export const SliderWithMarkers: FC<Props> = ({
     const [{ geojson }] = useSubjectState(data$);
     const [routeGeometryData] = useSubjectState(routeGeometryData$);
     const [animationControls] = useSubjectState(animatrix.controls$);
-    const [{ markerPlayerVisibility: showImageMarkers }] = useSubjectState(
-        state$,
-    );
+    const [{ markerPlayerVisibility: showImageMarkers }] = useSubjectState(state$);
 
     const handleProgressChange = (value: number) => {
         const nextProgressMs = animationControls.playbackPacing === 'distance' && geojson && routeGeometryData && routeTimes
@@ -70,7 +71,11 @@ export const SliderWithMarkers: FC<Props> = ({
     };
 
     return (
-        <View style={[styles.sliderContainer, style]}>
+        <View
+            nativeID="route-story-player-slider"
+            collapsable={false}
+            style={[styles.sliderContainer, style]}
+        >
             {showImageMarkers ? (
                 <SliderMarkers
                     gearId={gearId}
@@ -94,6 +99,7 @@ export const SliderWithMarkers: FC<Props> = ({
                 color="tertiary"
                 activeGlow="glow"
                 size="sm"
+                style={styles.slider}
             />
             <PlayerSliderLabels data$={data$} routeGeometryData$={routeGeometryData$} progressMs$={progressMs$} routeTimes$={routeTimes$} animatrix={animatrix} />
         </View>

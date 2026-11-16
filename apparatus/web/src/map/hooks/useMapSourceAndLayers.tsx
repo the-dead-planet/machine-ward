@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import * as maplibregl from "maplibre-gl";
 import { UpdatedData, useUpdateSourceData } from "./useUpdateSourceData";
 import { FeatureStateProps } from "@apparatus";
@@ -159,7 +159,9 @@ export const useMapSourceAndLayers = (
         };
     }, [map, data]);
 
-    useUpdateSourceData(map, updatedData);
+    // Reapply the latest geometry whenever the source is recreated, including theme changes.
+    const currentSourceData = useMemo(() => updatedData ? { ...updatedData } : undefined, [data, updatedData]);
+    useUpdateSourceData(map, currentSourceData);
 
     const updateFeatureState = (
         source: string,

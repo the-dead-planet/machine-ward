@@ -1,21 +1,13 @@
 import { FeatureStateProps, LoadedImageData } from "@apparatus";
 import { GeoJson } from "@tinker-chest";
-import {
-    getIconImageId,
-    getRouteLngLatAtDistanceFraction,
-    RouteGeometryData,
-    RoutePlacement,
-} from "../tinkers";
+import { getIconImageId, getRouteLngLatAtDistanceFraction, RouteGeometryData, RoutePlacement } from "../../tinkers";
 
 export const IMAGE_ANIMATION_DURATION = 250;
 export const IMAGE_PROPERTY = "iconImageId";
 export const IMAGE_THUMBNAIL_PROPERTY = "iconImageThumbnailId";
 export const DRAGGED_IMAGE_ID = -1;
 
-export type ImageFeature = GeoJSON.Feature<
-    GeoJSON.Point,
-    ImageFeatureProperties
->;
+export type ImageFeature = GeoJSON.Feature<GeoJSON.Point, ImageFeatureProperties>;
 export interface ImageFeatureProperties {
     imageId: number;
     distanceFromStartMeters: number;
@@ -23,19 +15,37 @@ export interface ImageFeatureProperties {
     markerCount?: number;
     markerGroupSize?: number;
     markerOpacity?: number;
+    markerScale?: number;
+    markerCenter?: [number, number];
+    markerOffsetY?: number;
     markerSelected?: boolean;
     markerAnchor?: boolean;
+    markerGroupId?: number;
+    markerExpanded?: boolean;
+    markerSlot?: number;
     [IMAGE_PROPERTY]: string;
     [IMAGE_THUMBNAIL_PROPERTY]: string;
     [FeatureStateProps.Highlight]?: boolean;
     [FeatureStateProps.Dragging]?: boolean;
 }
 
+export interface ImageGroupPagination {
+    lngLat: [number, number];
+    offset: number;
+    totalCount: number;
+    hiddenCount: number;
+}
+
+export interface ImageMarkerSource
+    extends GeoJSON.FeatureCollection<GeoJSON.Point, ImageFeatureProperties> {
+    pagination?: ImageGroupPagination;
+}
+
 export function getImageSource<TImageData>(
     loadedImages: LoadedImageData<TImageData>[],
     geojson?: GeoJson,
     routeGeometryData?: RouteGeometryData | null,
-): GeoJSON.FeatureCollection<GeoJSON.Point, ImageFeatureProperties> {
+): ImageMarkerSource {
     if (!geojson || !routeGeometryData) {
         return {
             type: "FeatureCollection",
@@ -46,11 +56,7 @@ export function getImageSource<TImageData>(
     return {
         type: "FeatureCollection",
         features: loadedImages.map((image) => {
-            const lngLat = getRouteLngLatAtDistanceFraction(
-                geojson,
-                routeGeometryData,
-                image.distanceFraction,
-            );
+            const lngLat = getRouteLngLatAtDistanceFraction(geojson, routeGeometryData, image.distanceFraction);
 
             return {
                 type: "Feature",
@@ -78,7 +84,7 @@ export function getImageSource<TImageData>(
 }
 
 export function getImageSourceWithMarkerVisibility(
-    source: GeoJSON.FeatureCollection<GeoJSON.Point, ImageFeatureProperties>,
+    source: ImageMarkerSource,
     visible: boolean,
 ): typeof source {
     return visible ? source : {
@@ -117,7 +123,13 @@ export function getImageSourceWithAnchors(original: ReturnType<typeof getImageSo
     const coordinates = new Map(original.features.map((feature) => [feature.properties.imageId, feature.geometry]));
     return {
         ...grouped,
-        features: grouped.features.flatMap((feature) => [{ ...feature, id: getImageMarkerFeatureId(feature.properties.imageId) }, {
+        features: grouped.features.flatMap((feature) => [{
+            ...feature,
+            id: getImageMarkerFeatureId(feature.properties.imageId),
+            geometry: feature.properties.markerCenter
+                ? { type: 'Point', coordinates: feature.properties.markerCenter }
+                : feature.geometry,
+        }, {
             ...feature,
             id: getImageMarkerAnchorId(feature.properties.imageId),
             geometry: coordinates.get(feature.properties.imageId) ?? feature.geometry,
@@ -134,9 +146,7 @@ export function getImageDragPreviewSource(
     imageId: number | null,
     placement: RoutePlacement | null,
 ): typeof source {
-    const image = source.features.find(
-        (feature) => feature.properties.imageId === imageId,
-    );
+    const image = source.features.find((feature) => feature.properties.imageId === imageId);
     if (!image || !placement) {
         return { type: "FeatureCollection", features: [] };
     }
@@ -155,6 +165,7 @@ export function getImageDragPreviewSource(
                     imageId: DRAGGED_IMAGE_ID,
                     markerVisible: false,
                     markerSelected: true,
+                    markerCenter: undefined,
                     [FeatureStateProps.Highlight]: true,
                 },
             },

@@ -3,7 +3,7 @@ import { parsers, FileToGeoJSONParser, ChronoLens } from "@apparatus";
 import { GeoJson, getNext } from "@tinker-chest";
 import { RouteStoryGear } from "./route-story-gear";
 import { RouteStoryFile } from "./model";
-import { expandedImageGroupId$, selectedImageId$ } from "./layer-specification/images-layers";
+import { clearImageMarkerSelection } from "./layer-specification/images/images-layers";
 
 export class FileOperator<TMap, TChronoLens extends ChronoLens, TFile extends RouteStoryFile, TImageData> {
     private gear: RouteStoryGear<TMap, TChronoLens, TFile, TImageData>;
@@ -21,8 +21,7 @@ export class FileOperator<TMap, TChronoLens extends ChronoLens, TFile extends Ro
         this.gear.progressMs$.next(0);
         this.gear.data$.next({});
         this.gear.images$.next([]);
-        selectedImageId$.next(null);
-        expandedImageGroupId$.next(null);
+        clearImageMarkerSelection();
         this.gear.routeTimes$.next(null);
         this.gear.fileOperator.isLoading$.next(false);
     };

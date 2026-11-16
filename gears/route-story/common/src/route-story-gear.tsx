@@ -6,6 +6,7 @@ import {
     OverlayComponentProps,
     Gear,
     TranslationTable,
+    TranslationId,
     GearTranslationKey,
     Cartomancer,
     MapLayout,
@@ -28,6 +29,10 @@ import { cleanUpRouteStoryState } from "./route-story-state";
 
 export abstract class RouteStoryGear<TMap, TChronoLens extends ChronoLens, TFile extends RouteStoryFile, TImageData> extends Gear<TMap, TChronoLens> {
     public readonly id = 'route-story';
+    public description: TranslationId<RouteStoryTranslationKey> = {
+        n: this.id,
+        t: RouteStoryTranslationKey.Description,
+    };
     public translations: TranslationTable<GearTranslationKey | RouteStoryTranslationKey> = Translations;
     public internalTranslationKey = RouteStoryTranslationKey;
 

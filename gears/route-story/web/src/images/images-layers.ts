@@ -1,9 +1,5 @@
 import { LayerSpecification } from "maplibre-gl";
-import {
-    imageLayerIds,
-    ImagesLayers,
-    imageSourceIds,
-} from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { imageLayerIds, ImagesLayers, imageSourceIds } from "@the-dead-planet/nav-gauge-gears-route-story-common";
 
 export const getImagesLayers = (
     displayImageId: number | null,
@@ -16,8 +12,8 @@ export const getImagesLayers = (
         {
             id: imageLayerIds.anchors,
             source: imageSourceIds.thumbnails,
-            type: 'symbol',
-            filter: ImagesLayers.anchors.filter,
+            type: "symbol",
+            filter: ImagesLayers.anchorsUnselected.filter,
             layout: ImagesLayers.anchors.layout,
             paint: ImagesLayers.anchors.getPaint(defaultColor, hoverColor, activeColor),
         },
@@ -34,19 +30,12 @@ export const getImagesLayers = (
             ...ImagesLayers.thumbnailsStackFront,
         },
         {
-            id: imageLayerIds.thumbnailsOutline,
-            source: imageSourceIds.thumbnails,
-            type: "circle",
-            filter: ImagesLayers.thumbnailsOutline.filter,
-            paint: ImagesLayers.thumbnailsOutline.getPaint(defaultColor, hoverColor, activeColor),
-        },
-        {
             id: imageLayerIds.thumbnails,
             source: imageSourceIds.thumbnails,
             type: "symbol",
-            filter: ImagesLayers.thumbnails.filter,
-            layout: ImagesLayers.thumbnails.layout,
-            paint: ImagesLayers.thumbnails.paint,
+            filter: ImagesLayers.thumbnailsOutlined.filter,
+            layout: ImagesLayers.thumbnailsOutlined.getLayout(defaultColor, hoverColor),
+            paint: ImagesLayers.thumbnailsOutlined.paint,
         },
         {
             id: imageLayerIds.countBadge,
@@ -54,6 +43,31 @@ export const getImagesLayers = (
             type: "symbol",
             filter: ImagesLayers.countBadge.filter,
             layout: ImagesLayers.countBadge.getLayout(defaultColor, badgeTextColor),
+            paint: ImagesLayers.countBadge.paint,
+        },
+        {
+            id: imageLayerIds.anchorsSelected,
+            source: imageSourceIds.thumbnails,
+            type: "symbol",
+            filter: ImagesLayers.anchorsSelected.filter,
+            layout: ImagesLayers.anchorsSelected.layout,
+            paint: ImagesLayers.anchorsSelected.getPaint(defaultColor, hoverColor, activeColor),
+        },
+        {
+            id: imageLayerIds.thumbnailsSelectedOutline,
+            source: imageSourceIds.thumbnails,
+            type: "symbol",
+            filter: ImagesLayers.thumbnailsSelectedOutline.filter,
+            layout: ImagesLayers.thumbnailsSelectedOutline.layout,
+            paint: ImagesLayers.thumbnailsSelectedOutline.getPaint(defaultColor, hoverColor, activeColor),
+        },
+        {
+            id: imageLayerIds.thumbnailsSelected,
+            source: imageSourceIds.thumbnails,
+            type: "symbol",
+            filter: ImagesLayers.thumbnailsSelected.filter,
+            layout: ImagesLayers.thumbnailsSelected.layout,
+            paint: ImagesLayers.thumbnailsSelected.paint,
         },
         {
             id: imageLayerIds.imageInDisplay,
@@ -71,7 +85,7 @@ export const getImageDragPreviewLayers = (
     {
         id: imageLayerIds.dragAnchor,
         source: imageSourceIds.dragPreview,
-        type: 'symbol',
+        type: "symbol",
         filter: ImagesLayers.anchors.filter,
         layout: ImagesLayers.anchors.layout,
         paint: ImagesLayers.anchors.getPaint(highlightColor, highlightColor, highlightColor),
@@ -79,8 +93,9 @@ export const getImageDragPreviewLayers = (
     {
         id: imageLayerIds.thumbnailsHighlightOutline,
         source: imageSourceIds.dragPreview,
-        type: "circle",
+        type: "symbol",
         filter: ImagesLayers.thumbnailsHighlightOutline.filter,
+        layout: ImagesLayers.thumbnailsHighlightOutline.layout,
         paint: ImagesLayers.thumbnailsHighlightOutline.getPaint(highlightColor),
     },
     {

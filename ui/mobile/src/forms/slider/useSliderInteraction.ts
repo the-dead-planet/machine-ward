@@ -10,8 +10,9 @@ export const useSliderInteraction = ({
     disabled,
     highlighted,
     onChange,
-}: SliderProps) => {
-    const [width, setWidth] = useState(0);
+}: SliderProps, trackInset: number) => {
+    const [containerWidth, setContainerWidth] = useState(0);
+    const width = Math.max(0, containerWidth - trackInset * 2);
     const [dragging, setDragging] = useState(false);
     const [focused, setFocused] = useState(false);
     const [hovered, setHovered] = useState(false);
@@ -23,8 +24,9 @@ export const useSliderInteraction = ({
         disabled,
         onChange,
         width,
+        trackInset,
     });
-    context.current = { value, min, max, step, disabled, onChange, width };
+    context.current = { value, min, max, step, disabled, onChange, width, trackInset };
     const startPosition = useRef(0);
     const startPageX = useRef(0);
 
@@ -61,15 +63,15 @@ export const useSliderInteraction = ({
                     return;
                 }
                 setDragging(true);
-                startPosition.current = event.nativeEvent.locationX;
+                startPosition.current = event.nativeEvent.locationX - context.current.trackInset;
                 startPageX.current = event.nativeEvent.pageX;
                 updateValue(startPosition.current);
             },
             onPanResponderMove: (event) => {
                 updateValue(
                     startPosition.current +
-                        event.nativeEvent.pageX -
-                        startPageX.current,
+                    event.nativeEvent.pageX -
+                    startPageX.current,
                 );
             },
             onPanResponderRelease: () => setDragging(false),
@@ -87,10 +89,10 @@ export const useSliderInteraction = ({
     const state: ThemeAppearanceState = disabled
         ? "disabled"
         : highlighted || dragging
-          ? "active-pressed"
-          : focused || hovered
-            ? "hover-focus"
-            : "default";
+            ? "active-pressed"
+            : focused || hovered
+                ? "hover-focus"
+                : "default";
 
     return {
         state,
@@ -98,8 +100,7 @@ export const useSliderInteraction = ({
         width,
         interaction: {
             ...panResponder.panHandlers,
-            onLayout: (event: LayoutChangeEvent) =>
-                setWidth(event.nativeEvent.layout.width),
+            onLayout: (event: LayoutChangeEvent) => setContainerWidth(event.nativeEvent.layout.width),
             onFocus: () => setFocused(true),
             onBlur: () => setFocused(false),
             onPointerEnter: () => setHovered(true),

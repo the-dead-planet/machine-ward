@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { BehaviorSubject } from "rxjs";
 import { MarkerImage, useMultipleTranslations } from "@apparatus";
-import { ParsingResultWithError, useSubjectState } from "@tinker-chest";
+import { clamp, ParsingResultWithError, useSubjectState } from "@tinker-chest";
 import {
     draggingImage$,
     draggingPlacement$,
@@ -125,9 +125,7 @@ export const SliderMarkers: FC<Props> = ({
     const [routeTimes] = useSubjectState(routeTimes$);
     const [images] = useSubjectState(images$);
     const [animationControls] = useSubjectState(animatrix.controls$);
-    const [highlightIdsBySourceId, setHighlightIdsBySourceId] = useSubjectState(
-        highlightIdsBySourceId$,
-    );
+    const [highlightIdsBySourceId, setHighlightIdsBySourceId] = useSubjectState(highlightIdsBySourceId$);
     const [draggingImage, setDraggingImage] = useSubjectState(draggingImage$);
     const [selectedImageId] = useSubjectState(selectedImageId$);
     const [containerWidth, setContainerWidth] = useState(0);
@@ -154,10 +152,7 @@ export const SliderMarkers: FC<Props> = ({
     });
 
     const markerColor = theme.color("tertiary", 500);
-    const markerHighlightColor = theme.color(
-        "tertiary",
-        theme.isDark ? 400 : 800,
-    );
+    const markerHighlightColor = theme.color("tertiary", theme.isDark ? 400 : 800);
     const routeEndMarkerColor = theme.color("neutral", 500);
     const markerGroups =
         geojson && routeGeometryData && routeTimes
@@ -180,9 +175,7 @@ export const SliderMarkers: FC<Props> = ({
 
     const beginDrag = (image: MarkerImage<MobileMarkerImageData>) => {
         setDraggingImage({ id: image.id, interaction: "player" });
-        setHighlightIdsBySourceId(
-            new Map([[imageSourceIds.thumbnails, new Set([String(image.id)])]]),
-        );
+        setHighlightIdsBySourceId(new Map([[imageSourceIds.thumbnails, new Set([String(image.id)])]]));
         containerRef.current?.measureInWindow((x, y, width) => {
             containerMetricsRef.current = { pageX: x, pageY: y, width };
         });
@@ -201,7 +194,7 @@ export const SliderMarkers: FC<Props> = ({
         if (metrics.width <= 0) {
             return;
         }
-        const positionPercent = ((pageX - metrics.pageX) / metrics.width) * 100;
+        const positionPercent = clamp(((pageX - metrics.pageX) / metrics.width) * 100, [0, 100]);
         draggingPositionRef.current.setValue(positionPercent);
         const placement = getRoutePlacementAtPercent(
             positionPercent,
@@ -225,11 +218,7 @@ export const SliderMarkers: FC<Props> = ({
             activeDragImage !== null &&
             placement !== null
         ) {
-            updateImageDistanceFraction(
-                images$,
-                activeDragImage.id,
-                placement.distanceFraction,
-            );
+            updateImageDistanceFraction(images$, activeDragImage.id, placement.distanceFraction);
         }
         draggingPlacement$.next(null);
         if (gesture?.moved) {
@@ -275,9 +264,7 @@ export const SliderMarkers: FC<Props> = ({
             );
             const grabbed = groups.reduce<(typeof groups)[number] | undefined>(
                 (nearest, group) => {
-                    const distance = Math.abs(
-                        (group.percent / 100) * metrics.width - offsetX,
-                    );
+                    const distance = Math.abs((group.percent / 100) * metrics.width - offsetX);
                     return distance <= GRAB_RADIUS_PX &&
                         (!nearest ||
                             distance <
@@ -315,12 +302,9 @@ export const SliderMarkers: FC<Props> = ({
     const containerPanResponder = useMemo(
         () =>
             PanResponder.create({
-                onStartShouldSetPanResponderCapture: (event) =>
-                    tryBeginDragAt(event),
-                onMoveShouldSetPanResponderCapture: () =>
-                    isDraggingPlayerRef.current,
-                onPanResponderMove: (_event, gestureState) =>
-                    updateDraggingFeature(gestureState.moveX),
+                onStartShouldSetPanResponderCapture: (event) => tryBeginDragAt(event),
+                onMoveShouldSetPanResponderCapture: () => isDraggingPlayerRef.current,
+                onPanResponderMove: (_event, gestureState) => updateDraggingFeature(gestureState.moveX),
                 onPanResponderRelease: () => endDrag(),
                 onPanResponderTerminate: () => endDrag(true),
             }),
@@ -337,9 +321,7 @@ export const SliderMarkers: FC<Props> = ({
         <View
             ref={containerRef}
             style={styles.container}
-            onLayout={(event) =>
-                setContainerWidth(event.nativeEvent.layout.width)
-            }
+            onLayout={(event) => setContainerWidth(event.nativeEvent.layout.width)}
             {...containerPanResponder.panHandlers}
         >
             {markerGroups.map(({ image, imageIds, percent }) => {
@@ -368,9 +350,7 @@ export const SliderMarkers: FC<Props> = ({
                                 ? `${imageIds.length} × ${imageLabel}: ${imageIds.join(", ")}`
                                 : `${imageLabel} ${image.id}`
                         }
-                        onAccessibilityTap={() =>
-                            toggleImageMarkerGroup(imageIds)
-                        }
+                        onAccessibilityTap={() => toggleImageMarkerGroup(imageIds)}
                         style={[
                             styles.marker,
                             selectedImageId !== null &&
@@ -395,11 +375,7 @@ export const SliderMarkers: FC<Props> = ({
                                 onPress={() => {
                                     const lngLat =
                                         geojson && routeGeometryData
-                                            ? getRouteLngLatAtDistanceFraction(
-                                                  geojson,
-                                                  routeGeometryData,
-                                                  image.distanceFraction!,
-                                              )
+                                            ? getRouteLngLatAtDistanceFraction(geojson, routeGeometryData, image.distanceFraction!)
                                             : undefined;
                                     if (lngLat) {
                                         map.camera$.value?.easeTo({

@@ -78,8 +78,21 @@ android {
     compileSdk rootProject.ext.compileSdkVersion
 
     namespace "com.app"
+    sourceSets {
+        file("../../../gears").eachDir { gearDirectory ->
+            def nativeSourceDirectory = new File(gearDirectory, "mobile/android/src/main/java")
+            if (nativeSourceDirectory.isDirectory()) {
+                main.java.srcDir(nativeSourceDirectory)
+            }
+            def nativeTestDirectory = new File(gearDirectory, "mobile/android/src/androidTest/java")
+            if (nativeTestDirectory.isDirectory()) {
+                androidTest.java.srcDir(nativeTestDirectory)
+            }
+        }
+    }
     defaultConfig {
         applicationId "com.app"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
@@ -115,6 +128,8 @@ android {
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
+    androidTestImplementation("androidx.test.ext:junit:1.3.0")
+    androidTestImplementation("androidx.test:runner:1.7.0")
 
     if (hermesEnabled.toBoolean()) {
         implementation("com.facebook.react:hermes-android")

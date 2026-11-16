@@ -2,6 +2,9 @@ import { GearTranslationKey, TranslationTable } from "@apparatus";
 import { RouteStoryTranslationKey } from "../model";
 
 const pl: TranslationTable<GearTranslationKey | RouteStoryTranslationKey>['pl'] = {
+    "description": 'Nieco osobliwy mechanizm twórczy, który tworzy z rozproszonych fragmentów świata animowane opowieści wizualne.',
+    "previous-images": 'Poprzednie obrazy',
+    "next-images": 'Następne obrazy',
     "gear-name": 'Historia trasy',
     "gear-short-name": 'Historia',
     "gear-description": 'Stwórz historię wideo ze swoich śladów GPS i danych obrazu',
