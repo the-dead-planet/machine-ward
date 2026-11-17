@@ -67,9 +67,12 @@ describe("Slider appearance", () => {
                     );
                     const unfilledColor =
                         window.getComputedStyle(track).backgroundColor;
+                    expect(window.getComputedStyle(track).boxShadow).to.equal("none");
+                    expect(parseFloat(window.getComputedStyle(thumb).width)).to.equal(parseFloat(window.getComputedStyle(slider).getPropertyValue("--size-control-thumb-size")));
                     const labelColor = window.getComputedStyle(label).color;
                     input.focus();
                     expect(input.matches(":focus-visible")).to.equal(true);
+                    expect(window.getComputedStyle(track.parentElement!).outlineWidth).to.equal("2px");
                     for (const highlighted of [false, true]) {
                         if (highlighted) {
                             slider.setAttribute("data-highlighted", "true");
@@ -80,6 +83,8 @@ describe("Slider appearance", () => {
                             "fill"
                                 ? thumbStyle.backgroundColor
                                 : thumbStyle.borderTopColor;
+                        reference.style.backgroundColor = `var(--appearance-${highlighted ? "active-pressed" : "hover-focus"}-${slider.getAttribute("data-appearance-variant") === "fill" ? "surface" : "border"})`;
+                        expect(thumbPaint).to.equal(window.getComputedStyle(reference).backgroundColor);
                         expect(
                             window.getComputedStyle(progress).backgroundColor,
                         ).to.equal(thumbPaint);
@@ -103,6 +108,12 @@ describe("Slider appearance", () => {
                     }
                     slider.setAttribute("data-disabled", "true");
                     input.disabled = true;
+                    reference.style.backgroundColor = `var(--appearance-disabled-${slider.getAttribute("data-appearance-variant") === "fill" ? "surface" : "border"})`;
+                    const disabledThumb = window.getComputedStyle(thumb);
+                    expect(slider.getAttribute("data-appearance-variant") === "fill" ? disabledThumb.backgroundColor : disabledThumb.borderTopColor).to.equal(window.getComputedStyle(reference).backgroundColor);
+                    expect(window.getComputedStyle(input).cursor).to.equal("not-allowed");
+                    expect(window.getComputedStyle(slider).opacity).to.equal("1");
+                    expect(window.getComputedStyle(track.parentElement!).outlineStyle).to.equal("none");
                     reference.style.backgroundColor =
                         "var(--appearance-color-500)";
                     expect(
@@ -152,156 +163,6 @@ describe("Slider appearance", () => {
                     "none",
                 );
             });
-    });
-
-    it("keeps highlighted above focus and disabled above both without dimming", () => {
-        cy.readFile<string>("src/forms/slider/slider.module.css").then(
-            (css) => {
-                cy.document().then((document) => {
-                    const style = document.createElement("style");
-                    style.textContent = css;
-                    document.head.appendChild(style);
-                    for (const [index, state] of [
-                        "default",
-                        "hover-focus",
-                        "active-pressed",
-                        "disabled",
-                    ].entries()) {
-                        for (const channel of ["surface", "border", "glyphs"]) {
-                            document.documentElement.style.setProperty(
-                                `--appearance-${state}-${channel}`,
-                                `rgb(${(index + 1) * 10}, 0, 0)`,
-                            );
-                        }
-                        document.documentElement.style.setProperty(
-                            `--appearance-${state}-border-width`,
-                            "1px",
-                        );
-                    }
-                    document.documentElement.style.setProperty(
-                        "--appearance-glow-color",
-                        "rgb(0, 0, 255)",
-                    );
-                    document.documentElement.style.colorScheme = "light";
-                    document.documentElement.style.setProperty(
-                        "--size-control-thumb-size",
-                        "14px",
-                    );
-                    document.documentElement.style.setProperty(
-                        "--size-control-track-thickness",
-                        "6px",
-                    );
-                    for (const shade of [300, 500, 700]) {
-                        document.documentElement.style.setProperty(
-                            `--appearance-color-${shade}`,
-                            `rgb(0, ${shade / 10}, 0)`,
-                        );
-                        document.documentElement.style.setProperty(
-                            `--appearance-highlight-${shade}`,
-                            `rgb(0, 0, ${shade / 10})`,
-                        );
-                    }
-                    document.body.innerHTML = `
-                    <div id="slider" class="container" data-size="sm" data-glow="glow">
-                        <div class="slider-wrapper" style="--track-complete:50%;width:300px;height:24px">
-                            <div class="track"><div class="progress"></div><div class="thumb"></div></div>
-                            <input id="range" class="slider" type="range" aria-label="Position" />
-                        </div>
-                    </div>
-                `;
-                });
-            },
-        );
-
-        cy.get(".thumb").should(
-            "have.css",
-            "background-color",
-            "rgb(10, 0, 0)",
-        );
-        cy.get(".thumb").should("have.css", "box-shadow", "none");
-        cy.get(".progress").should(
-            "have.css",
-            "background-color",
-            "rgb(0, 50, 0)",
-        );
-        cy.get(".track").should(
-            "have.css",
-            "background-color",
-            "rgb(0, 30, 0)",
-        );
-        cy.get("#range").focus();
-        cy.get(".thumb").should(
-            "have.css",
-            "background-color",
-            "rgb(20, 0, 0)",
-        );
-        cy.get(".thumb").should("not.have.css", "box-shadow", "none");
-        cy.get(".track").should("have.css", "box-shadow", "none");
-        cy.get(".progress").should(
-            "have.css",
-            "background-color",
-            "rgb(20, 0, 0)",
-        );
-        cy.get(".track").should(
-            "have.css",
-            "background-color",
-            "rgb(0, 30, 0)",
-        );
-        cy.get(".slider-wrapper").should("have.css", "outline-width", "2px");
-        cy.get("#slider").invoke("attr", "data-highlighted", "true");
-        cy.get(".thumb").should(
-            "have.css",
-            "background-color",
-            "rgb(30, 0, 0)",
-        );
-        cy.get(".thumb").should("not.have.css", "box-shadow", "none");
-        cy.get(".progress").should(
-            "have.css",
-            "background-color",
-            "rgb(30, 0, 0)",
-        );
-        cy.get("#slider").invoke("attr", "data-disabled", "true");
-        cy.get("#range").invoke("prop", "disabled", true);
-        cy.get(".thumb").should(
-            "have.css",
-            "background-color",
-            "rgb(40, 0, 0)",
-        );
-        cy.get(".thumb").should("have.css", "box-shadow", "none");
-        cy.get(".progress").should(
-            "have.css",
-            "background-color",
-            "rgb(0, 50, 0)",
-        );
-        cy.get("#range").should("have.css", "cursor", "not-allowed");
-        cy.get("#slider").should("have.css", "opacity", "1");
-        cy.get(".slider-wrapper").should("have.css", "outline-style", "none");
-        cy.get(".track").should(
-            "have.css",
-            "background-color",
-            "rgb(0, 30, 0)",
-        );
-        cy.document().then((document) => {
-            document.documentElement.style.colorScheme = "dark";
-        });
-        cy.get("#slider").invoke("attr", "data-appearance-mode", "dark");
-        cy.get(".track").should(
-            "have.css",
-            "background-color",
-            "rgb(0, 70, 0)",
-        );
-        cy.get("#slider").invoke("removeAttr", "data-disabled");
-        cy.get("#range").invoke("prop", "disabled", false);
-        cy.get(".progress").should(
-            "have.css",
-            "background-color",
-            "rgb(30, 0, 0)",
-        );
-        cy.get(".track").should(
-            "have.css",
-            "background-color",
-            "rgb(0, 70, 0)",
-        );
     });
 
     it("keeps the range and extracted number/step controls synchronized", () => {

@@ -2,7 +2,7 @@ import { RefObject } from "react";
 import { StyleSheet, View } from "react-native";
 import { Marker } from "@maplibre/maplibre-react-native";
 import { useMultipleTranslations } from "@apparatus";
-import { Button, Chip, Text } from "@mobile-ui";
+import { Button, Chip } from "@mobile-ui";
 import { FontType, Icons } from "@ui";
 import { shiftImageGroup, ImageGroupPagination, RouteStoryTranslationKey } from "@the-dead-planet/nav-gauge-gears-route-story-common";
 import { ImageGroupPagerDimensions } from "./model";
@@ -19,7 +19,6 @@ const styles = StyleSheet.create({
         gap: 1,
     },
     counter: {
-        textAlign: "center",
         fontSize: 14,
     },
     previous: {
@@ -62,16 +61,9 @@ export const ImageGroupPager = ({ pagination, gearId, dimensions }: Props) => {
                         color="tertiary"
                         variant="fill"
                         fontType={FontType.Numeric}
+                        textStyle={styles.counter}
                     >
-                        <Text
-                            style={styles.counter}
-                            fontType={FontType.Numeric}
-                            variant="fill"
-                            color="tertiary"
-                            numberOfLines={1}
-                        >
-                            +{pagination.hiddenCount}
-                        </Text>
+                        +{pagination.hiddenCount}
                     </Chip>
                 </View>
                 <View style={styles.controls}>

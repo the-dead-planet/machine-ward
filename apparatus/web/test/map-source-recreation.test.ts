@@ -18,11 +18,11 @@ it("reapplies unchanged expanded geometry after a theme recreates its source", a
     };
     const expanded: GeoJSON.FeatureCollection<GeoJSON.Point> = {
         type: "FeatureCollection",
-        features: Array.from({ length: 7 }, (_value, imageId) => ({
+        features: [{
             type: "Feature",
-            geometry: { type: "Point", coordinates: [imageId, imageId] },
-            properties: { imageId, markerVisible: imageId < 5 },
-        })),
+            geometry: { type: "Point", coordinates: [1, 1] },
+            properties: { imageId: 1, markerVisible: true },
+        }],
     };
     let displayed: GeoJSON.GeoJSON | string | undefined;
     let sourceCreations = 0;

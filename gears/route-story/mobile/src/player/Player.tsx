@@ -65,6 +65,7 @@ export const Player: FC<OverlayComponentProps<MobileMap> & MobileRouteStoryProps
     progressMs$,
     playerOperator,
     animatrix,
+    fitBoundsHandler,
 }) => {
     const theme = useTheme();
     const [media] = useSubjectState(theme.media$);
@@ -91,6 +92,7 @@ export const Player: FC<OverlayComponentProps<MobileMap> & MobileRouteStoryProps
             progressMs$={progressMs$}
             playerOperator={playerOperator}
             animatrix={animatrix}
+            fitBoundsHandler={fitBoundsHandler}
             style={!media.isLessThanMd ? styles.sliderDesktop : undefined}
         />
     );

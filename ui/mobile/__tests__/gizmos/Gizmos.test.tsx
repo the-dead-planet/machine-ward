@@ -1,9 +1,8 @@
 import { fireEvent, render } from "@testing-library/react-native";
-import { StyleSheet } from "react-native";
+import { processColor, StyleSheet } from "react-native";
 import {
     buttonCorners,
     CornerVariant,
-    fillVariantOptions,
     Orientation,
     RESIZE_HANDLE_TOUCH_SIZE,
     Theme,
@@ -16,11 +15,6 @@ import {
 import { Button } from "../../src/gizmos/button";
 import { Chip } from "../../src/gizmos/chip";
 import { ResizeHandle } from "../../src/gizmos/resize-handle";
-import { ResizeHandleGrip } from "../../src/gizmos/resize-handle/ResizeHandleGrip";
-
-jest.mock("../../src/gizmos/resize-handle/ResizeHandleGrip", () => ({
-    ResizeHandleGrip: jest.fn(() => null),
-}));
 
 const media = {
     initial: () => ({
@@ -71,7 +65,7 @@ describe("Gizmo interaction ownership", () => {
         },
     );
 
-    test.each(fillVariantOptions)(
+    test.each(["fill", "fill-translucent"] as const)(
         "%s button and chip labels do not add automatic shadows",
         async (variant) => {
             const theme = new Theme(
@@ -107,55 +101,53 @@ describe("Gizmo interaction ownership", () => {
         },
     );
 
-    test.each(fillVariantOptions)(
-        "resize grip %s follows the handle state without owning interaction",
-        async (variant) => {
-            const theme = new Theme(
-                themeSpecifications[ThemeName.Default].dark,
-                media,
-            );
-            const onDrag = jest.fn();
-            const content = (disabled = false) => (
-                <ThemeContext.Provider value={theme}>
-                    <ResizeHandle
-                        direction="horizontal"
-                        color="neutral"
-                        highlightColor="secondary"
-                        variant={variant}
-                        tooltip="Resize panel"
-                        onDrag={onDrag}
-                        disabled={disabled}
-                    />
-                </ThemeContext.Provider>
-            );
-            const screen = await render(content());
-            const expectGrip = (state: ThemeAppearanceState) => {
-                const appearance = theme.resolveAppearance(
-                    variant,
-                    "neutral",
-                    "secondary",
-                    state,
-                );
-                expect(
-                    jest.mocked(ResizeHandleGrip).mock.lastCall?.[0].appearance,
-                ).toEqual(appearance);
-            };
-            expectGrip("default");
-            expect(screen.queryAllByRole("button")).toHaveLength(0);
-            await fireEvent(screen.getByRole("adjustable"), "focus");
-            expectGrip("hover-focus");
-            await screen.rerender(content(true));
-            expectGrip("disabled");
-            await fireEvent(
-                screen.getByRole("adjustable"),
-                "accessibilityAction",
-                { nativeEvent: { actionName: "increment" } },
-            );
-            expect(onDrag).not.toHaveBeenCalled();
-            await screen.unmount();
-            theme.destroy();
-        },
-    );
+    test("the real resize grip follows its handle without owning interaction", async () => {
+        const variant = "fill-translucent";
+        const theme = new Theme(themeSpecifications[ThemeName.Default].dark, media);
+        const onDrag = jest.fn();
+        const content = (disabled = false) => (
+            <ThemeContext.Provider value={theme}>
+                <ResizeHandle
+                    direction="horizontal"
+                    color="neutral"
+                    highlightColor="secondary"
+                    variant={variant}
+                    tooltip="Resize panel"
+                    onDrag={onDrag}
+                    disabled={disabled}
+                />
+            </ThemeContext.Provider>
+        );
+        const screen = await render(content());
+        const expectGrip = (state: ThemeAppearanceState) => {
+            const appearance = theme.resolveAppearance(variant, "neutral", "secondary", state);
+            const polygons = screen.container.queryAll(({ props }) => typeof props.d === "string");
+            expect(polygons.length).toBeGreaterThan(0);
+            for (const polygon of polygons) {
+                expect(polygon.props).toMatchObject({
+                    fill: { type: 0, payload: processColor(appearance.surface) },
+                    stroke: { type: 0, payload: processColor(appearance.border.color) },
+                    strokeWidth: appearance.border.width,
+                });
+            }
+        };
+        expectGrip("default");
+        expect(screen.queryAllByRole("button")).toHaveLength(0);
+        await fireEvent(screen.getByRole("adjustable"), "focus");
+        expectGrip("hover-focus");
+        await fireEvent(screen.getByRole("adjustable"), "accessibilityAction", {
+            nativeEvent: { actionName: "increment" },
+        });
+        expect(onDrag).toHaveBeenCalledWith(10);
+        await screen.rerender(content(true));
+        expectGrip("disabled");
+        await fireEvent(screen.getByRole("adjustable"), "accessibilityAction", {
+            nativeEvent: { actionName: "increment" },
+        });
+        expect(onDrag).toHaveBeenCalledTimes(1);
+        await screen.unmount();
+        theme.destroy();
+    });
 
     test.each(cases)(
         "$corners in $mode respects the provider, focus, press, highlight and disabled",

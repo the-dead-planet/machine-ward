@@ -1,4 +1,4 @@
-name: Mobile app typecheck
+name: Mobile app checks
 
 on:
   push:
@@ -22,8 +22,11 @@ jobs:
       - name: Setup dependencies
         uses: ./.github/actions/setup-yarn
 
-      - name: Typecheck app-mobile
-        run: yarn tsc --noEmit -p app-mobile
+      - name: Typecheck app and shared mobile UI
+        run: yarn typecheck:mobile:once
+
+      - name: Typecheck native apparatus tests
+        run: yarn exec tsc --noEmit -p apparatus/mobile
 
       - name: Typecheck gear mobile packages
         run: |
@@ -34,3 +37,42 @@ jobs:
             fi
           done
         shell: bash
+
+      - name: Run mobile platform tests
+        run: yarn test:mobile:platform
+
+  android-instrumentation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    concurrency:
+      group: ${{ github.workflow }}-android-${{ github.event.pull_request.number || github.run_id }}
+      cancel-in-progress: true
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Setup dependencies
+        uses: ./.github/actions/setup-yarn
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Enable hardware acceleration
+        run: sudo chmod 666 /dev/kvm
+
+      - name: Start Metro for the debug test activity
+        working-directory: app-mobile
+        run: yarn start > "$RUNNER_TEMP/metro.log" 2>&1 &
+
+      - name: Run native gear instrumentation
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          arch: x86_64
+          disable-animations: true
+          script: |
+            adb reverse tcp:8081 tcp:8081
+            bash ./app-mobile/android/gradlew -p app-mobile/android :app:connectedDebugAndroidTest -PreactNativeArchitectures=x86_64

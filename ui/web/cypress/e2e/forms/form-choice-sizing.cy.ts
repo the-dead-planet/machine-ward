@@ -3,159 +3,94 @@ import { cornerOptions } from "@the-dead-planet/nav-gauge-ui-common/src/design-s
 
 describe("Form choice row sizing", () => {
     for (const control of ["checkbox", "radio"]) {
-        it(`keeps ${control} and its row stable when the selection mark appears`, () => {
-            cy.readFile<string>("src/design-system/typography/typography.module.css").then((css) => {
-                cy.document().then((document) => {
-                    const stylesheet = document.createElement("style");
-                    stylesheet.textContent = css;
-                    document.head.appendChild(stylesheet);
-                });
-            });
-            cy.readFile<string>(
-                `src/forms/${control}/${control}.module.css`,
-            ).then((css) => {
-                cy.document().then((document) => {
-                    const stylesheet = document.createElement("style");
-                    stylesheet.textContent = css;
-                    document.head.appendChild(stylesheet);
-                    document.documentElement.style.setProperty(
-                        "--appearance-default-border-width",
-                        "1px",
-                    );
-                    for (const [size, metrics] of Object.entries(
-                        themeSizes.control,
-                    )) {
-                        for (const [metric, value] of Object.entries(metrics)) {
-                            const suffix = metric.replace(
-                                /[A-Z]/g,
-                                (letter) => `-${letter.toLowerCase()}`,
-                            );
-                            document.documentElement.style.setProperty(
-                                `--size-control-${suffix}`,
-                                `${value}px`,
-                            );
-                        }
-                        for (const labelled of [false, true]) {
-                            for (const corners of cornerOptions) {
-                                const row = document.createElement("div");
-                                row.innerHTML = `
-                                <label class="${control} label font-default" data-size="${size}">
-                                    <input class="input" type="${control}" />
-                                    <span class="box corners-${corners}"></span>
-                                    ${labelled ? '<span class="label">Choice</span>' : ""}
-                                </label>
-                                <input type="text" aria-label="Neighbour" style="box-sizing:border-box;height:${metrics.height}px;vertical-align:middle" />
-                            `;
-                                document.body.appendChild(row);
-                                const label = row.querySelector("label")!;
-                                const box = row.querySelector(".box")!;
-                                box.setAttribute(
-                                    "style",
-                                    "color: rgb(10, 20, 30)",
-                                );
-                                if (corners === "hexagon") {
-                                    box.innerHTML =
-                                        '<svg class="drawing" style="position:absolute;inset:0;width:100%;height:100%"><polygon class="paint" /></svg>';
-                                }
-                                const neighbour =
-                                    row.querySelector('input[type="text"]')!;
-                                const measure = () => ({
-                                    controlHeight:
-                                        label.getBoundingClientRect().height,
-                                    controlWidth:
-                                        label.getBoundingClientRect().width,
-                                    controlTop:
-                                        label.getBoundingClientRect().top,
-                                    boxHeight:
-                                        box.getBoundingClientRect().height,
-                                    boxWidth: box.getBoundingClientRect().width,
-                                    rowHeight:
-                                        row.getBoundingClientRect().height,
-                                    neighbourTop:
-                                        neighbour.getBoundingClientRect().top,
-                                });
-                                const unchecked = measure();
-                                expect(
-                                    document.defaultView!.getComputedStyle(box)
-                                        .borderRadius,
-                                    `${control} corner shape`,
-                                ).to.equal(
+        it(`keeps the real ${control} row stable when its selection mark appears`, () => {
+            const storyId = `forms-${control}--playground`;
+            const input = `.story input[type="${control}"]`;
+            cy.visit(`/iframe.html?id=${storyId}&viewMode=story`);
+            cy.get(input).should("exist");
+            for (const [size, metrics] of Object.entries(themeSizes.control)) {
+                for (const corners of cornerOptions) {
+                    for (const children of ["", "Choice"]) {
+                        cy.window()
+                            .its("__STORYBOOK_PREVIEW__.channel")
+                            .invoke("emit", "updateStoryArgs", {
+                                storyId,
+                                updatedArgs: { size, corners, children, checked: false },
+                            });
+                        cy.get(input).should("not.be.checked").closest("label").should("have.attr", "data-size", size);
+                        cy.get(input)
+                            .closest("label")
+                            .should(($label) => {
+                                const label = $label[0];
+                                const box = label.querySelector('[aria-hidden="true"]')!;
+                                expect(label.textContent).to.equal(children);
+                                expect(box.querySelector("svg") !== null).to.equal(corners === "hexagon");
+                                expect(label.ownerDocument.defaultView!.getComputedStyle(box).borderRadius).to.equal(
                                     corners === "circle" ? "50%" : "0px",
                                 );
-                                row.querySelector<HTMLInputElement>(
-                                    `input[type="${control}"]`,
-                                )!.checked = true;
-                                box.insertAdjacentHTML(
-                                    "beforeend",
-                                    control === "checkbox"
-                                        ? '<svg class="checkmark" viewBox="0 0 12 12" width="12" height="12"><path d="M2 6l3 3 5-5" /></svg>'
-                                        : `<span class="marker">${corners === "hexagon" ? '<svg width="100%" height="100%"><polygon /></svg>' : ""}</span>`,
+                                expect(label.getBoundingClientRect().height).to.equal(metrics.height);
+                            });
+                        cy.document().then((document) => document.fonts.ready);
+                        cy.get(input)
+                            .closest("label")
+                            .then(($label) => {
+                                const label = $label[0];
+                                const box = label.querySelector<HTMLElement>('[aria-hidden="true"]')!;
+                                const neighbour = label.ownerDocument.createElement("input");
+                                neighbour.type = "text";
+                                neighbour.style.cssText = `box-sizing:border-box;height:${metrics.height}px;vertical-align:middle`;
+                                label.after(neighbour);
+                                const measure = () => ({
+                                    height: label.getBoundingClientRect().height,
+                                    width: label.getBoundingClientRect().width,
+                                    top: label.getBoundingClientRect().top,
+                                    boxHeight: box.getBoundingClientRect().height,
+                                    boxWidth: box.getBoundingClientRect().width,
+                                    neighbourTop: neighbour.getBoundingClientRect().top,
+                                });
+                                const unchecked = measure();
+                                expect(unchecked.height).to.equal(metrics.height);
+                                expect(unchecked.boxHeight).to.equal(metrics.height - metrics.gap);
+                                expect(unchecked.boxWidth).to.equal(metrics.height - metrics.gap);
+                                expect(unchecked.top).to.equal(unchecked.neighbourTop);
+                                expect(label.ownerDocument.defaultView!.getComputedStyle(box).borderRadius).to.equal(
+                                    corners === "circle" ? "50%" : "0px",
                                 );
-                                if (control === "radio") {
-                                    const marker =
-                                        box.querySelector(".marker")!;
-                                    const markerStyle =
-                                        document.defaultView!.getComputedStyle(
-                                            marker,
-                                        );
-                                    if (corners === "hexagon") {
-                                        expect(
-                                            markerStyle.backgroundColor,
-                                        ).to.equal("rgba(0, 0, 0, 0)");
-                                        expect(
-                                            document.defaultView!.getComputedStyle(
-                                                marker.querySelector(
-                                                    "polygon",
-                                                )!,
-                                            ).fill,
-                                        ).to.equal("rgb(10, 20, 30)");
-                                    } else {
-                                        expect(
-                                            markerStyle.borderRadius,
-                                        ).to.equal(
-                                            corners === "circle"
-                                                ? "50%"
-                                                : "0px",
-                                        );
-                                        expect(
-                                            markerStyle.backgroundColor,
-                                        ).to.equal("rgb(10, 20, 30)");
+                                cy.get(input).check({ force: true }).should("be.checked");
+                                cy.get(input).should(() => {
+                                    expect(
+                                        measure(),
+                                        `${control} ${size} ${corners} ${children || "unlabelled"}`,
+                                    ).to.deep.equal(unchecked);
+                                    if (control === "radio") {
+                                        const marker = box.lastElementChild!;
+                                        const window = label.ownerDocument.defaultView!;
+                                        const style = window.getComputedStyle(marker);
+                                        if (corners === "hexagon") {
+                                            expect(style.backgroundColor).to.equal("rgba(0, 0, 0, 0)");
+                                            expect(
+                                                window.getComputedStyle(marker.querySelector("polygon")!).fill,
+                                            ).to.equal(window.getComputedStyle(box).color);
+                                        } else {
+                                            expect(style.borderRadius).to.equal(corners === "circle" ? "50%" : "0px");
+                                            expect(style.backgroundColor).to.equal(window.getComputedStyle(box).color);
+                                        }
                                     }
-                                }
-                                const checked = measure();
-                                const description = `${control} ${corners} ${size} ${labelled ? "labelled" : "unlabelled"}`;
-                                expect(checked, description).to.deep.equal(
-                                    unchecked,
-                                );
-                                expect(
-                                    checked.controlHeight,
-                                    description,
-                                ).to.equal(metrics.height);
-                                expect(checked.boxHeight, description).to.equal(
-                                    metrics.height - metrics.gap,
-                                );
-                                expect(checked.boxWidth, description).to.equal(
-                                    metrics.height - metrics.gap,
-                                );
-                                expect(
-                                    checked.controlTop,
-                                    description,
-                                ).to.equal(checked.neighbourTop);
-                                row.querySelector<HTMLInputElement>(
-                                    `input[type="${control}"]`,
-                                )!.checked = false;
-                                box.querySelector(
-                                    ".checkmark, .marker",
-                                )!.remove();
-                                expect(measure(), description).to.deep.equal(
-                                    unchecked,
-                                );
-                                row.remove();
-                            }
-                        }
+                                });
+                                cy.window()
+                                    .its("__STORYBOOK_PREVIEW__.channel")
+                                    .invoke("emit", "updateStoryArgs", {
+                                        storyId,
+                                        updatedArgs: { checked: false },
+                                    });
+                                cy.get(input)
+                                    .should("not.be.checked")
+                                    .should(() => expect(measure()).to.deep.equal(unchecked));
+                                cy.then(() => neighbour.remove());
+                            });
                     }
-                });
-            });
+                }
+            }
         });
     }
 });

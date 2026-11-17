@@ -1,10 +1,21 @@
 ---
-description: Testing conventions
-globs: "*.test.{ts,tsx}"
+description: Test ownership, value, and verification
+globs: "**/*.{test,spec,cy}.{ts,tsx}"
 alwaysApply: true
 ---
 
-- **Web unit**: Mocha + Chai in `test/**/*.test.ts`
-- **Mobile unit**: Jest in `__tests__/*.test.tsx`
-- **Web E2E**: Cypress in `app-web/cypress/e2e/*.cy.ts`
-- Test complex logic; don't overcomplicate
+- **Unit**: Mocha + Chai in each workspace's `test/**/*.test.ts`.
+- **Native unit/component**: Jest with the React Native preset in each mobile workspace's `__tests__/**/*.{test,spec}.{ts,tsx}`. These are not device E2E tests.
+- **Browser**: Cypress in the owning app, UI, or gear web workspace's `cypress/e2e/**/*.cy.ts`. Native Android instrumentation lives in `android/src/androidTest/`.
+
+## Keep tests worth maintaining
+
+- Search existing coverage before adding a test. Each retained case must catch a plausible user-visible regression or an important calculation, accessibility, persistence, security, or resource-lifecycle failure. Keep temporary implementation/diagnostic checks outside the repository.
+- Test shared policy exhaustively in its common owner once. Platform tests cover representative forwarding, real interactions, and distinct renderer, size, shape, browser, or OS branches—not the same colors × variants × modes again.
+- Browser interaction tests render production components through the app or existing stories; never copy their JSX/HTML or simulate their state logic in a parallel fixture. Small isolated typography/CSS geometry fixtures are acceptable when component composition is not under test.
+- Await the initial story render before changing args, then wait for the requested state before measuring. Await fonts for font-dependent geometry and non-empty appearance variables before comparing theme paints; do not make two uninitialized values pass as equal.
+- Mock external boundaries, not the behavior being tested. Assert outcomes and target/value pairs, not just truthiness, property names, or a particular mock call. Keep call counts and handler/reference identity checks only for real stability, caching, ownership, or performance contracts, alongside observable behavior.
+- Avoid copying literal configuration tables or checking implementation source text. Generated DOM, SVG, and CSS are runtime outputs and may be asserted where they form a meaningful contract.
+- Keep `1 === 1` scaffold files only while their workspace has no real tests across any runner; remove them when the first real test is added. Preserve otherwise-untested workspaces and generation templates. Never count placeholders as product coverage.
+- When consolidating tests, preserve each distinct failure case, including cancellation, cleanup, error paths, and platform integration wiring. Replace weak coverage before deleting it; prefer local fixture simplification over a new shared test framework.
+- Test cleanup includes affected package scripts, callers, fixtures, and CI. Keep runner names honest, run common tests once in combined checks, and do not let an empty Mocha suite block native tests. Verify changed suites and typechecks; run browsers/devices for the boundaries changed, or report the missing verification explicitly.

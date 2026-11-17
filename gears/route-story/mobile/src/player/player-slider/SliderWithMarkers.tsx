@@ -24,6 +24,7 @@ interface Props {
     playerOperator: MobilePlayerOperator;
     state$: BehaviorSubject<RouteStoryState>;
     animatrix: Animatrix;
+    fitBoundsHandler: (map: MobileMap, boundingBox?: GeoJSON.BBox) => void;
     style?: ViewStyle;
 }
 
@@ -51,6 +52,7 @@ export const SliderWithMarkers: FC<Props> = ({
     playerOperator,
     state$,
     animatrix,
+    fitBoundsHandler,
     style,
 }) => {
     const [routeTimes] = useSubjectState(routeTimes$);
@@ -86,6 +88,7 @@ export const SliderWithMarkers: FC<Props> = ({
                     routeTimes$={routeTimes$}
                     images$={images$}
                     animatrix={animatrix}
+                    fitBoundsHandler={fitBoundsHandler}
                 />
             ) : null}
             <Slider

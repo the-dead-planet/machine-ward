@@ -31,7 +31,7 @@ makeLiveEditStory(Playground, {
     availableImports: { "@web-ui": { NotchedPanel } },
     code: `import { NotchedPanel } from '@web-ui';
 
-export default () => <NotchedPanel header="Navigation">Preview</NotchedPanel>;`,
+export default (props) => <NotchedPanel {...props} tabIndex={props.interactive ? 0 : undefined} header={props.header ?? 'Navigation'}>{props.children ?? 'Preview'}</NotchedPanel>;`,
 });
 
 export const Gallery: Story = {

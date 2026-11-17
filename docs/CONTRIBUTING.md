@@ -117,7 +117,7 @@ The application should not require an account creation but it can offer it as a 
 
 #### Testing
 
-Add unit, component and end-to-end tests for more complex logic but do not overcomplicate them. 
+Follow [test ownership and value rules](../.opencode/rules/testing.mdc) when adding or reducing coverage.
 
 ##### Testing environments:
 
@@ -129,7 +129,9 @@ Add unit, component and end-to-end tests for more complex logic but do not overc
 - Gear and apparatus native tests live in their owning mobile workspace's `__tests__/` directory. Each workspace's `test:native` runs only its own tests, using shared configuration from `scripts/testing/jest.native.config.cjs`; `test` includes those checks alongside any Mocha tests.
 - Backend tests in [TBD](/api/)
 
-`yarn test:ui:mobile` runs the UI workspace's Mocha unit tests and native Jest component tests. For a focused native suite, use `yarn workspace @the-dead-planet/nav-gauge-ui-mobile test:native --runTestsByPath __tests__/Fieldset.test.tsx`. Both `yarn typecheck:mobile` (watch) and `yarn typecheck:mobile:once` cover the app and UI workspace, including native tests.
+`yarn test:all` runs common tests once, then the web and mobile platform suites. Each standalone `yarn test:web` or `yarn test:mobile` still includes common tests. Mobile Jest is not device E2E coverage; CI runs mobile platform suites and a separate Android instrumentation job.
+
+`yarn test:ui:mobile` runs the UI workspace's Mocha unit tests and native Jest component tests. For a focused native suite, use `yarn workspace @the-dead-planet/nav-gauge-ui-mobile test:native --runTestsByPath __tests__/forms/Fieldset.test.tsx`. Both `yarn typecheck:mobile` (watch) and `yarn typecheck:mobile:once` cover the app and UI workspace, including native tests.
 
 ##### Web checks and CI parity
 
@@ -138,12 +140,12 @@ Run commands from the workspace root. With the application on port 3000 and Stor
 | Check | Local and CI command | Target |
 |-------|----------------------|--------|
 | Sources and Cypress suites | `yarn typecheck:web` | Separate app, UI, and gear Cypress TypeScript projects |
-| Web unit tests | `yarn test:web` | Common, apparatus, gears, app, and UI |
+| Web unit tests | `yarn test:web` | Common, apparatus, gears, and UI |
 | Application browser tests | `yarn test:e2e:web:dev --browser chrome` | `http://localhost:3000` |
-| Route-story browser tests | `yarn test:e2e:route-story:web --browser chrome` | Route-story workspace |
+| Route-story browser tests | `yarn test:e2e:route-story:web --browser chrome` | Dev app on port 3000, including debug recording controls |
 | UI browser tests | `yarn test:e2e:ui:web --browser chrome` and `--browser firefox` | `http://localhost:6006` |
 
-For fast development, start `yarn dev:web` and `yarn dev:ui:web` in separate terminals. To reproduce CI's production targets, run `yarn build:web` and `yarn build:ui:web`, then serve them with `yarn preview:web` and `yarn preview:ui:web` in separate terminals before running `yarn check:web`.
+Start `yarn dev:web` and `yarn dev:ui:web` in separate terminals for `yarn check:web`. CI uses the dev app for the route-story suite so debug recording controls are available; its separate application and UI jobs use production builds served by `yarn preview:web` and `yarn preview:ui:web` after `yarn build:web` and `yarn build:ui:web`.
 
 Each Cypress runner typechecks its own suite before execution. Keep Cypress globals isolated in each workspace's `cypress/tsconfig.json`; do not add them to application or UI source TypeScript configs. CI runs every discovered spec, so use `yarn check:web` rather than a focused `--spec` run for the complete pre-PR check.
 

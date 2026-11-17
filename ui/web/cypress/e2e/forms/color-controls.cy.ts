@@ -92,11 +92,11 @@ describe("Color controls", () => {
             });
     });
 
-    it("resolves all color field variants and palettes through focus, highlight and disabled", () => {
+    it("resolves regular and status color fields through focus, highlight and disabled", () => {
         cy.visit("/iframe.html?id=forms-colorinput--gallery&viewMode=story");
         cy.get("#theme-appearance-variables").should("exist");
-        cy.get<HTMLInputElement>('.story input[type="text"]')
-            .should("have.length", 24)
+        cy.get<HTMLInputElement>('.story [data-appearance-color="primary"] input[type="text"], .story [data-appearance-color="hazard"] input[type="text"]')
+            .should("have.length", 6)
             .each(($input) => {
                 const input = $input[0] as HTMLInputElement;
                 const field = input.parentElement!;

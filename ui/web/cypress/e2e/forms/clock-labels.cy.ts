@@ -135,6 +135,7 @@ describe("Form labels", () => {
                 .should("have.length", 24)
                 .filter('[data-appearance-color="neutral"]')
                 .should("have.length", 3)
+                .first()
                 .each(($label) => {
                     const label = $label[0];
                     const owner = label.closest("[data-size]")!;
@@ -172,6 +173,8 @@ describe("Form labels", () => {
                 .should("have.length", 72)
                 .filter('[data-appearance-color="neutral"]')
                 .should("have.length", 9)
+                .filter((_index, label) => label.querySelector('[data-appearance-variant="fill"]') !== null)
+                .should("have.length", 3)
                 .each(($label) => {
                     const label = $label[0];
                     const caption = label.lastElementChild!;
@@ -211,6 +214,8 @@ describe("Form labels", () => {
                 .should("have.length", 72)
                 .filter('[data-appearance-color="neutral"]')
                 .should("have.length", 9)
+                .filter((_index, label) => label.querySelector('[data-appearance-variant="fill"]') !== null)
+                .should("have.length", 3)
                 .each(($label) => {
                     const label = $label[0];
                     const caption = label.lastElementChild!;

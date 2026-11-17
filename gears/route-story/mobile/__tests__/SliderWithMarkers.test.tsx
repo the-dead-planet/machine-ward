@@ -60,6 +60,7 @@ test("keeps a native exclusion target around the player controls even when image
             playerOperator={{} as MobilePlayerOperator}
             state$={state$}
             animatrix={new Animatrix()}
+            fitBoundsHandler={() => {}}
         />,
     );
     const container = screen.getByTestId("player-slider-track").parent;

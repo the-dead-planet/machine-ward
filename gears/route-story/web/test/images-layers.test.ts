@@ -18,6 +18,13 @@ import {
 import { getImagesLayers, getImageDragPreviewLayers } from "../src/images/images-layers";
 
 describe("Image marker layers", () => {
+    const evaluate = (expression: unknown, properties: Record<string, number | boolean>): unknown => {
+        const parsed = createExpression(expression, "image-marker");
+        if (parsed.result !== "success") {
+            throw new Error("Invalid image marker expression");
+        }
+        return parsed.value.evaluate({ zoom: 0 }, { type: "Point", properties });
+    };
     it("stacks each default photo and its baked outline as one symbol, including hover", () => {
         const layers = getImagesLayers(null, "red", "blue", "green", "white");
         expect(layers.some(({ id }) => id === imageLayerIds.thumbnailsOutline)).to.equal(false);
@@ -50,20 +57,8 @@ describe("Image marker layers", () => {
     });
 
     it("anchors standalone growth at the bottom and keeps the outline centered on the image", () => {
-        const evaluate = (
-            expression: unknown,
-            properties: Record<string, number | boolean>,
-        ): unknown => {
-            const parsed = createExpression(expression, "thumbnail-offset");
-            if (parsed.result !== "success") {
-                throw new Error("Invalid thumbnail offset expression");
-            }
-            return parsed.value.evaluate(
-                { zoom: 0 },
-                { type: "Point", properties },
-            );
-        };
-        for (const scale of [1, 1.025, 1.05, 1.1]) {
+        expect(OUTLINED_MAP_THUMBNAIL_SIZE * THUMBNAIL_IMAGE_SIZE / MAP_THUMBNAIL_SIZE).to.equal(THUMBNAIL_IMAGE_SIZE + 4);
+        for (const scale of [0.9, 1, 1.025, 1.05, 1.1]) {
             const properties = {
                 markerGroupSize: 1,
                 markerScale: scale,
@@ -82,6 +77,7 @@ describe("Image marker layers", () => {
                 throw new Error("Invalid thumbnail geometry");
             }
             const centerShift = Number(imageOffset[1]) * imageSize;
+            expect(imageSize).to.be.closeTo(THUMBNAIL_IMAGE_SIZE / MAP_THUMBNAIL_SIZE * scale, 0.00001);
             expect(centerShift + (THUMBNAIL_IMAGE_SIZE * scale) / 2).to.be.closeTo(MAP_IMAGE_MARKER_OFFSET_Y + THUMBNAIL_IMAGE_SIZE / 2, 0.00001);
             expect(Number(outlineOffset[1]) * outlineSize).to.be.closeTo(centerShift, 0.00001);
             expect(
@@ -256,36 +252,6 @@ describe("Image marker layers", () => {
         ).to.equal(true);
     });
 
-    it("scales the thumbnail and its outline together", () => {
-        const layers = getImagesLayers(
-            null,
-            "#123456",
-            "#345678",
-            "#567890",
-            "#ffffff",
-        );
-        const image = layers.find(({ id }) => id === imageLayerIds.thumbnails);
-        expect(
-            (OUTLINED_MAP_THUMBNAIL_SIZE * THUMBNAIL_IMAGE_SIZE) /
-                MAP_THUMBNAIL_SIZE,
-        ).to.equal(THUMBNAIL_IMAGE_SIZE + 4);
-        const parsed = createExpression(image?.type === "symbol" ? image.layout?.["icon-size"] : undefined, "thumbnail-size");
-        if (parsed.result !== "success") {
-            throw new Error("Invalid thumbnail size expression");
-        }
-        for (const scale of [0.9, 1, 1.1]) {
-            expect(
-                parsed.value.evaluate(
-                    { zoom: 0 },
-                    { type: "Point", properties: { markerScale: scale } },
-                ),
-            ).to.be.closeTo(
-                (THUMBNAIL_IMAGE_SIZE / MAP_THUMBNAIL_SIZE) * scale,
-                0.00001,
-            );
-        }
-    });
-
     it("accepts canvas badge and separate drag-preview layers", () => {
         expect(
             validateStyleMin({
@@ -317,7 +283,7 @@ describe("Image marker layers", () => {
 
     it("does not display the drag preview as a full-size playback image", () => {
         const layers = getImagesLayers(
-            null,
+            42,
             "#123456",
             "#345678",
             "#567890",
@@ -327,7 +293,12 @@ describe("Image marker layers", () => {
             layers.findIndex(({ id }) => id === imageLayerIds.imageInDisplay),
         );
         const layer = layers.find(({ id }) => id === imageLayerIds.imageInDisplay);
-        expect(layer && "filter" in layer ? layer.filter : undefined).not.to.deep.equal(["==", ["get", "imageId"], DRAGGED_IMAGE_ID]);
+        const filter = layer && "filter" in layer ? layer.filter : undefined;
+        for (const imageId of [1, 42, DRAGGED_IMAGE_ID]) {
+            expect(evaluate(filter, { imageId, markerAnchor: true })).to.equal(imageId === 42);
+        }
+        expect(evaluate(filter, { imageId: 42, markerAnchor: false })).to.equal(false);
+        expect(evaluate(ImagesLayers.imageInDisplay.getFilter(null), { imageId: 42, markerAnchor: true })).to.equal(false);
     });
 
     it("keeps anchors map-aligned and moves the photo, border, and badge together toward viewport top", () => {

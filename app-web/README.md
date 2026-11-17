@@ -62,13 +62,7 @@ At the moment a separate deployment of UI library does not exist. It might be ad
 
 ### Unit tests
 
-Write unit tests for logic using mocha and chai in folders `test/**/*.ts`.
-
-Run below commands from the `app` / `ui` folder:
-
-```
-yarn test
-```
+Run `yarn test:web` from the repository root for common and web workspace unit tests. This composition-only app currently has browser tests below, not a separate unit suite. Add a workspace Mocha command when introducing real tests in `test/**/*.test.ts`.
 
 ### E2E tests
 

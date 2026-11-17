@@ -1,114 +1,66 @@
 describe("Side tool panel scrolling", () => {
-    beforeEach(() => {
-        for (const file of [
-            "src/layout/layout.module.css",
-            "src/machine/machine.module.css",
-        ]) {
-            cy.readFile<string>(file).then((css) => {
-                cy.document().then((document) => {
-                    const stylesheet = document.createElement("style");
-                    stylesheet.textContent = css;
-                    document.head.appendChild(stylesheet);
-                });
-            });
-        }
-    });
-
-    for (const placement of ["left", "right"]) {
-        it(`bounds the ${placement} controls scroll area below the stationary header`, () => {
-            cy.document().then((document) => {
-                document.body.style.margin = "0";
-                document.body.innerHTML = `
-                    <div id="app" style="height:360px;width:900px;display:flex;flex-direction:column;overflow:hidden">
-                        <div class="layout">
-                            <header style="height:50px">Application header</header>
-                            <main class="machine">
-                                <div class="toolbar top"><div class="content">Top toolbar</div></div>
-                                <aside class="toolbar ${placement}" style="width:320px">
-                                    <div class="content">
-                                        <nav class="content-header"><button>Panel selector</button></nav>
-                                        <div class="component-container">
-                                            <header class="component-header">Tool heading</header>
-                                            <section class="component">
-                                            <div class="component-content">
-                                                <article style="height:1200px;display:flex;flex-direction:column">
-                                                    <p>Long tool controls</p>
-                                                    <button id="last-control" style="margin-top:auto">Last control</button>
-                                                </article>
-                                            </div>
-                                            </section>
-                                        </div>
-                                    </div>
-                                </aside>
-                            </main>
-                        </div>
-                    </div>`;
-            });
-
-            for (const { height, width } of [
-                { height: 360, width: 320 },
-                { height: 240, width: 200 },
-            ]) {
-                cy.get("#app").invoke("css", "height", `${height}px`);
-                cy.get(`.toolbar.${placement}`).invoke(
-                    "css",
-                    "width",
-                    `${width}px`,
+    it("keeps the real panel headers stationary, reaches the last control, and stops overflowing after filtering", () => {
+        cy.viewport(1100, 360);
+        cy.visit("/", { onBeforeLoad: (window) => window.localStorage.clear() });
+        cy.get('button[aria-label="Animatrix controls"]', { timeout: 20000 }).then(($button) => {
+            if ($button.attr("data-highlighted") !== "true") {
+                cy.wrap($button).click();
+            }
+        });
+        for (const placement of ["left", "right"]) {
+            cy.get("#animation-controls-search")
+                .should("be.visible")
+                .parents()
+                .filter((_index, element) => Boolean(element.nextElementSibling?.querySelector("fieldset")))
+                .should("have.length", 1)
+                .as("header");
+            cy.get("@header").next().as("scroll");
+            cy.get("@header").parent().prev().as("rail");
+            cy.get("@header").parent().parent().parent().as("panel");
+            cy.get("@panel").should(($panel) => {
+                const bounds = $panel[0].getBoundingClientRect();
+                expect(bounds.left + bounds.width / 2).to.satisfy((center: number) =>
+                    placement === "left" ? center < 550 : center > 550,
                 );
-                cy.get<HTMLElement>(".component").should(($content) => {
+            });
+            for (const height of [360, 240]) {
+                cy.viewport(1100, height);
+                cy.get<JQuery<HTMLElement>>("@scroll").should(($content) => {
                     const content = $content[0];
-                    const toolbar = content.closest(".toolbar")!;
-                    const header = content.previousElementSibling!;
                     const bounds = content.getBoundingClientRect();
+                    const header = content.previousElementSibling!;
                     expect(bounds.bottom).to.be.at.most(height);
-                    expect(bounds.bottom).to.be.at.most(
-                        toolbar.getBoundingClientRect().bottom,
-                    );
-                    expect(bounds.top).to.be.at.least(
-                        header.getBoundingClientRect().bottom,
-                    );
+                    expect(bounds.top).to.be.at.least(header.getBoundingClientRect().bottom);
                     expect(content.clientHeight).to.be.greaterThan(0);
-                    expect(content.scrollHeight).to.be.greaterThan(
-                        content.clientHeight,
-                    );
+                    expect(content.scrollHeight).to.be.greaterThan(content.clientHeight);
                 });
             }
-
-            cy.get(".content-header").then(($rail) => {
-                const railTop = $rail[0].getBoundingClientRect().top;
-                cy.get(".component-header").then(($header) => {
-                    const headerTop = $header[0].getBoundingClientRect().top;
-                    cy.get(".component").scrollTo("bottom");
-                    cy.get("#last-control").should("be.visible");
-                    cy.get(".component-header").should(($currentHeader) => {
-                        expect(
-                            $currentHeader[0].getBoundingClientRect().top,
-                        ).to.equal(headerTop);
-                    });
-                });
-                cy.get(".content-header").should(($currentRail) => {
-                    expect(
-                        $currentRail[0].getBoundingClientRect().top,
-                    ).to.equal(railTop);
+            cy.get("#animation-controls-search").then(($search) => {
+                const headerTop = $search[0].getBoundingClientRect().top;
+                cy.get("@rail").then(($rail) => {
+                    const railTop = $rail[0].getBoundingClientRect().top;
+                    cy.get("@scroll").scrollTo("bottom").find("button, label").last().should("be.visible");
+                    cy.get("#animation-controls-search").should(($current) =>
+                        expect($current[0].getBoundingClientRect().top).to.equal(headerTop),
+                    );
+                    cy.get("@rail").should(($current) =>
+                        expect($current[0].getBoundingClientRect().top).to.equal(railTop),
+                    );
                 });
             });
-            cy.get<HTMLElement>(
-                ".toolbar > .content, .component-container",
-            ).should(($content) => {
-                for (const content of $content.toArray()) {
-                    expect(content.scrollTop).to.equal(0);
-                }
-            });
-            cy.get(".component-content > article").invoke(
-                "css",
-                "height",
-                "20px",
+            cy.get("@header")
+                .parent()
+                .parent()
+                .should(($container) => expect($container[0].scrollTop).to.equal(0));
+            cy.get("#animation-controls-search").focus().type("no matching control");
+            cy.get<JQuery<HTMLElement>>("@scroll").should(($content) =>
+                expect($content[0].scrollHeight).to.equal($content[0].clientHeight),
             );
-            cy.get<HTMLElement>(".component").should(($content) => {
-                expect($content[0].scrollHeight).to.equal(
-                    $content[0].clientHeight,
-                );
-            });
-        });
-    }
+            cy.get("#animation-controls-search").clear();
+            if (placement === "left") {
+                cy.get("@panel").find('button[aria-label="Panel options"]').click();
+                cy.contains('[role="menuitem"]', "Place panel on the right").click();
+            }
+        }
+    });
 });

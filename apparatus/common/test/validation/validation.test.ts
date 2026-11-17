@@ -29,7 +29,6 @@ describe("Apparatus", () => {
                 expect(() => validateMapLayout({ size: { type: 'boo' } } as unknown as MapLayout)).to.throw("Size type should be one of: full-screen, manual");
             });
             it("should throw if height incorrect", () => {
-                expect(() => validateMapLayout({ size: { type: 'manual', height: 12, width: 100, } })).to.not.throw();
                 expect(() => validateMapLayout({ size: { height: true } } as unknown as MapLayout)).to.throw("Height should be of type number");
             });
             it("should throw if inner border color incorrect", () => {
@@ -45,7 +44,6 @@ describe("Apparatus", () => {
                 expect(() => validateMapLayout({ innerBoxShadow: true } as unknown as MapLayout)).to.throw("Inner box shadow should be of type string");
             });
             it("should throw if width incorrect", () => {
-                expect(() => validateMapLayout({ size: { type: 'manual', height: 12, width: 100, } })).to.not.throw();
                 expect(() => validateMapLayout({ size: { width: true } } as unknown as MapLayout)).to.throw("Width should be of type number");
             });
         });

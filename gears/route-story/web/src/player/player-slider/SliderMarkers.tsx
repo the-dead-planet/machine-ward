@@ -66,10 +66,7 @@ export const SliderMarkers: FC<Props> = ({
         useMultipleTranslations([
             { n: gearId, t: translationKey.Image },
             { n: gearId, t: translationKey.PanToImage },
-            {
-                n: animatrix.namespace,
-                t: animatrix.translationKey.PanToWholeRouteAtEnd,
-            },
+            { n: animatrix.namespace, t: animatrix.translationKey.PanToWholeRouteAtEnd },
         ]);
 
     const containerRef = useRef<HTMLDivElement>(null);
@@ -80,20 +77,20 @@ export const SliderMarkers: FC<Props> = ({
     const markerGroups =
         geojson && routeGeometryData && routeTimes
             ? getSliderImageMarkers(
-                  images,
-                  (fraction) =>
-                      getDistanceFractionPercent(
-                          fraction,
-                          geojson,
-                          routeGeometryData,
-                          routeTimes.startTimeEpoch,
-                          routeTimes.duration,
-                          animationControls.playbackPacing,
-                      ),
-                  containerWidth,
-                  routeGeometryData.totalDistanceMeters,
-                  selectedImageId,
-              )
+                images,
+                (fraction) =>
+                    getDistanceFractionPercent(
+                        fraction,
+                        geojson,
+                        routeGeometryData,
+                        routeTimes.startTimeEpoch,
+                        routeTimes.duration,
+                        animationControls.playbackPacing,
+                    ),
+                containerWidth,
+                routeGeometryData.totalDistanceMeters,
+                selectedImageId,
+            )
             : [];
 
     useEffect(() => {
@@ -174,13 +171,13 @@ export const SliderMarkers: FC<Props> = ({
     const draggingPosition =
         draggingPlacement !== null && geojson && routeGeometryData && routeTimes
             ? getDistanceFractionPercent(
-                  draggingPlacement.distanceFraction,
-                  geojson,
-                  routeGeometryData,
-                  routeTimes.startTimeEpoch,
-                  routeTimes.duration,
-                  animationControls.playbackPacing,
-              )
+                draggingPlacement.distanceFraction,
+                geojson,
+                routeGeometryData,
+                routeTimes.startTimeEpoch,
+                routeTimes.duration,
+                animationControls.playbackPacing,
+            )
             : null;
 
     return (
@@ -189,10 +186,7 @@ export const SliderMarkers: FC<Props> = ({
                 <div className={styles["route-end-marker-container"]}>
                     <span
                         role="presentation"
-                        className={classNames(
-                            styles["image-marker"],
-                            styles["route-end-marker"],
-                        )}
+                        className={classNames(styles["image-marker"], styles["route-end-marker"])}
                     />
                     <Tooltip
                         content={panToWholeRouteAtEndLabel}
@@ -252,10 +246,10 @@ export const SliderMarkers: FC<Props> = ({
                                     const lngLat =
                                         geojson && routeGeometryData
                                             ? getRouteLngLatAtDistanceFraction(
-                                                  geojson,
-                                                  routeGeometryData,
-                                                  image.distanceFraction!,
-                                              )
+                                                geojson,
+                                                routeGeometryData,
+                                                image.distanceFraction!,
+                                            )
                                             : undefined;
                                     if (lngLat) {
                                         fitBoundsHandler(map, [

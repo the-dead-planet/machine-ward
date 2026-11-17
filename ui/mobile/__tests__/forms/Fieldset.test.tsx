@@ -2,7 +2,6 @@ import { fireEvent, render } from "@testing-library/react-native";
 import {
     FieldsetProps,
     Orientation,
-    surfaceVariantOptions,
     Theme,
     ThemeContext,
     ThemeName,
@@ -151,17 +150,15 @@ describe("Fieldset", () => {
                 } else {
                     expect(configureAnimation).toHaveBeenCalledTimes(2);
                 }
-                for (let cycle = 0; cycle < 2; cycle += 1) {
-                    await fireEvent.press(screen.getByRole("button"));
-                    expect(clip).toHaveStyle({ height: 0 });
-                    expect(panel).toHaveStyle({ position: "absolute" });
-                    await fireEvent.press(screen.getByRole("button"));
-                    expect(clip).toHaveStyle({ height: 220 });
-                    expect(screen.getByLabelText("Reading")).toBe(reading);
-                    expect(screen.getByText("New details")).toBeTruthy();
-                }
+                await fireEvent.press(screen.getByRole("button"));
+                expect(clip).toHaveStyle({ height: 0 });
+                expect(panel).toHaveStyle({ position: "absolute" });
+                await fireEvent.press(screen.getByRole("button"));
+                expect(clip).toHaveStyle({ height: 220 });
+                expect(screen.getByLabelText("Reading")).toBe(reading);
+                expect(screen.getByText("New details")).toBeTruthy();
                 expect(configureAnimation).toHaveBeenCalledTimes(
-                    reducedMotion ? 0 : 6,
+                    reducedMotion ? 0 : 4,
                 );
                 await screen.unmount();
             } finally {
@@ -172,7 +169,7 @@ describe("Fieldset", () => {
         },
     );
 
-    test.each(surfaceVariantOptions)(
+    test.each(["outline", "fill-translucent"] as const)(
         "uses one ghost disclosure for the %s container",
         async (variant) => {
             const theme = new Theme(

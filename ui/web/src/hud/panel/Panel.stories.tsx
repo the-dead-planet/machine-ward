@@ -31,7 +31,7 @@ makeLiveEditStory(Playground, {
     availableImports: { "@web-ui": { Panel } },
     code: `import { Panel } from '@web-ui';
 
-export default () => <Panel>Preview</Panel>;`,
+export default (props) => <Panel {...props} tabIndex={props.interactive ? 0 : undefined}>{props.children ?? 'Preview'}</Panel>;`,
 });
 
 export const Gallery: Story = {
