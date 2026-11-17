@@ -219,8 +219,6 @@ yarn check:web
 
 This runs source checks, unit tests, application E2E tests, and UI browser tests against the running local app and Storybook. See [web checks and CI parity](docs/CONTRIBUTING.md#web-checks-and-ci-parity) for server commands and individual suites.
 
-#### Mobile with Jest
+#### Mobile component and native tests
 
-```bash
-test:e2e:mobile
-```
+`yarn test:mobile` runs common tests and each mobile workspace's unit/component tests. Jest is not a device E2E runner. See [native Android instrumentation](gears/README.md#native-android-integration) for connected-device tests.

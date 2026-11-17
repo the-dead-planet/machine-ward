@@ -54,20 +54,6 @@ yarn typecheck:mobile
 
 ## Tests
 
-### Unit tests
+Run `yarn test:mobile` from the repository root for shared and mobile unit/component tests, or `yarn test:native` from this workspace for its Jest tests in `__tests__/`. These exercise JavaScript/native contracts, not a running device app.
 
-Write unit tests for logic using mocha and chai in folders `test/**/*.ts`.
-
-Run below commands from the `app` / `ui` folder:
-
-```
-yarn test
-```
-
-### E2E tests
-
-Write E2E (component rendering) tests using jest in folders `__tests__/**/*.tsx`.
-
-```
-yarn test:e2e
-```
+See [testing conventions](../.opencode/rules/testing.mdc) and [connected Android instrumentation](../gears/README.md#native-android-integration).

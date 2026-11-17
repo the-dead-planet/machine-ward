@@ -52,6 +52,7 @@ Keep documentation concise and scannable: one authoritative home per rule, links
 
 - Read relevant code and guidance; reuse context instead of rereading unchanged files or revisiting settled decisions. Ask only about genuine behavioral ambiguity.
 - Batch cohesive changes and review the final diff once. Adjacent cleanup is worthwhile only when it materially improves consistency.
+- For test additions, reviews, and reductions, follow [.opencode/rules/testing.mdc](.opencode/rules/testing.mdc); preserve meaningful regression coverage rather than targeting a test count.
 - Verify proportionally to the change:
 
 | Change | Checks |

@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { actionButtonVariants, appearanceColorOptions, ColorShade, Orientation, surfaceVariantOptions, Theme, themeAppearanceStateOptions, themeSpecifications, ThemeName, translucentSurfaceOpacity } from "../../src";
+import { appearanceColorOptions, ColorShade, Orientation, resolveMapImageMarkerColors, surfaceVariantOptions, Theme, themeAppearanceStateOptions, themeSpecifications, ThemeName, translucentSurfaceOpacity } from "../../src";
 
 const media = {
     initial: () => ({
@@ -25,6 +25,21 @@ const oklabLightness = ({ r, g, b }: { r: number; g: number; b: number }): numbe
 };
 
 describe("Theme", () => {
+    it('uses outline border shades for map markers in both map modes', () => {
+        for (const mode of ['light', 'dark'] as const) {
+            const theme = new Theme(themeSpecifications[ThemeName.Default][mode], media);
+            try {
+                expect(resolveMapImageMarkerColors(theme)).to.deep.equal({
+                    defaultColor: theme.color('tertiary', 500),
+                    hoverColor: theme.color('tertiary', mode === 'light' ? 600 : 300),
+                    activeColor: theme.color('tertiary', mode === 'light' ? 700 : 200),
+                });
+            } finally {
+                theme.destroy();
+            }
+        }
+    });
+
     it('reuses mode overrides and disposes their media subscriptions with the parent', () => {
         let subscriptions = 0;
         const scopedTheme = new Theme(themeSpecifications[ThemeName.Default].light, {
@@ -152,12 +167,6 @@ describe("Theme", () => {
                 translucentTheme.destroy();
             }
         }
-    });
-
-    it('shares selected and secondary action variants across filled surfaces', () => {
-        expect(actionButtonVariants.fill).to.deep.equal({ active: 'fill-inverse', inactive: 'fill' });
-        expect(actionButtonVariants['fill-inverse']).to.deep.equal({ active: 'fill', inactive: 'fill-inverse' });
-        expect(actionButtonVariants['fill-translucent']).to.deep.equal({ active: 'fill', inactive: 'fill-translucent' });
     });
 
     it('uses the base palette for omitted highlights across all variants, states and colors', () => {

@@ -49,6 +49,24 @@ jobs:
           build: yarn build
           start: yarn preview
 
+  test-e2e-route-story:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    concurrency:
+      group: ${{ github.workflow }}-test-e2e-route-story-${{ github.event.pull_request.number || github.run_id }}
+      cancel-in-progress: true
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Route-story browser tests
+        uses: ./.github/actions/cypress-e2e
+        with:
+          start: yarn dev
+          command: yarn workspace @the-dead-planet/nav-gauge-gears-route-story-web test:e2e --browser chrome
+          artifact-name: cypress-route-story
+
   test-e2e-ui:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
@@ -98,7 +116,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
-    needs: [build-and-push, test, test-e2e, test-e2e-ui]
+    needs: [build-and-push, test, test-e2e, test-e2e-route-story, test-e2e-ui]
     permissions:
       contents: read
     steps:
@@ -136,7 +154,7 @@ jobs:
   storybook-deploy:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
-    needs: [storybook-build-and-push, test, test-e2e, test-e2e-ui]
+    needs: [storybook-build-and-push, test, test-e2e, test-e2e-route-story, test-e2e-ui]
     permissions:
       contents: read
     steps:

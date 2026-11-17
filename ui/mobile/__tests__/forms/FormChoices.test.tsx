@@ -1,8 +1,8 @@
 import { fireEvent, render } from "@testing-library/react-native";
+import { processColor } from "react-native";
 import {
-    appearanceColorOptions,
     buttonCorners,
-    fillVariantOptions,
+    ColorVariant,
     sizeOptions,
     Orientation,
     Theme,
@@ -15,11 +15,6 @@ import {
 import { Checkbox } from "../../src/forms/checkbox";
 import { Radio } from "../../src/forms/radio";
 import { Text } from "../../src/design-system/typography";
-import { HexagonSurface } from "../../src/hud/hexagon/HexagonSurface";
-
-jest.mock("../../src/hud/hexagon/HexagonSurface", () => ({
-    HexagonSurface: jest.fn(() => null),
-}));
 
 const media = {
     initial: () => ({
@@ -31,55 +26,42 @@ const media = {
 };
 const modes: ThemeMode[] = ["light", "dark"];
 const cases = modes.flatMap((mode) =>
-    fillVariantOptions.flatMap((variant) =>
-        buttonCorners.map((corners) => ({ mode, variant, corners })),
-    ),
+    buttonCorners.map((corners) => ({ mode, corners })),
 );
 
 describe("Form choice appearance ownership", () => {
-    test.each(sizeOptions)(
-        "%s choices reserve the control height and inset the box by one gap",
-        async (size) => {
-            const theme = new Theme(
-                themeSpecifications[ThemeName.Default].light,
-                media,
-                false,
+    test.each(sizeOptions)("%s choices reserve the control height and inset the box by one gap", async (size) => {
+        const theme = new Theme(themeSpecifications[ThemeName.Default].light, media, false);
+        const controlSize = theme.sizes.control[size];
+        for (const [Control, role] of [
+            [Checkbox, "checkbox"],
+            [Radio, "radio"],
+        ] as const) {
+            const screen = await render(
+                <ThemeContext.Provider value={theme}>
+                    <Control checked size={size} onChange={() => {}}>
+                        Choice
+                    </Control>
+                </ThemeContext.Provider>,
             );
-            const controlSize = theme.sizes.control[size];
-            for (const [Control, role] of [
-                [Checkbox, "checkbox"],
-                [Radio, "radio"],
-            ] as const) {
-                const screen = await render(
-                    <ThemeContext.Provider value={theme}>
-                        <Control checked size={size} onChange={() => {}}>
-                            Choice
-                        </Control>
-                    </ThemeContext.Provider>,
-                );
-                const control = screen.getByRole(role);
-                expect(control).toHaveStyle({
-                    minHeight: controlSize.height,
-                    gap: controlSize.gap,
-                });
-                expect(control.children[0]).toHaveStyle({
-                    width: controlSize.height - controlSize.gap,
-                    height: controlSize.height - controlSize.gap,
-                });
-                await screen.unmount();
-            }
-            theme.destroy();
-        },
-    );
+            const control = screen.getByRole(role);
+            expect(control).toHaveStyle({
+                minHeight: controlSize.height,
+                gap: controlSize.gap,
+            });
+            expect(control.children[0]).toHaveStyle({
+                width: controlSize.height - controlSize.gap,
+                height: controlSize.height - controlSize.gap,
+            });
+            await screen.unmount();
+        }
+        theme.destroy();
+    });
 
     test.each(modes)(
         "inherits the form choice and nested label theme without changing its %s sibling",
         async (mode) => {
-            const theme = new Theme(
-                themeSpecifications[ThemeName.Default][mode],
-                media,
-                false,
-            );
+            const theme = new Theme(themeSpecifications[ThemeName.Default][mode], media, false);
             const overrides: ThemeMode[] = ["light", "dark"];
             for (const [Control, role] of [
                 [Checkbox, "checkbox"],
@@ -115,23 +97,15 @@ describe("Form choice appearance ownership", () => {
                         ).surface,
                     });
                     expect(screen.getByText("Nested label")).toHaveStyle({
-                        color: resolvedTheme.resolveAppearance(
-                            undefined,
-                            "glitch",
-                        ).glyphs,
+                        color: resolvedTheme.resolveAppearance(undefined, "glitch").glyphs,
                     });
                     expect(screen.getByText("Sibling")).toHaveStyle({
-                        color: theme.resolveAppearance(undefined, "glitch")
-                            .glyphs,
+                        color: theme.resolveAppearance(undefined, "glitch").glyphs,
                     });
                     await screen.rerender(content(themeMode, true));
                     expect(screen.getByRole(role).children[0]).toHaveStyle({
-                        backgroundColor: resolvedTheme.resolveAppearance(
-                            "fill-inverse",
-                            "glitch",
-                            "intel",
-                            "disabled",
-                        ).surface,
+                        backgroundColor: resolvedTheme.resolveAppearance("fill-inverse", "glitch", "intel", "disabled")
+                            .surface,
                     });
                 }
                 await screen.unmount();
@@ -141,21 +115,17 @@ describe("Form choice appearance ownership", () => {
     );
 
     test.each(cases)(
-        "$corners $variant in $mode follows shared policy through focus, press, highlight and disabled",
-        async ({ mode, variant, corners }) => {
-            const theme = new Theme(
-                themeSpecifications[ThemeName.Default][mode],
-                media,
-                false,
-            );
+        "$corners choices in $mode preserve interaction and independent caption appearance",
+        async ({ mode, corners }) => {
+            const variant = "fill-translucent";
+            const theme = new Theme(themeSpecifications[ThemeName.Default][mode], media, false);
             for (const [Control, role] of [
                 [Checkbox, "checkbox"],
                 [Radio, "radio"],
             ] as const) {
-                jest.mocked(HexagonSurface).mockClear();
                 const onChange = jest.fn();
                 const content = (
-                    color = appearanceColorOptions[0],
+                    color: ColorVariant = "glitch",
                     highlighted = false,
                     disabled = false,
                     overrides = false,
@@ -183,54 +153,51 @@ describe("Form choice appearance ownership", () => {
                 expect(screen.getAllByRole(role)).toHaveLength(1);
                 const expectAppearance = (
                     state: ThemeAppearanceState,
-                    color = appearanceColorOptions[0],
+                    color: ColorVariant = "glitch",
                     highlighted = false,
                 ) => {
-                    const appearance = theme.resolveAppearance(
-                        variant,
-                        color,
-                        "intel",
-                        state,
-                    );
+                    const appearance = theme.resolveAppearance(variant, color, "intel", state);
                     expect(screen.getByRole(role).children[0]).toHaveStyle({
                         width: 28,
                         height: 28,
                         borderRadius: corners === "circle" ? 14 : 0,
-                        backgroundColor:
-                            corners === "hexagon"
-                                ? "transparent"
-                                : appearance.surface,
+                        backgroundColor: corners === "hexagon" ? "transparent" : appearance.surface,
                         borderColor: appearance.border.color,
-                        borderWidth:
-                            corners === "hexagon" ? 0 : appearance.border.width,
+                        borderWidth: corners === "hexagon" ? 0 : appearance.border.width,
                     });
                     if (corners === "hexagon") {
                         expect(
-                            jest.mocked(HexagonSurface).mock.lastCall?.[0],
-                        ).toMatchObject({
-                            appearance,
-                            showGlow: false,
-                        });
+                            screen.container.queryAll(
+                                ({ props }) =>
+                                    typeof props.d === "string" &&
+                                    props.fill?.payload === processColor(appearance.surface) &&
+                                    props.stroke?.payload === processColor(appearance.border.color),
+                            ).length,
+                        ).toBeGreaterThan(0);
                     } else {
-                        expect(HexagonSurface).not.toHaveBeenCalled();
+                        expect(screen.container.queryAll(({ props }) => typeof props.d === "string")).toHaveLength(0);
                     }
                     expect(screen.getByText("Choice")).toHaveStyle({
                         color: theme.resolveAppearance(
                             undefined,
                             color,
                             "intel",
-                            state === "disabled"
-                                ? "disabled"
-                                : highlighted
-                                  ? "active-pressed"
-                                  : "default",
+                            state === "disabled" ? "disabled" : highlighted ? "active-pressed" : "default",
                         ).glyphs,
                     });
                 };
-                for (const color of appearanceColorOptions) {
-                    await screen.rerender(content(color));
-                    expectAppearance("default", color);
+                expectAppearance("default");
+                await screen.rerender(content("hazard"));
+                expectAppearance("default", "hazard");
+                await screen.rerender(content(undefined, false, false, true));
+                for (const event of ["hoverIn", "focus", "pressIn"]) {
+                    await fireEvent(screen.getByRole(role), event);
+                    expect(screen.getByText("Choice")).toHaveStyle({
+                        color: theme.color("glitch", 500),
+                    });
                 }
+                await fireEvent(screen.getByRole(role), "pressOut");
+                await fireEvent(screen.getByRole(role), "hoverOut");
                 await screen.rerender(content());
                 await fireEvent(screen.getByRole(role), "focus");
                 expectAppearance("hover-focus");
@@ -256,21 +223,17 @@ describe("Form choice appearance ownership", () => {
                 expect(onChange).not.toHaveBeenCalled();
                 await screen.rerender(content(undefined, false, false, true));
                 expect(screen.getByText("Choice")).toHaveStyle({
-                    color: theme.color(appearanceColorOptions[0], 500),
+                    color: theme.color("glitch", 500),
                 });
                 await fireEvent.press(screen.getByRole(role));
                 expect(onChange).toHaveBeenLastCalledWith(true);
-                await screen.rerender(
-                    content(undefined, false, false, false, true),
-                );
+                await screen.rerender(content(undefined, false, false, false, true));
                 if (role === "radio") {
                     const markerSize = theme.sizes.control.lg.iconSize / 2;
                     const marker = screen
                         .getByRole(role)
                         .queryAll(
-                            (node) =>
-                                node.props.style?.width === markerSize &&
-                                node.props.style?.height === markerSize,
+                            (node) => node.props.style?.width === markerSize && node.props.style?.height === markerSize,
                         )[0];
                     expect(marker).toHaveStyle({
                         width: markerSize,
@@ -279,17 +242,11 @@ describe("Form choice appearance ownership", () => {
                         backgroundColor:
                             corners === "hexagon"
                                 ? "transparent"
-                                : theme.resolveAppearance(
-                                      variant,
-                                      appearanceColorOptions[0],
-                                      "intel",
-                                  ).glyphs,
+                                : theme.resolveAppearance(variant, "glitch", "intel").glyphs,
                     });
-                    expect(
-                        marker.queryAll(
-                            (node) => typeof node.props.d === "string",
-                        ),
-                    ).toHaveLength(corners === "hexagon" ? 1 : 0);
+                    expect(marker.queryAll((node) => typeof node.props.d === "string")).toHaveLength(
+                        corners === "hexagon" ? 1 : 0,
+                    );
                 }
                 await fireEvent.press(screen.getByRole(role));
                 expect(onChange).toHaveBeenLastCalledWith(role === "radio");

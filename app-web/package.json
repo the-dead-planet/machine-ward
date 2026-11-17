@@ -23,7 +23,6 @@
         "typecheck:cypress": "tsc --noEmit -p cypress/tsconfig.json",
         "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings -1",
         "clean": "npx shx rm -rf node_modules/",
-        "test": "mocha",
         "test:e2e": "yarn typecheck:cypress && cypress run",
         "test:e2e:dev": "yarn test:e2e --config baseUrl=http://localhost:3000",
         "test:e2e:prod": "yarn test:e2e --config baseUrl=https://gauge.spookydoodle.com",

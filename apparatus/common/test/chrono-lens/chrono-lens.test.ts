@@ -25,5 +25,6 @@ describe("ChronoLens", () => {
         chronoLens.surveillanceState$.next(SurveillanceState.Stopped);
         chronoLens.surveillanceState$.next(SurveillanceState.Stopped);
         expect(chronoLens.stopCount).to.equal(1);
+        chronoLens.clearSurveillance();
     });
 });

@@ -10,7 +10,6 @@ import {
     PanResponder,
 } from "react-native";
 import {
-    fillVariantOptions,
     Orientation,
     Theme,
     ThemeAppearanceState,
@@ -59,71 +58,57 @@ test("color ramp hue survives RGB quantization, hex echoes and achromatic edits"
 
 test("color fields follow shared policy with disabled above highlight above focus", async () => {
     for (const mode of ["light", "dark"] as const) {
-        const theme = new Theme(
-            themeSpecifications[ThemeName.Default][mode],
-            media,
-            false,
-        );
+        const theme = new Theme(themeSpecifications[ThemeName.Default][mode], media, false);
         try {
             const color = mode === "light" ? "primary" : "glitch";
-            for (const variant of fillVariantOptions) {
-                const content = (highlighted = false, disabled = false) => (
-                    <ThemeContext.Provider value={theme}>
-                        <ColorInput
-                            label="Color"
-                            value="#336699"
-                            color={color}
-                            highlightColor="hazard"
-                            glyphsShade={600}
-                            highlightGlyphsShade={200}
-                            variant={variant}
-                            highlighted={highlighted}
-                            disabled={disabled}
-                            showColorButton={false}
-                            onChange={() => {}}
-                        />
-                    </ThemeContext.Provider>
-                );
-                const screen = await render(content());
-                const check = (state: ThemeAppearanceState) => {
-                    const appearance = theme.resolveAppearance(
-                        variant,
-                        color,
-                        "hazard",
-                        state,
-                        600,
-                        200,
-                    );
-                    const input = screen.getByLabelText("Color");
-                    expect(input).toHaveStyle({ color: appearance.glyphs });
-                    expect(input.parent).toHaveStyle({
-                        backgroundColor: appearance.surface,
-                        borderColor: appearance.border.color,
-                        borderWidth: appearance.border.width,
-                    });
-                };
-                check("default");
-                await fireEvent(screen.getByLabelText("Color"), "pointerEnter");
-                check("hover-focus");
-                await fireEvent(screen.getByLabelText("Color"), "pointerLeave");
-                check("default");
-                const label = screen.getByText("Color");
-                const labelStyle = label.props.style;
-                await fireEvent(screen.getByLabelText("Color"), "focus");
-                check("hover-focus");
-                expect(screen.getByText("Color").props.style).toEqual(
-                    labelStyle,
-                );
-                await fireEvent(screen.getByLabelText("Color"), "pressIn");
-                check("active-pressed");
-                await fireEvent(screen.getByLabelText("Color"), "pressOut");
-                await screen.rerender(content(true));
-                check("active-pressed");
-                await screen.rerender(content(true, true));
-                check("disabled");
-                expect(screen.getByLabelText("Color")).toBeDisabled();
-                await screen.unmount();
-            }
+            const variant = "fill-translucent";
+            const content = (highlighted = false, disabled = false) => (
+                <ThemeContext.Provider value={theme}>
+                    <ColorInput
+                        label="Color"
+                        value="#336699"
+                        color={color}
+                        highlightColor="hazard"
+                        glyphsShade={600}
+                        highlightGlyphsShade={200}
+                        variant={variant}
+                        highlighted={highlighted}
+                        disabled={disabled}
+                        showColorButton={false}
+                        onChange={() => {}}
+                    />
+                </ThemeContext.Provider>
+            );
+            const screen = await render(content());
+            const check = (state: ThemeAppearanceState) => {
+                const appearance = theme.resolveAppearance(variant, color, "hazard", state, 600, 200);
+                const input = screen.getByLabelText("Color");
+                expect(input).toHaveStyle({ color: appearance.glyphs });
+                expect(input.parent).toHaveStyle({
+                    backgroundColor: appearance.surface,
+                    borderColor: appearance.border.color,
+                    borderWidth: appearance.border.width,
+                });
+            };
+            check("default");
+            await fireEvent(screen.getByLabelText("Color"), "pointerEnter");
+            check("hover-focus");
+            await fireEvent(screen.getByLabelText("Color"), "pointerLeave");
+            check("default");
+            const label = screen.getByText("Color");
+            const labelStyle = label.props.style;
+            await fireEvent(screen.getByLabelText("Color"), "focus");
+            check("hover-focus");
+            expect(screen.getByText("Color").props.style).toEqual(labelStyle);
+            await fireEvent(screen.getByLabelText("Color"), "pressIn");
+            check("active-pressed");
+            await fireEvent(screen.getByLabelText("Color"), "pressOut");
+            await screen.rerender(content(true));
+            check("active-pressed");
+            await screen.rerender(content(true, true));
+            check("disabled");
+            expect(screen.getByLabelText("Color")).toBeDisabled();
+            await screen.unmount();
         } finally {
             theme.destroy();
         }

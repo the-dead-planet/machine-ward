@@ -30,7 +30,7 @@ makeLiveEditStory(Playground, {
     availableImports: { "@web-ui": { Hexagon } },
     code: `import { Hexagon } from '@web-ui';
 
-export default () => <Hexagon>H</Hexagon>;`,
+export default (props) => <Hexagon {...props} tabIndex={props.interactive ? 0 : undefined}>{props.children ?? 'H'}</Hexagon>;`,
 });
 
 export const Gallery: Story = {

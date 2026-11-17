@@ -20,7 +20,6 @@ import { Button } from '../../src/gizmos/button';
 import { Text } from '../../src/design-system/typography';
 import { FileInput } from '../../src/forms/file-input';
 import { Tabstrip } from '../../src/rigs/tabstrip';
-import * as tabstripLayout from '../../src/rigs/tabstrip/useTabstripLayout';
 import { Menu, MenuItem } from '../../src/rigs/menu';
 import { Icon } from '../../src/design-system/icons';
 
@@ -356,20 +355,7 @@ describe('Mobile rig content', () => {
     it.each(fillVariantOptions)(
         'uses the shared selected-tab variant on %s without forcing pressed styling',
         async (variant) => {
-            jest.spyOn(tabstripLayout, 'useTabstripLayout').mockReturnValue({
-                setContainerWidth: jest.fn(),
-                optionWidths: [80, 80],
-                overflowWidth: 80,
-                setOverflowWidth: jest.fn(),
-                visibleIndexes: [0, 1],
-                setOptionWidth: jest.fn(),
-                selectTab: jest.fn(),
-            });
-            const theme = new Theme(
-                themeSpecifications[ThemeName.Default].light,
-                media,
-                false,
-            );
+            const theme = new Theme(themeSpecifications[ThemeName.Default].light, media, false);
             const options = [
                 {
                     value: 'route',
@@ -380,6 +366,7 @@ describe('Mobile rig content', () => {
                     label: 'Terrain',
                 },
             ];
+            const onChange = jest.fn();
             const content = (value: string) => (
                 <ThemeContext.Provider value={theme}>
                     <Tabstrip
@@ -388,7 +375,7 @@ describe('Mobile rig content', () => {
                         highlightColor="intel"
                         options={options}
                         value={value}
-                        onChange={() => undefined}
+                        onChange={onChange}
                         overflowAccessibilityLabel="More tabs"
                     >
                         Tab content
@@ -396,34 +383,49 @@ describe('Mobile rig content', () => {
                 </ThemeContext.Provider>
             );
             const screen = await render(content('route'));
+            for (const label of ['Route', 'Terrain']) {
+                await fireEvent(screen.getByText(label, { includeHiddenElements: true }), 'layout', {
+                    nativeEvent: { layout: { x: 0, y: 0, width: 80, height: 24 } },
+                });
+            }
+            const overflowMeasure = screen.getAllByLabelText('More tabs', { includeHiddenElements: true }).at(-1)!;
+            await fireEvent(overflowMeasure, 'layout', {
+                nativeEvent: { layout: { x: 0, y: 0, width: 30, height: 24 } },
+            });
+            const tablist = screen.container.queryAll((node) => node.props.accessibilityRole === 'tablist')[0];
+            await fireEvent(tablist, 'layout', { nativeEvent: { layout: { x: 0, y: 0, width: 200, height: 24 } } });
             const selectedFill = theme.resolveAppearance(actionButtonVariants[variant].active, 'primary').surface;
-            const inactiveFill = theme.resolveAppearance(
-                actionButtonVariants[variant].inactive,
-                'primary',
-            ).surface;
+            const inactiveFill = theme.resolveAppearance(actionButtonVariants[variant].inactive, 'primary').surface;
             expect(screen.getByRole('tab', { selected: true })).toHaveStyle({
                 backgroundColor: selectedFill,
             });
             expect(screen.getByRole('tab', { selected: false })).toHaveStyle({
                 backgroundColor: inactiveFill,
             });
+            await fireEvent.press(screen.getByRole('tab', { name: 'Terrain' }));
+            expect(onChange).toHaveBeenCalledWith('terrain');
             await screen.rerender(content('terrain'));
-            expect(
-                screen.getByRole('tab', { name: 'Terrain', selected: true }),
-            ).toHaveStyle({ backgroundColor: selectedFill });
+            expect(screen.getByRole('tab', { name: 'Terrain', selected: true })).toHaveStyle({
+                backgroundColor: selectedFill,
+            });
+            await fireEvent(tablist, 'layout', { nativeEvent: { layout: { x: 0, y: 0, width: 110, height: 24 } } });
+            expect(screen.getByRole('tab', { name: 'Terrain', selected: true })).toBeTruthy();
+            expect(screen.queryByRole('tab', { name: 'Route' })).toBeNull();
+            expect(screen.getByLabelText('More tabs')).toBeTruthy();
             await screen.unmount();
             theme.destroy();
         },
     );
 
     it.each<ThemeMode>(['light', 'dark'])(
-        'uses the dialog foreground for its heading and bare text in %s mode',
+        'inherits %s dialog mode for its frame, heading, bare text, actions and descendants',
         async (mode) => {
-            const theme = new Theme(
-                themeSpecifications[ThemeName.Default][mode],
+            const parentTheme = new Theme(
+                themeSpecifications[ThemeName.Default][mode === 'light' ? 'dark' : 'light'],
                 media,
                 false,
             );
+            const theme = parentTheme.forMode(mode);
             for (const variant of fillVariantOptions) {
                 const screen = await render(
                     <ThemeContext.Provider value={theme}>
@@ -440,11 +442,11 @@ describe('Mobile rig content', () => {
                     </ThemeContext.Provider>,
                 );
                 const glyphs = theme.resolveAppearance(variant, 'primary').glyphs;
+                expect(screen.getByLabelText('Readable heading')).toHaveStyle({
+                    backgroundColor: theme.resolveAppearance(variant, 'primary').surface,
+                });
                 expect(screen.getByRole('button', { name: 'Close' })).toHaveStyle({
-                    backgroundColor: theme.resolveAppearance(
-                        actionButtonVariants[variant].inactive,
-                        'primary',
-                    ).surface,
+                    backgroundColor: theme.resolveAppearance(actionButtonVariants[variant].inactive, 'primary').surface,
                 });
                 expect(screen.getByRole('header')).toHaveStyle({
                     color: glyphs,
@@ -468,57 +470,27 @@ describe('Mobile rig content', () => {
                 }
                 await screen.unmount();
             }
-            theme.destroy();
-        },
-    );
-
-    it.each<ThemeMode>(['light', 'dark'])(
-        'inherits %s mode in the dialog frame and content',
-        async (mode) => {
-            const theme = new Theme(
-                themeSpecifications[ThemeName.Default][mode === 'light' ? 'dark' : 'light'],
-                media,
-                false,
-            );
-            const dialogTheme = theme.forMode(mode);
-            for (const variant of fillVariantOptions) {
-                const screen = await render(
-                    <ThemeContext.Provider value={dialogTheme}>
-                        <Dialog
-                            variant={variant}
-                            color="intel"
-                            header="Themed dialog"
-                            closeText="Close"
-                            onClose={() => undefined}
-                        >
-                            Bare dialog text
-                            <ChildThemeLabel />
-                        </Dialog>
-                    </ThemeContext.Provider>,
-                );
-                const appearance = dialogTheme.resolveAppearance(variant, 'intel');
-                expect(screen.getByLabelText('Themed dialog')).toHaveStyle({ backgroundColor: appearance.surface });
-                expect(screen.getByRole('header')).toHaveStyle({ color: appearance.glyphs });
-                expect(screen.getByText('Bare dialog text')).toHaveStyle({ color: appearance.glyphs });
-                expect(screen.getByText(`Child theme: ${mode}`)).toBeTruthy();
-                expect(screen.getByRole('button', { name: 'Close' })).toHaveStyle({
-                    backgroundColor: dialogTheme.resolveAppearance(actionButtonVariants[variant].inactive, 'intel').surface,
-                });
-                await screen.unmount();
-            }
-            theme.destroy();
+            parentTheme.destroy();
         },
     );
 
     it.each<ThemeMode>(['light', 'dark'])(
         'can disable the neutral dialog backdrop in %s mode without removing the dialog',
         async (mode) => {
+            jest.mocked(Animated.timing).mockImplementation((value, configuration) => ({
+                start: () => {
+                    if (value instanceof Animated.Value && typeof configuration.toValue === 'number') {
+                        value.setValue(configuration.toValue);
+                    }
+                },
+                stop: jest.fn(),
+                reset: jest.fn(),
+            }));
             const theme = new Theme(
                 themeSpecifications[ThemeName.Default][mode === 'light' ? 'dark' : 'light'],
                 media,
                 false,
             );
-            const interpolate = jest.spyOn(Animated.Value.prototype, 'interpolate');
             const content = (backdrop?: boolean) => (
                 <ThemeContext.Provider value={theme.forMode(mode)}>
                     <Dialog
@@ -533,15 +505,15 @@ describe('Mobile rig content', () => {
                 </ThemeContext.Provider>
             );
             const shade = mode === 'light' ? 100 : 900;
-            const backdropInterpolation = {
-                inputRange: [0, 1],
-                outputRange: [theme.color('neutral', shade, 0), theme.color('neutral', shade, 0.6)],
-            };
             const screen = await render(content());
-            expect(interpolate).toHaveBeenCalledWith(backdropInterpolation);
-            interpolate.mockClear();
+            const overlay = () =>
+                screen.container.queryAll((node) => {
+                    const style = StyleSheet.flatten(node.props.style);
+                    return style?.paddingTop === 24 && style.paddingBottom === 48;
+                })[0];
+            expect(overlay()).toHaveStyle({ backgroundColor: theme.color('neutral', shade, 0.6) });
             await screen.rerender(content(false));
-            expect(interpolate).not.toHaveBeenCalledWith(backdropInterpolation);
+            expect(overlay()).toHaveStyle({ backgroundColor: 'transparent' });
             expect(screen.getByLabelText('Themed backdrop')).toBeTruthy();
             expect(screen.getByText('Dialog content')).toBeTruthy();
             expect(screen.getByRole('button', { name: 'Close' })).toBeTruthy();

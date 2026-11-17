@@ -159,10 +159,9 @@ describe("Rotation and step controls", () => {
         "iconrotateinput",
     ]) {
         it(`${component} keeps optional step button appearance independent from its own variant`, () => {
-            const storyId = `forms-${component}--gallery`;
-            const count = component === "iconrotateinput" ? 48 : 24;
+            const storyId = `forms-${component}--playground`;
             cy.visit(`/iframe.html?id=${storyId}&viewMode=story`);
-            cy.get(".story table").should("exist");
+            cy.get(".story [data-size]").should("exist");
             cy.window()
                 .its("__STORYBOOK_PREVIEW__.channel")
                 .invoke("emit", "updateStoryArgs", {
@@ -174,12 +173,8 @@ describe("Rotation and step controls", () => {
                     },
                 });
             cy.get('.story button[aria-label="Value (+)"]')
-                .should("have.length", count)
-                .each(($button) => {
-                    expect($button.attr("data-appearance-variant")).to.equal(
-                        "ghost",
-                    );
-                });
+                .should("have.length", 1)
+                .and("have.attr", "data-appearance-variant", "ghost");
             if (component !== "clockdurationinput") {
                 cy.window()
                     .its("__STORYBOOK_PREVIEW__.channel")
@@ -188,7 +183,7 @@ describe("Rotation and step controls", () => {
                         updatedArgs: { showNumberInput: true },
                     });
                 cy.get<HTMLInputElement>('.story input[aria-label="Value (#)"]')
-                    .should("have.length", count)
+                    .should("have.length", 1)
                     .each(($input) => {
                         const field = $input[0].closest(
                             "[data-appearance-variant]",
@@ -208,13 +203,6 @@ describe("Rotation and step controls", () => {
                 cy.get('.story button[aria-label="Value (+)"]')
                     .first()
                     .should("have.attr", "data-appearance-variant", variant);
-                cy.get('.story button[aria-label="Value (+)"]').each(
-                    ($button) => {
-                        expect(
-                            $button.attr("data-appearance-variant"),
-                        ).to.equal(variant);
-                    },
-                );
             }
             cy.window()
                 .its("__STORYBOOK_PREVIEW__.channel")

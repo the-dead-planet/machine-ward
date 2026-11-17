@@ -6,7 +6,7 @@
     "scripts": {
         "build": "tsc -b",
         "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings -1",
-        "test": "mocha && yarn test:native",
+        "test": "yarn test:native",
         "test:native": "jest --runInBand"
     },
     "dependencies": {

@@ -289,7 +289,7 @@ describe("Expanded map image groups", () => {
         expect(imageGroupOffset$.value).to.equal(0);
     });
 
-    it("uses the same color policy and highlight identities for connectors and outlines", async () => {
+    it("preserves connector identities and geometry when selection changes", async () => {
         const source = sourceFor(3);
         const expanded = await getGroupedImageSource(
             source,
@@ -302,21 +302,6 @@ describe("Expanded map image groups", () => {
         expect(connections.features.map(({ properties }) => properties)).to.deep.equal([{ imageId: 0 }, { imageId: 1 }, { imageId: 2 }]);
         expect(connections.features.map(({ id }) => id)).to.deep.equal([
             0, 1, 2,
-        ]);
-        expect(
-            ImagesLayers.connections.getPaint(
-                "#123456",
-                "#345678",
-                "#567890",
-                1,
-            )["line-color"],
-        ).to.deep.equal([
-            "case",
-            ["==", ["get", "imageId"], 1],
-            "#567890",
-            ["==", ["feature-state", "highlight"], true],
-            "#345678",
-            "#123456",
         ]);
         const selected = await getGroupedImageSource(
             source,

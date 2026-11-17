@@ -1,5 +1,5 @@
 import { act, renderHook } from "@testing-library/react-native";
-import { StorageFolderSummary, StorageListing } from "../src/storage-debug/model";
+import { StorageEntry, StorageFolderSummary, StorageListing } from "../src/storage-debug/model";
 import { readStorageDebugFolder } from "../src/storage-debug/storage-files";
 import { useStorageFolderSummary } from "../src/storage-debug/useStorageFolderSummary";
 
@@ -9,74 +9,51 @@ jest.mock("../src/storage-debug/storage-files", () => ({
 
 beforeEach(() => jest.resetAllMocks());
 
+const emptySummary: StorageFolderSummary = {
+    status: "ready",
+    files: 0,
+    folders: 0,
+    totalBytes: 0,
+    imageFiles: 0,
+    imageBytes: 0,
+    asyncStorageFiles: 0,
+    asyncStorageBytes: 0,
+};
+
 test("counts nested files, image bytes, and AsyncStorage databases including companion files", async () => {
+    const entry = (path: string, size: number, isDirectory = false): StorageEntry => ({
+        name: path.split("/").at(-1)!,
+        path,
+        size,
+        isDirectory,
+    });
     const listings: Record<string, StorageListing> = {
         "/app": {
             exists: true,
             entries: [
-                {
-                    name: "photo.jpg",
-                    path: "/app/photo.jpg",
-                    size: 1024,
-                    isDirectory: false,
-                },
-                {
-                    name: "route.gpx",
-                    path: "/app/route.gpx",
-                    size: 2048,
-                    isDirectory: false,
-                },
-                {
-                    name: "images",
-                    path: "/app/images",
-                    size: 4096,
-                    isDirectory: true,
-                },
-                {
-                    name: "databases",
-                    path: "/app/databases",
-                    size: 4096,
-                    isDirectory: true,
-                },
+                entry("/app/photo.jpg", 1024),
+                entry("/app/route.gpx", 2048),
+                entry("/app/images", 4096, true),
+                entry("/app/databases", 4096, true),
             ],
         },
         "/app/images": {
             exists: true,
             entries: [
-                {
-                    name: "nested.jpg",
-                    path: "/app/images/nested.jpg",
-                    size: 1024,
-                    isDirectory: false,
-                },
+                entry("/app/images/nested.jpg", 1024),
             ],
         },
         "/app/databases": {
             exists: true,
             entries: [
-                {
-                    name: "async-storage",
-                    path: "/app/databases/async-storage",
-                    size: 4096,
-                    isDirectory: true,
-                },
+                entry("/app/databases/async-storage", 4096, true),
             ],
         },
         "/app/databases/async-storage": {
             exists: true,
             entries: [
-                {
-                    name: "nav-gauge.sqlite",
-                    path: "/app/databases/async-storage/nav-gauge.sqlite",
-                    size: 4096,
-                    isDirectory: false,
-                },
-                {
-                    name: "nav-gauge.sqlite-wal",
-                    path: "/app/databases/async-storage/nav-gauge.sqlite-wal",
-                    size: 1024,
-                    isDirectory: false,
-                },
+                entry("/app/databases/async-storage/nav-gauge.sqlite", 4096),
+                entry("/app/databases/async-storage/nav-gauge.sqlite-wal", 1024),
             ],
         },
     };
@@ -114,16 +91,7 @@ test("distinguishes missing and unreadable folders from empty folders", async ()
     await rerender({ revision: 1 });
     expect(result.current).toEqual({ status: "unavailable" });
     await rerender({ revision: 2 });
-    expect(result.current).toEqual({
-        status: "ready",
-        files: 0,
-        folders: 0,
-        totalBytes: 0,
-        imageFiles: 0,
-        imageBytes: 0,
-        asyncStorageFiles: 0,
-        asyncStorageBytes: 0,
-    });
+    expect(result.current).toEqual(emptySummary);
     await unmount();
 });
 
@@ -144,15 +112,6 @@ test("keeps pending counts in loading state and ignores stale results after refr
     expect(result.current).toEqual({ status: "loading" });
     await rerender({ revision: 1 });
     await act(() => finishOldRead({ exists: false, entries: [] }));
-    expect(result.current).toEqual({
-        status: "ready",
-        files: 0,
-        folders: 0,
-        totalBytes: 0,
-        imageFiles: 0,
-        imageBytes: 0,
-        asyncStorageFiles: 0,
-        asyncStorageBytes: 0,
-    });
+    expect(result.current).toEqual(emptySummary);
     await unmount();
 });

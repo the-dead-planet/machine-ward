@@ -2,7 +2,7 @@ import { describe } from "mocha";
 import { expect } from "chai";
 import { getDistanceFractionPercent, getRouteDistanceFraction, getRouteGeometryData, getRoutePlacement, getRoutePlacementPercent, getRouteSourceData, getRouteTimelinePositionForDistanceFraction, getSplineHeading, getRouteLngLatAtDistanceFraction } from "../src/tinkers";
 import { GeoJson } from "@tinker-chest";
-import { RouteStoryState } from "../src";
+import { defaultRouteStoryState } from "../src";
 const route: GeoJson = {
     type: "FeatureCollection",
     features: [
@@ -12,42 +12,7 @@ const route: GeoJson = {
     ],
 };
 
-const state: RouteStoryState = {
-    markerPlayerVisibility: true,
-    markerLayerVisibility: true,
-    routeStyleActive: {
-        showRouteLine: true,
-        showRoutePoints: false,
-        pointColor: 'red',
-        pointRadius: 3,
-        color: 'red',
-        width: 2,
-        outlineColor: 'black',
-        outlineWidth: 0,
-        lineStyle: 'solid',
-        colorTransitionLengthPixels: 0,
-    },
-    routeStyleInactive: {
-        showRouteLine: true,
-        showRoutePoints: false,
-        pointColor: 'red',
-        pointRadius: 3,
-        color: 'red',
-        width: 1,
-        outlineColor: 'black',
-        outlineWidth: 0,
-        lineStyle: 'dashed',
-        colorTransitionLengthPixels: 0,
-    },
-    currentPoint: {
-        fillColor: 'blue',
-        size: 1,
-        icon: 'Circle',
-        autoRotate: true,
-        rotation: 0,
-        rotationAlignment: 'map',
-    }
-};
+const state = defaultRouteStoryState;
 const startTimeEpoch = Date.parse("2026-01-01T00:00:00Z");
 const routeTimes = {
     startTime: "2026-01-01T00:00:00Z",
@@ -75,16 +40,12 @@ describe("Route story gear", () => {
         });
 
         it("should produce two valid lines mid-route", () => {
-            const { line } = getRouteSourceData(state, route, startTimeEpoch, 90_000, routeGeometryData);
+            const { line, splitIndex } = getRouteSourceData(state, route, startTimeEpoch, 90_000, routeGeometryData);
             const lineStrings = (line as GeoJSON.FeatureCollection).features
                 .filter((f): f is GeoJSON.Feature<GeoJSON.LineString> => f.geometry.type === "LineString");
             expect(lineStrings).to.have.lengthOf(2);
             expect(lineStrings[0].geometry.coordinates.length).to.be.greaterThan(1);
             expect(lineStrings[1].geometry.coordinates.length).to.be.greaterThan(1);
-        });
-
-        it("should report the index of the segment that follows the current time", () => {
-            const { splitIndex } = getRouteSourceData(state, route, startTimeEpoch, 90_000, routeGeometryData);
             expect(splitIndex).to.equal(2);
         });
 

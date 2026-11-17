@@ -150,6 +150,8 @@ test("shows image details inline, searches, opens only folders, and refreshes", 
         screen.getByText(`${mockRoot.path}/photo.jpg`).props.selectable,
     ).toBe(true);
     expect(screen.getByText(/^2 KB · Modified /)).toBeTruthy();
+    await fireEvent.press(screen.getByText("photo.jpg"));
+    expect(mockBrowser.openFolder).not.toHaveBeenCalled();
     await fireEvent.press(screen.getByLabelText("Open folder nested"));
     expect(mockBrowser.openFolder).toHaveBeenCalledWith(
         mockRoot,

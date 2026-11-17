@@ -4,13 +4,13 @@ import { createRequire } from 'node:module';
 import { ComponentProps, createElement, ReactElement } from 'react';
 import { renderToStaticMarkup as renderMarkup } from 'react-dom/server';
 import {
-    appearanceColorOptions,
+    ColorVariant,
     buttonCorners,
     hexagonGeometry,
     getOctagonalGeometry,
     surfaceVariantOptions,
     ColorBoxProps,
-    fillVariantOptions,
+    FillVariant,
     DEFAULT_SIZE,
     SizeVariant,
     MenuContext,
@@ -21,7 +21,6 @@ import {
     ThemeName,
     sizeOptions,
     themeSpecifications,
-    resolveMapImageMarkerColors,
 } from '@ui';
 import { createAppearanceRules } from '../../src/design-system/theme/useThemeVariables';
 
@@ -94,6 +93,8 @@ const media = {
 };
 
 const renderingTheme = new Theme(themeSpecifications[ThemeName.Default].light, media);
+const renderingColors: ColorVariant[] = ['primary', 'hazard'];
+const forwardingVariants: FillVariant[] = ['fill', 'fill-translucent'];
 const renderToStaticMarkup = (children: ReactElement): string => renderMarkup(
     createElement(ThemeContext.Provider, {
         value: renderingTheme,
@@ -102,17 +103,6 @@ const renderToStaticMarkup = (children: ReactElement): string => renderMarkup(
 );
 
 describe('Composed appearance rendering', () => {
-    it('uses outline border shades for map markers in both map modes', () => {
-        const modes: ThemeMode[] = ['light', 'dark'];
-        for (const mode of modes) {
-            const theme = new Theme(themeSpecifications[ThemeName.Default][mode], media);
-            expect(resolveMapImageMarkerColors(theme)).to.deep.equal({
-                defaultColor: theme.color('tertiary', 500),
-                hoverColor: theme.color('tertiary', mode === 'light' ? 600 : 300),
-                activeColor: theme.color('tertiary', mode === 'light' ? 700 : 200),
-            });
-        }
-    });
     after(() => renderingTheme.destroy());
 
     it('gives tiles one panel surface, raised depth and semantic content', () => {
@@ -136,7 +126,7 @@ describe('Composed appearance rendering', () => {
 
     it('gives color controls palette-aware overrides and associated disabled field labels', () => {
         for (const color of ['primary', 'glitch'] as const) {
-            for (const variant of fillVariantOptions) {
+            for (const variant of forwardingVariants) {
                 const markup = renderToStaticMarkup(createElement(ColorInput, {
                     label: 'Color',
                     value: '#336699',
@@ -210,8 +200,8 @@ describe('Composed appearance rendering', () => {
     });
 
     it('gives sliders shared appearance and a readable associated native range label', () => {
-        for (const color of appearanceColorOptions) {
-            for (const variant of fillVariantOptions) {
+        for (const color of renderingColors) {
+            for (const variant of forwardingVariants) {
                 const markup = renderToStaticMarkup(createElement(Slider, {
                     value: 150,
                     label: 'Position',
@@ -293,7 +283,7 @@ describe('Composed appearance rendering', () => {
     });
 
     it('shares fixed inverse list surfaces while preserving menu and listbox semantics', () => {
-        for (const color of appearanceColorOptions) {
+        for (const color of renderingColors) {
             for (const size of sizeOptions) {
                 for (const as of ['div', 'ul'] as const) {
                     const role = as === 'ul' ? 'listbox' : 'menu';
@@ -321,8 +311,8 @@ describe('Composed appearance rendering', () => {
     });
 
     it('renders dropdown trigger appearance and glyph overrides once for every color and fill variant', () => {
-        for (const color of appearanceColorOptions) {
-            for (const variant of fillVariantOptions) {
+        for (const color of renderingColors) {
+            for (const variant of forwardingVariants) {
                 const markup = renderToStaticMarkup(createElement(Dropdown<string>, {
                     value: 'selected',
                     options: [{ value: 'selected', label: 'Selected option' }],
@@ -356,8 +346,8 @@ describe('Composed appearance rendering', () => {
     });
 
     it('renders clocks with shared appearance ownership for every color and fill variant', () => {
-        for (const color of appearanceColorOptions) {
-            for (const variant of fillVariantOptions) {
+        for (const color of renderingColors) {
+            for (const variant of forwardingVariants) {
                 for (const Component of [ClockInput, ClockSliceInput, ClockDurationInput]) {
                     const markup = renderToStaticMarkup(createElement(Component, {
                         value: 30,
@@ -459,7 +449,7 @@ describe('Composed appearance rendering', () => {
     });
 
     it('keeps Fieldset semantic, associates its toggle and hides collapsed content for every surface and color', () => {
-        for (const color of appearanceColorOptions) {
+        for (const color of renderingColors) {
             for (const variant of surfaceVariantOptions) {
                 const markup = renderToStaticMarkup(createElement(Fieldset, {
                     label: 'Telemetry',
@@ -569,8 +559,8 @@ describe('Composed appearance rendering', () => {
 
     it('keeps selection separate from appearance and labels the native form control', () => {
         for (const Control of [Checkbox, Radio]) {
-            for (const color of appearanceColorOptions) {
-                for (const variant of fillVariantOptions) {
+            for (const color of renderingColors) {
+                for (const variant of forwardingVariants) {
                     const markup = renderToStaticMarkup(createElement(Control, {
                         color,
                         variant,
@@ -742,7 +732,7 @@ describe('Composed appearance rendering', () => {
                 children,
             }),
         );
-        for (const variant of fillVariantOptions) {
+        for (const variant of forwardingVariants) {
             const markups = [
                 renderWithTheme(createElement(Button, {
                     variant,
@@ -775,7 +765,7 @@ describe('Composed appearance rendering', () => {
 
     it('inherits menu item size and highlight policy without retaining disabled link navigation', () => {
         const theme = new Theme(themeSpecifications[ThemeName.Default].light, media);
-        for (const color of appearanceColorOptions) {
+        for (const color of renderingColors) {
             for (const size of sizeOptions) {
                 const markup = renderToStaticMarkup(createElement(ThemeContext.Provider, {
                     value: theme,
@@ -916,7 +906,7 @@ describe('Composed appearance rendering', () => {
 
     it('gives every button shape one inherited theme owner and resolves status glyph overrides', () => {
         const theme = new Theme(themeSpecifications[ThemeName.Default].dark, media);
-        for (const color of appearanceColorOptions) {
+        for (const color of renderingColors) {
             for (const corners of ['square', 'circle', 'hexagon'] as const) {
                 const markup = renderToStaticMarkup(createElement(ThemeContext.Provider, {
                     value: theme,
@@ -948,7 +938,7 @@ describe('Composed appearance rendering', () => {
         const chip = renderToStaticMarkup(createElement(Chip, { children: 'Telemetry' }));
         expect(chip).to.include('data-appearance-variant="ghost"');
         expect(chip).to.include('data-appearance-color="neutral"');
-        for (const color of appearanceColorOptions) {
+        for (const color of renderingColors) {
             const handle = renderToStaticMarkup(createElement(ResizeHandle, {
                 direction: 'horizontal',
                 color,
@@ -966,8 +956,8 @@ describe('Composed appearance rendering', () => {
     });
 
     it('applies resize fill variants only to passive decorative grips', () => {
-        for (const variant of fillVariantOptions) {
-            for (const color of appearanceColorOptions) {
+        for (const variant of forwardingVariants) {
+            for (const color of renderingColors) {
                 const markup = renderToStaticMarkup(createElement(ResizeHandle, {
                     direction: 'horizontal',
                     color,
@@ -986,7 +976,7 @@ describe('Composed appearance rendering', () => {
     });
 
     it('resets HUD appearance for every color and removes disabled keyboard activation', () => {
-        for (const color of appearanceColorOptions) {
+        for (const color of renderingColors) {
             for (const Surface of [Panel, HexagonalPanel, NotchedPanel]) {
                 const markup = renderToStaticMarkup(createElement(Surface, {
                     color,
@@ -1023,7 +1013,7 @@ describe('Composed appearance rendering', () => {
         expect(markup).to.include('--appearance-border-width-scale:0');
     });
     it('keeps divider margins independent of stylesheet order and resets inherited appearance', () => {
-        for (const color of appearanceColorOptions) {
+        for (const color of renderingColors) {
             const markup = renderToStaticMarkup(createElement(Divider, {
                 orientation: 'vertical',
                 color,

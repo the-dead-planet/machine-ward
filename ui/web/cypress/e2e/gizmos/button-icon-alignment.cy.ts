@@ -1,4 +1,24 @@
-describe("Icon-only Button alignment", () => {
+describe("Button icon and caption alignment", () => {
+    for (const { text, lineCount } of [
+        { text: "Fermare sorveglianza", lineCount: 2 },
+        { text: "マーカー", lineCount: 1 },
+    ]) {
+        it(`centers "${text}" without splitting words`, () => {
+            cy.visit(`/iframe.html?id=gizmos-button--hexagon-caption&viewMode=story&args=caption:${encodeURIComponent(text)}`);
+            cy.get('.story button > span:last-child').should(($caption) => {
+                const caption = $caption[0];
+                const icon = caption.previousElementSibling!.getBoundingClientRect();
+                const range = caption.ownerDocument.createRange();
+                range.selectNodeContents(caption);
+                const lines = [...range.getClientRects()];
+                expect(lines).to.have.length(lineCount);
+                for (const line of lines) {
+                    expect(Math.abs(line.left + line.width / 2 - icon.left - icon.width / 2)).to.be.lessThan(1);
+                }
+            });
+        });
+    }
+
     it("renders a captioned hexagon as one native button with a compact caption", () => {
         cy.visit(
             '/iframe.html?id=gizmos-button--hexagon-caption&viewMode=story',

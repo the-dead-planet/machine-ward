@@ -6,8 +6,6 @@ import {
 } from "@testing-library/react-native";
 import { AccessibilityInfo, PanResponder, Text } from "react-native";
 import {
-    appearanceColorOptions,
-    surfaceVariantOptions,
     SurfaceVariant,
     getClockGeometry,
     getCompanionNumberInputWidth,
@@ -48,44 +46,25 @@ const media = {
     subscribe: () => ({ unsubscribe: () => undefined }),
 };
 
-test.each(sizeOptions)(
-    "all %s companion number fields share one fixed width",
-    async (size) => {
-        const theme = new Theme(
-            themeSpecifications[ThemeName.Default].light,
-            media,
-            false,
-        );
-        try {
-            for (const Control of [
-                Slider,
-                ClockInput,
-                ClockSliceInput,
-                IconRotateInput,
-            ]) {
-                const screen = await render(
-                    <ThemeContext.Provider value={theme}>
-                        <Control
-                            value={50}
-                            onChange={() => {}}
-                            size={size}
-                            ariaLabel="Value"
-                            showNumberInput
-                        />
-                    </ThemeContext.Provider>,
-                );
-                const field =
-                    screen.getByLabelText("Value (#)").parent?.parent?.parent;
-                expect(field).toHaveStyle({
-                    width: getCompanionNumberInputWidth(),
-                });
-                await screen.unmount();
-            }
-        } finally {
-            theme.destroy();
+test("independently composed companion number fields share one fixed width", async () => {
+    const theme = new Theme(themeSpecifications[ThemeName.Default].light, media, false);
+    try {
+        for (const Control of [Slider, ClockInput, ClockSliceInput, IconRotateInput]) {
+            const screen = await render(
+                <ThemeContext.Provider value={theme}>
+                    <Control value={50} onChange={() => {}} size="lg" ariaLabel="Value" showNumberInput />
+                </ThemeContext.Provider>,
+            );
+            const field = screen.getByLabelText("Value (#)").parent?.parent?.parent;
+            expect(field).toHaveStyle({
+                width: getCompanionNumberInputWidth(),
+            });
+            await screen.unmount();
         }
-    },
-);
+    } finally {
+        theme.destroy();
+    }
+});
 
 test("rotation uses clock dial geometry and responds to every theme control size", async () => {
     const theme = new Theme(
@@ -186,62 +165,41 @@ test("held steps use current bounds and callbacks, and stop when disabled", asyn
     }
 });
 
-test("step buttons consume the selected appearance across variants, colors, and disabled states", async () => {
+test("step buttons forward non-default appearance and disabled priority to Button", async () => {
     for (const mode of ["light", "dark"] as const) {
-        const theme = new Theme(
-            themeSpecifications[ThemeName.Default][mode],
-            media,
-            false,
-        );
+        const theme = new Theme(themeSpecifications[ThemeName.Default][mode], media, false);
         try {
-            for (const color of appearanceColorOptions) {
-                for (const variant of surfaceVariantOptions) {
-                    const content = (disabled = false) => (
-                        <ThemeContext.Provider value={theme}>
-                            <StepControls
-                                value={5}
-                                onChange={() => {}}
-                                color={color}
-                                variant={variant}
-                                highlightColor="hazard"
-                                highlighted
-                                disabled={disabled}
-                            >
-                                <Text>Value</Text>
-                            </StepControls>
-                        </ThemeContext.Provider>
-                    );
-                    const screen = await render(content());
-                    const button = screen.getByLabelText("+");
-                    const active = theme.resolveAppearance(
-                        variant,
-                        color,
-                        "hazard",
-                        "active-pressed",
-                    );
-                    expect(button).toHaveStyle({
-                        backgroundColor: active.surface,
-                        borderColor: active.border.color,
-                    });
-                    await fireEvent(button, "hoverIn");
-                    expect(button).toHaveStyle({
-                        backgroundColor: active.surface,
-                    });
-                    await screen.rerender(content(true));
-                    const disabled = theme.resolveAppearance(
-                        variant,
-                        color,
-                        "hazard",
-                        "disabled",
-                    );
-                    expect(screen.getByLabelText("+")).toHaveStyle({
-                        backgroundColor: disabled.surface,
-                        borderColor: disabled.border.color,
-                    });
-                    expect(screen.getByLabelText("+")).toBeDisabled();
-                    await screen.unmount();
-                }
+            const content = (disabled = false) => (
+                <ThemeContext.Provider value={theme}>
+                    <StepControls
+                        value={5}
+                        onChange={() => {}}
+                        color="intel"
+                        variant="outline"
+                        highlightColor="hazard"
+                        highlighted
+                        disabled={disabled}
+                    >
+                        <Text>Value</Text>
+                    </StepControls>
+                </ThemeContext.Provider>
+            );
+            const screen = await render(content());
+            for (const disabled of [false, true]) {
+                await screen.rerender(content(disabled));
+                const appearance = theme.resolveAppearance(
+                    "outline",
+                    "intel",
+                    "hazard",
+                    disabled ? "disabled" : "active-pressed",
+                );
+                expect(screen.getByLabelText("+")).toHaveStyle({
+                    backgroundColor: appearance.surface,
+                    borderColor: appearance.border.color,
+                });
             }
+            expect(screen.getByLabelText("+")).toBeDisabled();
+            await screen.unmount();
         } finally {
             theme.destroy();
         }

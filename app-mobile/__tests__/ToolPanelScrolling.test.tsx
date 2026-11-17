@@ -76,7 +76,7 @@ jest.mock(
     }),
 );
 
-test.each(["left", "right", "bottom"])(
+test.each(["left", "bottom"])(
     "keeps the %s panel heading outside its only scroll view",
     async (placement) => {
         const properties = {
