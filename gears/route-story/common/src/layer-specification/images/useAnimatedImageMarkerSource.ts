@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { ImageMarkerSource } from "./images-sources";
-import { getImageMarkerTransition } from "./image-marker-transition";
+import { getImageMarkerTransition, isImageGroupPaging } from "./image-marker-transition";
 
 export const useAnimatedImageMarkerSource = (
     source: ImageMarkerSource,
@@ -25,7 +25,7 @@ export const useAnimatedImageMarkerSource = (
             );
         });
 
-        if (reducedMotion || (previousGroup === nextGroup && !scaleChanged)) {
+        if (reducedMotion || (previousGroup === nextGroup && !scaleChanged && !isImageGroupPaging(previous, source))) {
             currentSource.current = source;
             setRenderedSource(source);
 

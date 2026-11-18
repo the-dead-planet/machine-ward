@@ -16,6 +16,7 @@ export interface ImageFeatureProperties {
     markerGroupSize?: number;
     markerOpacity?: number;
     markerScale?: number;
+    markerRevealScale?: number;
     markerCenter?: [number, number];
     markerOffsetY?: number;
     markerSelected?: boolean;
