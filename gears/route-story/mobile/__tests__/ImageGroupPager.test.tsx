@@ -41,8 +41,12 @@ test("shows the hidden count, reports touch bounds and pages using the latest gr
     const dimensions: { current: ImageGroupPagerDimensions | null } = {
         current: null,
     };
+    const position: { current: [number, number] | null } = {
+        current: [300, 300],
+    };
+    const pressEvent = { stopPropagation: jest.fn() };
     const screen = await render(
-        <ImageGroupPager pagination={pagination} gearId="route-story" dimensions={dimensions} />,
+        <ImageGroupPager pagination={pagination} gearId="route-story" dimensions={dimensions} position={position} />,
     );
     expect(screen.getByText("+10")).toBeTruthy();
     const boundsOwner = screen.container.queryAll((node) => typeof node.props.onLayout === "function")[0];
@@ -50,19 +54,45 @@ test("shows the hidden count, reports touch bounds and pages using the latest gr
         nativeEvent: { layout: { x: 0, y: 0, width: 65, height: 54 } },
     });
     expect(dimensions.current).toEqual({ x: 0, y: 0, width: 65, height: 54 });
-    await fireEvent.press(screen.getByLabelText("Previous images"));
+    await fireEvent.press(screen.getByLabelText("Previous images"), pressEvent);
     expect(shiftImageGroup).toHaveBeenLastCalledWith(pagination, -1);
-    await fireEvent.press(screen.getByLabelText("Next images"));
+    await fireEvent.press(screen.getByLabelText("Next images"), pressEvent);
     expect(shiftImageGroup).toHaveBeenLastCalledWith(pagination, 1);
     const lastPage: ImageGroupPagination = {
         ...pagination,
         offset: 14,
     };
-    await screen.rerender(<ImageGroupPager pagination={lastPage} gearId="route-story" dimensions={dimensions} />);
+    await screen.rerender(<ImageGroupPager pagination={lastPage} gearId="route-story" dimensions={dimensions} position={position} />);
     expect(screen.getByText("+10")).toBeTruthy();
-    await fireEvent.press(screen.getByLabelText("Next images"));
+    await fireEvent.press(screen.getByLabelText("Next images"), pressEvent);
     expect(shiftImageGroup).toHaveBeenLastCalledWith(lastPage, 1);
-    await fireEvent.press(screen.getByLabelText("Previous images"));
+    await fireEvent.press(screen.getByLabelText("Previous images"), pressEvent);
     expect(shiftImageGroup).toHaveBeenLastCalledWith(lastPage, -1);
+    expect(pressEvent.stopPropagation).toHaveBeenCalled();
+
+    const nativeMarker = screen.container.queryAll((node) => node.props.id === "route-story-image-group-pager")[0];
+    const markerPress = async (point: [number, number]) => {
+        await fireEvent(nativeMarker, "press", {
+            nativeEvent: { point },
+            stopPropagation: pressEvent.stopPropagation,
+        });
+    };
+    jest.mocked(shiftImageGroup).mockClear();
+    await markerPress([280, 310]);
+    expect(shiftImageGroup).not.toHaveBeenCalled();
+    const controlsOwner = screen.container.queryAll((node) => typeof node.props.onLayout === "function")[1];
+    await fireEvent(controlsOwner, "layout", {
+        nativeEvent: { layout: { x: 0, y: 22, width: 65, height: 32 } },
+    });
+    await markerPress([280, 310]);
+    expect(shiftImageGroup).toHaveBeenLastCalledWith(lastPage, -1);
+    await markerPress([320, 310]);
+    expect(shiftImageGroup).toHaveBeenLastCalledWith(lastPage, 1);
+    jest.mocked(shiftImageGroup).mockClear();
+    await markerPress([300, 280]);
+    await markerPress([400, 310]);
+    position.current = null;
+    await markerPress([320, 310]);
+    expect(shiftImageGroup).not.toHaveBeenCalled();
     await screen.unmount();
 });
