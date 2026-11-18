@@ -66,9 +66,8 @@ public class SliderGestureExclusionTest {
                         root.viewTreeObserver.dispatchOnPreDraw()
                     }
                     fun expectedBand(): Rect {
-                        assertTrue(slider.getGlobalVisibleRect(Rect()))
                         val bounds = Rect()
-                        slider.getDrawingRect(bounds)
+                        assertTrue("Slider has no visible bounds", slider.getLocalVisibleRect(bounds))
                         root.offsetDescendantRectToMyCoords(slider, bounds)
                         return Rect(0, bounds.top, root.width, bounds.bottom)
                     }
