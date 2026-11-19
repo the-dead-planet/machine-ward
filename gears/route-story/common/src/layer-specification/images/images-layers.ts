@@ -55,12 +55,12 @@ const dragThumbnailTranslate: [number, number] = [
     0,
     MAP_IMAGE_MARKER_OFFSET_Y - (THUMBNAIL_IMAGE_SIZE * 0.1) / 2,
 ];
-const countText: ExpressionSpecification = [
+const countText = [
     "case",
     [">", ["get", "markerCount"], 9],
     "9+",
     ["to-string", ["get", "markerCount"]],
-];
+] satisfies ExpressionSpecification;
 export const expandedImageGroupId$ = new BehaviorSubject<number | null>(null);
 export const imageGroupOffset$ = new BehaviorSubject(0);
 
@@ -107,46 +107,49 @@ export const selectMapImageMarker = (
     expandedImageGroupId$.next(groupSize > 1 ? groupId : null);
 };
 
-const thumbnailsFilter: FilterSpecification = [
+const thumbnailsFilter = [
     "all",
     ["!=", ["get", "markerAnchor"], true],
     ["!=", ["get", "imageId"], DRAGGED_IMAGE_ID],
     ["==", ["get", "markerVisible"], true],
-];
-const groupFilter: FilterSpecification = [
+] satisfies FilterSpecification;
+const groupFilter = [
     "all",
     thumbnailsFilter,
     [">", ["get", "markerCount"], 1],
-];
+] satisfies FilterSpecification;
 const thumbnailIconImage: GetProperty = ["get", IMAGE_THUMBNAIL_PROPERTY];
 const thumbnailIconSize: number = getImageIconSize(MAP_THUMBNAIL_SIZE, THUMBNAIL_IMAGE_SIZE);
-const thumbnailScale: ExpressionSpecification = [
+const thumbnailScale = [
     "*",
     ["coalesce", ["get", "markerScale"], 1],
     ["coalesce", ["get", "markerRevealScale"], 1],
-];
-const scaledThumbnailIconSize: ExpressionSpecification = [
+] satisfies ExpressionSpecification;
+const scaledThumbnailIconSize = [
     "*",
     thumbnailIconSize,
     thumbnailScale,
-];
-const thumbnailDiameter: ExpressionSpecification = [
+] satisfies ExpressionSpecification;
+const thumbnailDiameter = [
     "*",
     THUMBNAIL_IMAGE_SIZE,
     thumbnailScale,
-];
-const thumbnailBorderDiameter: ExpressionSpecification = [
+] satisfies ExpressionSpecification;
+const thumbnailBorderDiameter = [
     "case",
     ["==", ["get", "markerSelected"], true],
     6,
     MAP_IMAGE_MARKER_OUTLINE_WIDTH * 2,
-];
-const thumbnailOutlineDiameter: ExpressionSpecification = [
+] satisfies ExpressionSpecification;
+const thumbnailOutlineDiameter = [
     "+",
     thumbnailDiameter,
     ["*", thumbnailBorderDiameter, ["coalesce", ["get", "markerRevealScale"], 1]],
-];
-const thumbnailOffset = (diameter: ExpressionSpecification, baseDiameter: number | ExpressionSpecification): ExpressionSpecification => [
+] satisfies ExpressionSpecification;
+const thumbnailOffset = (
+    diameter: typeof thumbnailDiameter | typeof thumbnailOutlineDiameter,
+    baseDiameter: number | ["+", number, typeof thumbnailBorderDiameter],
+) => [
     "interpolate",
     ["linear"],
     [
@@ -158,9 +161,9 @@ const thumbnailOffset = (diameter: ExpressionSpecification, baseDiameter: number
     ["literal", [0, -MAP_THUMBNAIL_SIZE]],
     1,
     ["literal", [0, MAP_THUMBNAIL_SIZE]],
-];
+] satisfies ExpressionSpecification;
 const dragOpacity = 0.4;
-const thumbnailDraggingOpacity: ExpressionSpecification = [
+const thumbnailDraggingOpacity = [
     "*",
     ["coalesce", ["get", "markerOpacity"], 1],
     [
@@ -173,12 +176,12 @@ const thumbnailDraggingOpacity: ExpressionSpecification = [
         dragOpacity,
         1,
     ],
-];
+] satisfies ExpressionSpecification;
 const thumbnailsOutlineStrokeColor = (
     defaultColor: string,
     hoverColor: string,
     activeColor: string,
-): ExpressionSpecification => [
+) => [
     "case",
     [
         "any",
@@ -194,17 +197,17 @@ const thumbnailsOutlineStrokeColor = (
     ],
     hoverColor,
     defaultColor,
-];
+] satisfies ExpressionSpecification;
 
-const thumbnailsHighlightFilter: FilterSpecification = [
+const thumbnailsHighlightFilter = [
     "all",
     ["==", ["get", "imageId"], DRAGGED_IMAGE_ID],
     ["!=", ["get", "markerAnchor"], true],
-];
+] satisfies FilterSpecification;
 
 const inDisplayIconImage: GetProperty = ["get", IMAGE_PROPERTY];
 
-const thumbnailsStackBack: Pick<SymbolLayerSpecification, "filter" | "layout" | "paint"> = {
+const thumbnailsStackBack = {
     filter: groupFilter,
     layout: {
         "icon-image": thumbnailIconImage,
@@ -217,7 +220,7 @@ const thumbnailsStackBack: Pick<SymbolLayerSpecification, "filter" | "layout" | 
         "icon-translate-anchor": "viewport",
         "icon-opacity": 0.4,
     },
-};
+} satisfies Pick<SymbolLayerSpecification, "filter" | "layout" | "paint">;
 const thumbnailsStackFront: typeof thumbnailsStackBack = {
     ...thumbnailsStackBack,
     paint: {
@@ -227,25 +230,25 @@ const thumbnailsStackFront: typeof thumbnailsStackBack = {
     },
 };
 
-const anchorLayout: NonNullable<SymbolLayerSpecification["layout"]> = {
+const anchorLayout = {
     "icon-image": IMAGE_MARKER_ANCHOR_ID,
     "icon-size": 1,
     "icon-allow-overlap": true,
     "icon-pitch-alignment": "map",
     "icon-rotation-alignment": "map",
-};
-const thumbnailPaint: NonNullable<SymbolLayerSpecification["paint"]> = {
+} satisfies NonNullable<SymbolLayerSpecification["layout"]>;
+const thumbnailPaint = {
     "icon-opacity": thumbnailDraggingOpacity,
     "icon-translate": thumbnailTranslate,
     "icon-translate-anchor": "viewport",
-};
-const thumbnailViewportLayout: NonNullable<SymbolLayerSpecification["layout"]> =
+} satisfies NonNullable<SymbolLayerSpecification["paint"]>;
+const thumbnailViewportLayout =
     {
         "icon-allow-overlap": true,
         "icon-pitch-alignment": "viewport",
         "icon-rotation-alignment": "viewport",
-    };
-const thumbnailOutlineLayout: NonNullable<SymbolLayerSpecification["layout"]> =
+    } satisfies NonNullable<SymbolLayerSpecification["layout"]>;
+const thumbnailOutlineLayout =
     {
         ...thumbnailViewportLayout,
         "icon-image": IMAGE_MARKER_OUTLINE_ID,
@@ -255,20 +258,20 @@ const thumbnailOutlineLayout: NonNullable<SymbolLayerSpecification["layout"]> =
             THUMBNAIL_IMAGE_SIZE,
             thumbnailBorderDiameter,
         ]),
-    };
-const countBadgePaint: NonNullable<SymbolLayerSpecification["paint"]> = {
+    } satisfies NonNullable<SymbolLayerSpecification["layout"]>;
+const countBadgePaint = {
     "icon-opacity": 1,
-};
-const selectedThumbnailsFilter: FilterSpecification = [
+} satisfies NonNullable<SymbolLayerSpecification["paint"]>;
+const selectedThumbnailsFilter = [
     "all",
     thumbnailsFilter,
     ["==", ["get", "markerSelected"], true],
-];
-const unselectedThumbnailsFilter: FilterSpecification = [
+] satisfies FilterSpecification;
+const unselectedThumbnailsFilter = [
     "all",
     thumbnailsFilter,
     ["!=", ["get", "markerSelected"], true],
-];
+] satisfies FilterSpecification;
 const thumbnailsOutline = {
     filter: unselectedThumbnailsFilter,
     layout: thumbnailOutlineLayout,
@@ -276,10 +279,10 @@ const thumbnailsOutline = {
         defaultColor: string,
         hoverColor: string,
         activeColor: string,
-    ): NonNullable<SymbolLayerSpecification["paint"]> => ({
+    ) => ({
         ...thumbnailPaint,
         "icon-color": thumbnailsOutlineStrokeColor(defaultColor, hoverColor, activeColor),
-    }),
+    } satisfies NonNullable<SymbolLayerSpecification["paint"]>),
 };
 const thumbnails = {
     filter: unselectedThumbnailsFilter,
@@ -291,7 +294,7 @@ const thumbnails = {
     },
     paint: thumbnailPaint,
 };
-const anchorsFilter: FilterSpecification = [
+const anchorsFilter = [
     "all",
     ["==", ["get", "markerAnchor"], true],
     [
@@ -299,7 +302,7 @@ const anchorsFilter: FilterSpecification = [
         ["==", ["get", "markerVisible"], true],
         ["==", ["get", "imageId"], DRAGGED_IMAGE_ID],
     ],
-];
+] satisfies FilterSpecification;
 const anchors = {
     filter: anchorsFilter,
     layout: anchorLayout,
@@ -307,21 +310,21 @@ const anchors = {
         defaultColor: string,
         hoverColor: string,
         activeColor: string,
-    ): NonNullable<SymbolLayerSpecification["paint"]> => ({
+    ) => ({
         "icon-color": thumbnailsOutlineStrokeColor(defaultColor, hoverColor, activeColor),
         "icon-opacity": thumbnailDraggingOpacity,
-    }),
+    } satisfies NonNullable<SymbolLayerSpecification["paint"]>),
 };
-const unselectedAnchorsFilter: FilterSpecification = [
+const unselectedAnchorsFilter = [
     "all",
     anchorsFilter,
     ["!=", ["get", "markerSelected"], true],
-];
-const selectedAnchorsFilter: FilterSpecification = [
+] satisfies FilterSpecification;
+const selectedAnchorsFilter = [
     "all",
     anchorsFilter,
     ["==", ["get", "markerSelected"], true],
-];
+] satisfies FilterSpecification;
 
 export default {
     connections: {
@@ -330,7 +333,7 @@ export default {
             hoverColor: string,
             activeColor: string,
             selectedImageId: number | null,
-        ): NonNullable<LineLayerSpecification["paint"]> => ({
+        ) => ({
             "line-color": [
                 "case",
                 ["==", ["get", "imageId"], selectedImageId ?? DRAGGED_IMAGE_ID],
@@ -341,7 +344,7 @@ export default {
             ],
             "line-width": 1,
             "line-dasharray": [2, 2],
-        }),
+        } satisfies NonNullable<LineLayerSpecification["paint"]>),
     },
     thumbnailsStackBack,
     thumbnailsStackFront,
@@ -361,7 +364,7 @@ export default {
         getLayout: (
             defaultColor: string,
             hoverColor: string,
-        ): NonNullable<SymbolLayerSpecification["layout"]> => ({
+        ) => ({
             ...thumbnails.layout,
             "icon-image": [
                 "concat",
@@ -374,7 +377,7 @@ export default {
                     defaultColor,
                 ],
             ],
-        }),
+        } satisfies NonNullable<SymbolLayerSpecification["layout"]>),
         paint: thumbnailPaint,
     },
     thumbnailsSelectedOutline: {
@@ -394,11 +397,11 @@ export default {
         },
         getPaint: (
             highlightColor: string,
-        ): NonNullable<SymbolLayerSpecification["paint"]> => ({
+        ) => ({
             "icon-color": highlightColor,
             "icon-translate": dragThumbnailTranslate,
             "icon-translate-anchor": "viewport",
-        }),
+        } satisfies NonNullable<SymbolLayerSpecification["paint"]>),
     },
     thumbnailsHighlight: {
         filter: thumbnailsHighlightFilter,
@@ -419,7 +422,7 @@ export default {
         getLayout: (
             backgroundColor: string,
             textColor: string,
-        ): NonNullable<SymbolLayerSpecification["layout"]> => ({
+        ) => ({
             ...thumbnailViewportLayout,
             "icon-image": [
                 "concat",
@@ -429,15 +432,15 @@ export default {
             "icon-size": 1,
             "icon-offset": [MAP_IMAGE_COUNT_BADGE_OFFSET[0], MAP_IMAGE_MARKER_OFFSET_Y + MAP_IMAGE_COUNT_BADGE_OFFSET[1]],
             "icon-allow-overlap": true,
-        }),
+        } satisfies NonNullable<SymbolLayerSpecification["layout"]>),
         paint: countBadgePaint,
     },
     imageInDisplay: {
-        getFilter: (displayImageId: number | null): FilterSpecification => [
+        getFilter: (displayImageId: number | null) => [
             "all",
             ["==", ["get", "imageId"], displayImageId ?? ""],
             ["==", ["get", "markerAnchor"], true],
-        ],
+        ] satisfies FilterSpecification,
         layout: {
             "icon-image": inDisplayIconImage,
             "icon-size": getImageIconSize(FULL_SIZE_IMAGE_SIZE, THUMBNAIL_IMAGE_SIZE),
