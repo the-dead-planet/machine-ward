@@ -1,6 +1,56 @@
 import { act, renderHook } from "@testing-library/react-native";
 import { ImageMarkerSource } from "@the-dead-planet/nav-gauge-gears-route-story-common/src/layer-specification/images/images-sources";
 import { useAnimatedImageMarkerSource } from "@the-dead-planet/nav-gauge-gears-route-story-common/src/layer-specification/images/useAnimatedImageMarkerSource";
+import { getGroupedImageSource } from "@the-dead-planet/nav-gauge-gears-route-story-common/src/layer-specification/images/grouped-image-source";
+
+test("animates paging, reverses from the displayed frame, and skips paging motion when reduced", async () => {
+    jest.useFakeTimers();
+    const source: ImageMarkerSource = {
+        type: "FeatureCollection",
+        features: Array.from({ length: 7 }, (_value, imageId) => ({
+            type: "Feature",
+            id: imageId,
+            geometry: { type: "Point", coordinates: [0, 0] },
+            properties: {
+                imageId,
+                distanceFromStartMeters: 0,
+                iconImageId: "image",
+                iconImageThumbnailId: "thumbnail",
+            },
+        })),
+    };
+    const identity = (point: [number, number]): [number, number] => point;
+    const initial = await getGroupedImageSource(source, identity, identity, 0, 0, 0);
+    const next = await getGroupedImageSource(source, identity, identity, 0, 0, 6);
+    const hook = await renderHook(
+        ({ source, reducedMotion }: { source: ImageMarkerSource; reducedMotion: boolean }) => useAnimatedImageMarkerSource(source, reducedMotion),
+        {
+            initialProps: {
+                source: initial,
+                reducedMotion: false,
+            },
+        },
+    );
+    try {
+        await hook.rerender({ source: next, reducedMotion: false });
+        await act(() => jest.advanceTimersByTimeAsync(64));
+        const interrupted = hook.result.current;
+        expect(interrupted.features[0].geometry.coordinates).not.toEqual(initial.features[0].geometry.coordinates);
+        expect(interrupted.features[0].geometry.coordinates).not.toEqual(next.features[0].geometry.coordinates);
+        expect(interrupted.features[6].properties.markerRevealScale).toBeGreaterThan(0);
+        expect(interrupted.features[6].properties.markerRevealScale).toBeLessThan(1);
+        await hook.rerender({ source: initial, reducedMotion: false });
+        expect(hook.result.current.features[0].geometry).toEqual(interrupted.features[0].geometry);
+        expect(hook.result.current.features[6].properties.markerRevealScale).toBe(interrupted.features[6].properties.markerRevealScale);
+        await act(() => jest.advanceTimersByTimeAsync(300));
+        expect(hook.result.current).toBe(initial);
+        await hook.rerender({ source: next, reducedMotion: true });
+        expect(hook.result.current).toBe(next);
+    } finally {
+        await hook.unmount();
+        jest.useRealTimers();
+    }
+});
 
 test("finishes interrupted group motion at the latest target and respects reduced motion", async () => {
     jest.useFakeTimers();

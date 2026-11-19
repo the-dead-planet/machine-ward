@@ -55,10 +55,31 @@ jobs:
       - name: Setup dependencies
         uses: ./.github/actions/setup-yarn
 
-      - uses: actions/setup-java@v5
+      - uses: actions/setup-java@v6
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: |
+            17
+            25
+
+      - name: Cache Gradle dependencies and build outputs
+        uses: gradle/actions/setup-gradle@v5
+        with:
+          cache-read-only: false
+
+      - name: Cache native C++ compilation
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: ${{ runner.os }}-android-x86_64
+          max-size: 1G
+
+      - name: Accept Android SDK licenses
+        run: |
+          set +o pipefail
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null
+
+      - name: Build debug app and instrumentation APKs
+        run: bash ./app-mobile/android/gradlew -p app-mobile/android :app:assembleDebug :app:assembleDebugAndroidTest --build-cache -PreactNativeArchitectures=x86_64
 
       - name: Enable hardware acceleration
         run: sudo chmod 666 /dev/kvm
@@ -75,4 +96,15 @@ jobs:
           disable-animations: true
           script: |
             adb reverse tcp:8081 tcp:8081
-            bash ./app-mobile/android/gradlew -p app-mobile/android :app:connectedDebugAndroidTest -PreactNativeArchitectures=x86_64
+            bash ./app-mobile/android/gradlew -p app-mobile/android :app:connectedDebugAndroidTest --build-cache -PreactNativeArchitectures=x86_64
+
+      - name: Upload native test results
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: android-instrumentation-results
+          path: |
+            app-mobile/android/app/build/reports/androidTests/
+            app-mobile/android/app/build/outputs/androidTest-results/
+          if-no-files-found: ignore
+          retention-days: 7

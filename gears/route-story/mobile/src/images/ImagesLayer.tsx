@@ -204,6 +204,7 @@ export const ImagesLayer: FC<OverlayComponentProps<MobileMap> & MobileRouteStory
                     pagination={groupedSource.pagination}
                     gearId={gearId}
                     dimensions={paginationDimensions}
+                    position={paginationTarget}
                 />
             )}
         </>
