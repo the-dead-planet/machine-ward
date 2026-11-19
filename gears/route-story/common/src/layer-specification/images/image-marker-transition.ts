@@ -3,12 +3,26 @@ import { MAP_IMAGE_MARKER_OFFSET_Y } from "../../tinkers/images";
 
 export const IMAGE_GROUP_ANIMATION_DURATION = 180;
 export const IMAGE_GROUP_ANIMATION_STAGGER = 24;
+export const IMAGE_GROUP_PAGING_DURATION = 200;
+
+export function isImageGroupPaging(previous: ImageMarkerSource, target: ImageMarkerSource): boolean {
+    const previousGroup = previous.features.find(({ properties }) => properties.markerExpanded)?.properties.markerGroupId;
+    const targetGroup = target.features.find(({ properties }) => properties.markerExpanded)?.properties.markerGroupId;
+
+    return (
+        !!previous.pagination &&
+        !!target.pagination &&
+        previousGroup === targetGroup &&
+        (previous.pagination.offset !== target.pagination.offset || previous.features.some(({ properties }) => properties.markerRevealScale !== undefined))
+    );
+}
 
 export function getImageMarkerTransition(
     previous: ImageMarkerSource,
     target: ImageMarkerSource,
     elapsed: number,
 ): ImageMarkerSource {
+    const paging = isImageGroupPaging(previous, target);
     const originals = new Map(
         previous.features.map((feature) => [
             feature.properties.imageId,
@@ -21,6 +35,42 @@ export function getImageMarkerTransition(
 
         if (!original) {
             return feature;
+        }
+
+        if (paging && original.properties.markerGroupId === feature.properties.markerGroupId && (original.properties.markerExpanded || feature.properties.markerExpanded)) {
+            const progress = Math.min(1, Math.max(0, elapsed / IMAGE_GROUP_PAGING_DURATION));
+            if (progress === 1) {
+                return feature;
+            }
+
+            complete = false;
+            const eased = 1 - (1 - progress) ** 3;
+            const from = original.properties.markerVisible ? original : feature;
+            const to = feature.properties.markerVisible ? feature : original;
+            const interpolateCoordinate = (index: number): number => from.geometry.coordinates[index] + (to.geometry.coordinates[index] - from.geometry.coordinates[index]) * eased;
+            const coordinates: [number, number] = [interpolateCoordinate(0), interpolateCoordinate(1)];
+            const fromRevealScale = original.properties.markerVisible ? (original.properties.markerRevealScale ?? 1) : 0;
+            const toRevealScale = feature.properties.markerVisible ? 1 : 0;
+            const fromScale = original.properties.markerScale ?? 1;
+            const toScale = feature.properties.markerScale ?? 1;
+
+            return {
+                ...feature,
+                geometry: {
+                    ...feature.geometry,
+                    coordinates,
+                },
+                properties: {
+                    ...feature.properties,
+                    markerVisible: true,
+                    markerExpanded: true,
+                    markerCenter: coordinates,
+                    markerOffsetY: 0,
+                    markerScale: fromScale + (toScale - fromScale) * eased,
+                    markerRevealScale: fromRevealScale + (toRevealScale - fromRevealScale) * eased,
+                    markerOpacity: 1,
+                },
+            };
         }
 
         const expansionChanged = !!original.properties.markerExpanded !== !!feature.properties.markerExpanded;

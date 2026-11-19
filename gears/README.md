@@ -21,7 +21,7 @@ Keep gear-specific Kotlin/Java code under `<gear>/mobile/android/src/main/java/<
 
 Kotlin/Java and Gradle changes require rebuilding and reinstalling the mobile app; Metro reload is not sufficient.
 
-Run native gear tests on a connected Android device with `./gradlew :app:connectedDebugAndroidTest` from `app-mobile/android` (`.\gradlew.bat` on Windows).
+See [Android instrumentation](../app-mobile/README.md#android-instrumentation) for device setup, Metro, test commands, and troubleshooting.
 
 ## Generating a new gear
 

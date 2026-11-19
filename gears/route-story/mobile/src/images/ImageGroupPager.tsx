@@ -6,6 +6,7 @@ import { Button, Chip } from "@mobile-ui";
 import { FontType, Icons } from "@ui";
 import { shiftImageGroup, ImageGroupPagination, RouteStoryTranslationKey } from "@the-dead-planet/nav-gauge-gears-route-story-common";
 import { ImageGroupPagerDimensions } from "./model";
+import { useImageGroupPagerInteraction } from "./useImageGroupPagerInteraction";
 
 const styles = StyleSheet.create({
     pager: {
@@ -35,9 +36,11 @@ interface Props {
     pagination: ImageGroupPagination;
     gearId: string;
     dimensions: RefObject<ImageGroupPagerDimensions | null>;
+    position: RefObject<[number, number] | null>;
 }
 
-export const ImageGroupPager = ({ pagination, gearId, dimensions }: Props) => {
+export const ImageGroupPager = ({ pagination, gearId, dimensions, position }: Props) => {
+    const { onControlsLayout, onPress } = useImageGroupPagerInteraction(pagination, position, dimensions);
     const [previousLabel, nextLabel] = useMultipleTranslations([
         { n: gearId, t: RouteStoryTranslationKey.PreviousImages },
         { n: gearId, t: RouteStoryTranslationKey.NextImages },
@@ -47,6 +50,7 @@ export const ImageGroupPager = ({ pagination, gearId, dimensions }: Props) => {
             id="route-story-image-group-pager"
             lngLat={pagination.lngLat}
             anchor="center"
+            onPress={onPress}
         >
             <View
                 style={styles.pager}
@@ -66,7 +70,7 @@ export const ImageGroupPager = ({ pagination, gearId, dimensions }: Props) => {
                         +{pagination.hiddenCount}
                     </Chip>
                 </View>
-                <View style={styles.controls}>
+                <View style={styles.controls} onLayout={onControlsLayout}>
                     <Button
                         style={styles.previous}
                         icon={Icons.NounProject.Previous}
@@ -74,7 +78,10 @@ export const ImageGroupPager = ({ pagination, gearId, dimensions }: Props) => {
                         variant="fill-translucent"
                         color="tertiary"
                         accessibilityLabel={previousLabel}
-                        onPress={() => shiftImageGroup(pagination, -1)}
+                        onPress={(event) => {
+                            event.stopPropagation();
+                            shiftImageGroup(pagination, -1);
+                        }}
                     />
                     <Button
                         style={styles.next}
@@ -83,7 +90,10 @@ export const ImageGroupPager = ({ pagination, gearId, dimensions }: Props) => {
                         variant="fill-translucent"
                         color="tertiary"
                         accessibilityLabel={nextLabel}
-                        onPress={() => shiftImageGroup(pagination, 1)}
+                        onPress={(event) => {
+                            event.stopPropagation();
+                            shiftImageGroup(pagination, 1);
+                        }}
                     />
                 </View>
             </View>

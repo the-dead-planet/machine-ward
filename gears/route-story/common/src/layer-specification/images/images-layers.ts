@@ -121,9 +121,9 @@ const groupFilter: FilterSpecification = [
 const thumbnailIconImage: GetProperty = ["get", IMAGE_THUMBNAIL_PROPERTY];
 const thumbnailIconSize: number = getImageIconSize(MAP_THUMBNAIL_SIZE, THUMBNAIL_IMAGE_SIZE);
 const thumbnailScale: ExpressionSpecification = [
-    "coalesce",
-    ["get", "markerScale"],
-    1,
+    "*",
+    ["coalesce", ["get", "markerScale"], 1],
+    ["coalesce", ["get", "markerRevealScale"], 1],
 ];
 const scaledThumbnailIconSize: ExpressionSpecification = [
     "*",
@@ -144,7 +144,7 @@ const thumbnailBorderDiameter: ExpressionSpecification = [
 const thumbnailOutlineDiameter: ExpressionSpecification = [
     "+",
     thumbnailDiameter,
-    thumbnailBorderDiameter,
+    ["*", thumbnailBorderDiameter, ["coalesce", ["get", "markerRevealScale"], 1]],
 ];
 const thumbnailOffset = (diameter: ExpressionSpecification, baseDiameter: number | ExpressionSpecification): ExpressionSpecification => [
     "interpolate",
@@ -152,7 +152,7 @@ const thumbnailOffset = (diameter: ExpressionSpecification, baseDiameter: number
     [
         "/",
         ["+", ["coalesce", ["get", "markerOffsetY"], MAP_IMAGE_MARKER_OFFSET_Y], ["case", ["==", ["get", "markerGroupSize"], 1], ["/", ["-", baseDiameter, diameter], 2], 0]],
-        diameter,
+        ["max", diameter, 0.00001],
     ],
     -1,
     ["literal", [0, -MAP_THUMBNAIL_SIZE]],

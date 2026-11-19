@@ -9,7 +9,7 @@ import ImagesLayers, {
     imageGroupOffset$,
     selectMapImageMarker,
 } from "../../../src/layer-specification/images/images-layers";
-import { getImageMarkerTransition } from "../../../src/layer-specification/images/image-marker-transition";
+import { getImageMarkerTransition, IMAGE_GROUP_PAGING_DURATION } from "../../../src/layer-specification/images/image-marker-transition";
 import { MAP_IMAGE_GROUP_RING_RADIUS } from "../../../src/tinkers/images";
 import { createExpression } from "@maplibre/maplibre-gl-style-spec";
 
@@ -251,6 +251,78 @@ describe("Expanded map image groups", () => {
         expect(next.features[6].properties.markerSlot).to.equal(0);
         expect(next.features[6].properties.markerCenter?.[0]).to.be.lessThan(centerX);
         expect(next.features[6].properties.markerCenter?.[1]).to.be.greaterThan(0);
+    });
+
+    it("slides retained thumbnails and scales end thumbnails in place in both paging directions", async () => {
+        const source = sourceFor(7);
+        const previous = await getGroupedImageSource(source, identity, identity, 0, 0, 0);
+        for (const offset of [1, 6]) {
+            const target = await getGroupedImageSource(source, identity, identity, 0, 0, offset);
+            const start = getImageMarkerTransition(previous, target, 0);
+            const middle = getImageMarkerTransition(previous, target, IMAGE_GROUP_PAGING_DURATION / 2);
+            const eased = 0.875;
+            for (const [imageId, feature] of middle.features.entries()) {
+                const before = previous.features[imageId];
+                const after = target.features[imageId];
+                if (before.properties.markerVisible && after.properties.markerVisible) {
+                    for (const coordinate of [0, 1]) {
+                        expect(feature.geometry.coordinates[coordinate]).to.be.closeTo(
+                            before.geometry.coordinates[coordinate] + (after.geometry.coordinates[coordinate] - before.geometry.coordinates[coordinate]) * eased,
+                            0.00001,
+                        );
+                    }
+                    expect(feature.properties.markerScale).to.equal(after.properties.markerScale);
+                    expect(feature.properties.markerRevealScale).to.equal(1);
+                } else if (before.properties.markerVisible || after.properties.markerVisible) {
+                    const entering = !!after.properties.markerVisible;
+                    const endpoint = entering ? after : before;
+                    expect(feature.geometry).to.deep.equal(endpoint.geometry);
+                    expect(feature.properties.markerCenter).to.deep.equal(endpoint.properties.markerCenter);
+                    expect(feature.properties.markerRevealScale).to.equal(entering ? eased : 1 - eased);
+                    expect(start.features[imageId].properties.markerRevealScale).to.equal(entering ? 0 : 1);
+                    expect(feature.properties.markerVisible).to.equal(true);
+                    expect(feature.properties.markerOpacity).to.equal(1);
+                } else {
+                    expect(feature.properties.markerVisible).to.equal(false);
+                }
+            }
+            expect(getImageMarkerTransition(previous, target, IMAGE_GROUP_PAGING_DURATION)).to.equal(target);
+        }
+    });
+
+    it("retargets rapid forward and reverse clicks from the current positions and scales", async () => {
+        const source = sourceFor(7);
+        const initial = await getGroupedImageSource(source, identity, identity, 0, 0, 0);
+        const next = await getGroupedImageSource(source, identity, identity, 0, 0, 6);
+        const interrupted = getImageMarkerTransition(initial, next, 60);
+        for (const offset of [0, 5]) {
+            const target = await getGroupedImageSource(source, identity, identity, 0, 0, offset);
+            const restart = getImageMarkerTransition(interrupted, target, 0);
+            for (const feature of interrupted.features.filter(({ properties }) => properties.markerVisible)) {
+                const restarted = restart.features[feature.properties.imageId];
+                expect(restarted.geometry).to.deep.equal(feature.geometry);
+                expect(restarted.properties.markerScale).to.equal(feature.properties.markerScale);
+                expect(restarted.properties.markerRevealScale).to.equal(feature.properties.markerRevealScale);
+            }
+            expect(getImageMarkerTransition(interrupted, target, IMAGE_GROUP_PAGING_DURATION)).to.equal(target);
+        }
+    });
+
+    it("keeps zero-scale thumbnail and outline offsets finite and centered", async () => {
+        const source = sourceFor(7);
+        const previous = await getGroupedImageSource(source, identity, identity, 0, 0, 0);
+        const target = await getGroupedImageSource(source, identity, identity, 0, 0, 6);
+        const entering = getImageMarkerTransition(previous, target, 0).features[6];
+        for (const layout of [ImagesLayers.thumbnails.layout, ImagesLayers.thumbnailsOutline.layout]) {
+            for (const property of ["icon-size", "icon-offset"] as const) {
+                const expression = createExpression(layout[property], property);
+                if (expression.result !== "success") {
+                    throw new Error("Invalid thumbnail layout expression");
+                }
+                const value: number | number[] = expression.value.evaluate({ zoom: 0 }, { type: "Point", properties: entering.properties });
+                expect(value).to.deep.equal(property === "icon-size" ? 0 : [0, 0]);
+            }
+        }
     });
 
     it("preserves the window when picking a group member and resets it on dismissal or a different group", async () => {
