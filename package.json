@@ -16,6 +16,7 @@
         "dev:web": "yarn workspace @the-dead-planet/nav-gauge-app-web dev",
         "dev:mobile": "yarn workspace @the-dead-planet/nav-gauge-app-mobile dev",
         "dev:mobile:r": "yarn workspace @the-dead-planet/nav-gauge-app-mobile dev:r",
+        "run:mobile": "yarn workspace @the-dead-planet/nav-gauge-app-mobile exec react-native run-android --no-packager",
         "dev:ui:web": "yarn workspace @the-dead-planet/nav-gauge-ui-web storybook",
         "start:web": "yarn workspace @the-dead-planet/nav-gauge-app-web start",
         "preview:web": "yarn workspace @the-dead-planet/nav-gauge-app-web preview",
