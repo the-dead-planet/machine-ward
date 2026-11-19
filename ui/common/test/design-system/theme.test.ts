@@ -56,11 +56,34 @@ describe("Theme", () => {
         expect(scopedTheme.forMode('dark')).to.equal(darkTheme);
         expect(darkTheme.forMode('light')).to.equal(scopedTheme);
         expect(darkTheme.isDark).to.equal(true);
-        expect(darkTheme.colors).to.deep.equal(scopedTheme.colors);
+        expect(darkTheme.colors).to.deep.equal(Theme.resolveColors(themeSpecifications[ThemeName.Default].dark));
         expect(darkTheme.resolveAppearance('fill-translucent').effects.backdropBlur).to.equal(0);
         expect(subscriptions).to.equal(2);
         scopedTheme.destroy();
         expect(subscriptions).to.equal(0);
+    });
+
+    it('uses the map mode palettes and status colors without changing the application theme', () => {
+        for (const specifications of Object.values(themeSpecifications)) {
+            for (const specification of Object.values(specifications)) {
+                const applicationTheme = new Theme(specification, media);
+                const expectedMapTheme = new Theme(specifications[applicationTheme.otherMode], media);
+                try {
+                    const mapTheme = applicationTheme.forMode(applicationTheme.otherMode);
+                    expect(mapTheme.name).to.equal(applicationTheme.name);
+                    expect(mapTheme.colors).to.deep.equal(expectedMapTheme.colors);
+                    expect(mapTheme.statusColors).to.deep.equal(expectedMapTheme.statusColors);
+                    expect(resolveMapImageMarkerColors(mapTheme)).to.deep.equal(resolveMapImageMarkerColors(expectedMapTheme));
+                    expect(mapTheme.resolveAppearance('fill', 'tertiary').glyphs).to.equal(expectedMapTheme.resolveAppearance('fill', 'tertiary').glyphs);
+                    expect(applicationTheme.mode).to.equal(specification.mode);
+                    expect(applicationTheme.colors).to.deep.equal(Theme.resolveColors(specification));
+                    expect(mapTheme.forMode(applicationTheme.mode)).to.equal(applicationTheme);
+                } finally {
+                    applicationTheme.destroy();
+                    expectedMapTheme.destroy();
+                }
+            }
+        }
     });
 
     it('derives contrast glyphs from the current surface shade', () => {

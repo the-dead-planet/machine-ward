@@ -1,6 +1,6 @@
 import { Option } from "../../model";
 import { ThemeMode, ThemeName, ThemeSpecification } from "./model";
-import { Theme } from "./theme";
+import { palette } from "./palette";
 
 export const themeNameOptions: Option<ThemeName>[] = Object.values(ThemeName)
     .map((value) => ({ value, label: value }));
@@ -72,31 +72,31 @@ export const themeSpecifications: { [key in ThemeName]: { [key in ThemeMode]: Th
     [ThemeName.Default]: standardTheme(
         ThemeName.Default,
         {
-            primary: Theme.palette.teal,
-            secondary: Theme.palette.copper,
-            tertiary: Theme.palette.pink,
-            neutral: Theme.palette['neutral-grey'],
+            primary: palette.teal,
+            secondary: palette.copper,
+            tertiary: palette.pink,
+            neutral: palette['neutral-grey'],
         },
         {
-            primary: Theme.palette.teal,
-            secondary: Theme.palette.yellow,
-            tertiary: Theme.palette.pink,
-            neutral: Theme.palette['neutral-grey'],
+            primary: palette.teal,
+            secondary: palette.yellow,
+            tertiary: palette.pink,
+            neutral: palette['neutral-grey'],
         },
     ),
     [ThemeName.NeonBlue]: standardTheme(
         ThemeName.NeonBlue,
         {
-            primary: Theme.palette.navy,
-            secondary: Theme.palette.navy,
-            tertiary: Theme.palette.copper,
-            neutral: Theme.palette['neutral-grey'],
+            primary: palette.navy,
+            secondary: palette.navy,
+            tertiary: palette.copper,
+            neutral: palette['neutral-grey'],
         },
         {
-            primary: Theme.palette.blue,
-            secondary: Theme.palette.blue,
-            tertiary: Theme.palette.copper,
-            neutral: Theme.palette['neutral-grey'],
+            primary: palette.blue,
+            secondary: palette.blue,
+            tertiary: palette.copper,
+            neutral: palette['neutral-grey'],
         },
     ),
     [ThemeName.Batman]: {
@@ -111,10 +111,10 @@ export const themeSpecifications: { [key in ThemeName]: { [key in ThemeMode]: Th
                 },
             },
             colors: {
-                primary: Theme.palette['neutral-blue'],
-                secondary: Theme.palette['neutral-blue'],
-                tertiary: Theme.palette['dark-gold'],
-                neutral: Theme.palette['neutral-blue'],
+                primary: palette['neutral-blue'],
+                secondary: palette['neutral-blue'],
+                tertiary: palette['dark-gold'],
+                neutral: palette['neutral-blue'],
             }
         },
         dark: {
@@ -128,10 +128,10 @@ export const themeSpecifications: { [key in ThemeName]: { [key in ThemeMode]: Th
                 },
             },
             colors: {
-                primary: Theme.palette['neutral-blue'],
-                secondary: Theme.palette['neutral-blue'],
-                tertiary: Theme.palette['luminous-yellow'],
-                neutral: Theme.palette['neutral-blue'],
+                primary: palette['neutral-blue'],
+                secondary: palette['neutral-blue'],
+                tertiary: palette['luminous-yellow'],
+                neutral: palette['neutral-blue'],
             },
         }
     },
@@ -147,10 +147,10 @@ export const themeSpecifications: { [key in ThemeName]: { [key in ThemeMode]: Th
                 }
             },
             colors: {
-                primary: Theme.palette.violet,
-                secondary: Theme.palette.lime,
-                tertiary: Theme.palette['burnt-orange'],
-                neutral: Theme.palette['neutral-grey'],
+                primary: palette.violet,
+                secondary: palette.lime,
+                tertiary: palette['burnt-orange'],
+                neutral: palette['neutral-grey'],
             }
         },
         dark: {
@@ -164,86 +164,86 @@ export const themeSpecifications: { [key in ThemeName]: { [key in ThemeMode]: Th
                 }
             },
             colors: {
-                primary: Theme.palette.violet,
-                secondary: Theme.palette.lime,
-                tertiary: Theme.palette['burnt-orange'],
-                neutral: Theme.palette['deep-violet'],
+                primary: palette.violet,
+                secondary: palette.lime,
+                tertiary: palette['burnt-orange'],
+                neutral: palette['deep-violet'],
             },
         }
     },
     [ThemeName.Foundry]: standardTheme(
         ThemeName.Foundry,
         {
-            primary: Theme.palette.mahogany,
-            secondary: Theme.palette.copper,
-            tertiary: Theme.palette.teal,
-            neutral: Theme.palette['neutral-brown'],
+            primary: palette.mahogany,
+            secondary: palette.copper,
+            tertiary: palette.teal,
+            neutral: palette['neutral-brown'],
         },
         {
-            primary: Theme.palette.coral,
-            secondary: Theme.palette.copper,
-            tertiary: Theme.palette.aqua,
-            neutral: Theme.palette['neutral-brown'],
+            primary: palette.coral,
+            secondary: palette.copper,
+            tertiary: palette.aqua,
+            neutral: palette['neutral-brown'],
         },
     ),
     [ThemeName.Aurora]: standardTheme(
         ThemeName.Aurora,
         {
-            primary: Theme.palette.indigo,
-            secondary: Theme.palette.mint,
-            tertiary: Theme.palette.rose,
-            neutral: Theme.palette['neutral-violet'],
+            primary: palette.indigo,
+            secondary: palette.mint,
+            tertiary: palette.rose,
+            neutral: palette['neutral-violet'],
         },
         {
-            primary: Theme.palette.purple,
-            secondary: Theme.palette.mint,
-            tertiary: Theme.palette.rose,
-            neutral: Theme.palette['deep-violet'],
+            primary: palette.purple,
+            secondary: palette.mint,
+            tertiary: palette.rose,
+            neutral: palette['deep-violet'],
         },
     ),
     [ThemeName.SolarFlare]: standardTheme(
         ThemeName.SolarFlare,
         {
-            primary: Theme.palette.orange,
-            secondary: Theme.palette.plum,
-            tertiary: Theme.palette.green,
-            neutral: Theme.palette['neutral-khaki'],
+            primary: palette.orange,
+            secondary: palette.plum,
+            tertiary: palette.green,
+            neutral: palette['neutral-khaki'],
         },
         {
-            primary: Theme.palette.peach,
-            secondary: Theme.palette.magenta,
-            tertiary: Theme.palette.mint,
-            neutral: Theme.palette['neutral-olive'],
+            primary: palette.peach,
+            secondary: palette.magenta,
+            tertiary: palette.mint,
+            neutral: palette['neutral-olive'],
         },
     ),
     [ThemeName.Verdant]: standardTheme(
         ThemeName.Verdant,
         {
-            primary: Theme.palette.green,
-            secondary: Theme.palette.chartreuse,
-            tertiary: Theme.palette.plum,
-            neutral: Theme.palette['neutral-green'],
+            primary: palette.green,
+            secondary: palette.chartreuse,
+            tertiary: palette.plum,
+            neutral: palette['neutral-green'],
         },
         {
-            primary: Theme.palette.mint,
-            secondary: Theme.palette.lime,
-            tertiary: Theme.palette.magenta,
-            neutral: Theme.palette['neutral-green'],
+            primary: palette.mint,
+            secondary: palette.lime,
+            tertiary: palette.magenta,
+            neutral: palette['neutral-green'],
         },
     ),
     [ThemeName.GoldenCircuit]: standardTheme(
         ThemeName.GoldenCircuit,
         {
-            primary: Theme.palette['dark-gold'],
-            secondary: Theme.palette.navy,
-            tertiary: Theme.palette.mahogany,
-            neutral: Theme.palette['neutral-khaki'],
+            primary: palette['dark-gold'],
+            secondary: palette.navy,
+            tertiary: palette.mahogany,
+            neutral: palette['neutral-khaki'],
         },
         {
-            primary: Theme.palette['luminous-yellow'],
-            secondary: Theme.palette.blue,
-            tertiary: Theme.palette.coral,
-            neutral: Theme.palette['neutral-khaki'],
+            primary: palette['luminous-yellow'],
+            secondary: palette.blue,
+            tertiary: palette.coral,
+            neutral: palette['neutral-khaki'],
         },
     ),
 };
