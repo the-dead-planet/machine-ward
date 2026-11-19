@@ -6,7 +6,6 @@ import { useSubjectState } from "@tinker-chest";
 import {
     getIconImageId,
     getImageSource,
-    getImageSourceWithDraggingState,
     getImageSourceWithMarkerVisibility,
     getImageSourceWithAnchors,
     IMAGE_MARKER_ANCHOR_ID,
@@ -19,7 +18,6 @@ import {
     routeLayerIds,
     imageLayerIds,
     imageSourceIds,
-    draggingImage$,
     useAnimatedImageMarkerSource,
 } from "@the-dead-planet/nav-gauge-gears-route-story-common";
 import { MobileMap } from "@mobile-apparatus";
@@ -34,6 +32,7 @@ import { CircularMapThumbnail } from "./CircularMapThumbnail";
 import { ImageCountBadges } from './ImageCountBadges';
 import { ImageGroupPager } from "./ImageGroupPager";
 import { ImageGroupPagerDimensions } from "./model";
+import { useImageDragFeatureState } from "./useImageDragFeatureState";
 
 export const ImagesLayer: FC<OverlayComponentProps<MobileMap> & MobileRouteStoryProps> = ({
     map,
@@ -53,7 +52,7 @@ export const ImagesLayer: FC<OverlayComponentProps<MobileMap> & MobileRouteStory
     const [routeGeometryData] = useSubjectState(routeGeometryData$);
     const [images] = useSubjectState(images$);
     const [{ markerLayerVisibility }] = useSubjectState(state$);
-    const [draggingImage] = useSubjectState(draggingImage$);
+    const thumbnailsSourceRef = useImageDragFeatureState();
     const [selectedImageId] = useSubjectState(selectedImageId$);
     const loadedImages = useLoadedMobileImages(images);
     const originalSource = useMemo(
@@ -68,8 +67,8 @@ export const ImagesLayer: FC<OverlayComponentProps<MobileMap> & MobileRouteStory
     const connections = useImageMarkerConnections(originalSource, visibleSource);
     useMapImageInteraction(map, images$, geojson, routeGeometryData, markerLayerVisibility, hitTargets, paginationTarget, paginationDimensions, groupedSource === targetSource);
     const renderedSource = useMemo(
-        () => getImageSourceWithDraggingState(getImageSourceWithAnchors(originalSource, visibleSource), draggingImage?.id ?? null),
-        [originalSource, visibleSource, draggingImage],
+        () => getImageSourceWithAnchors(originalSource, visibleSource),
+        [originalSource, visibleSource],
     );
 
     const imageSources: Record<string, ImageEntry> = Object.fromEntries(
@@ -121,7 +120,7 @@ export const ImagesLayer: FC<OverlayComponentProps<MobileMap> & MobileRouteStory
                     )}
                 />
             </GeoJSONSource>
-            <GeoJSONSource id={imageSourceIds.thumbnails} data={renderedSource}>
+            <GeoJSONSource ref={thumbnailsSourceRef} id={imageSourceIds.thumbnails} data={renderedSource}>
                 <Layer
                     type="symbol"
                     id={imageLayerIds.anchors}
