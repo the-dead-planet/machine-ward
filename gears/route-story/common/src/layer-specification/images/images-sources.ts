@@ -94,29 +94,6 @@ export function getImageSourceWithMarkerVisibility(
     };
 }
 
-export function getImageSourceWithDraggingState(
-    source: GeoJSON.FeatureCollection<GeoJSON.Point, ImageFeatureProperties>,
-    imageId: number | null,
-): typeof source {
-    if (imageId === null) {
-        return source;
-    }
-    return {
-        ...source,
-        features: source.features.map((feature) =>
-            feature.properties.imageId === imageId
-                ? {
-                      ...feature,
-                      properties: {
-                          ...feature.properties,
-                          [FeatureStateProps.Dragging]: true,
-                      },
-                  }
-                : feature,
-        ),
-    };
-}
-
 export const getImageMarkerFeatureId = (imageId: number | string): number => Math.abs(Number(imageId)) * 2 + 1;
 export const getImageMarkerAnchorId = (imageId: number | string): number => getImageMarkerFeatureId(imageId) + 1;
 

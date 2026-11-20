@@ -10,3 +10,4 @@ export * from "./image-marker-outline";
 export * from "./outlined-thumbnail";
 export * from "./useAnimatedImageMarkerSource";
 export * from "./useImageMarkerConnections";
+export * from "./useImageDragState";

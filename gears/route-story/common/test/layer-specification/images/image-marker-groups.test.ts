@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { describe, it } from "mocha";
 import { getSliderImageMarkers, groupImageMarkers } from "../../../src/tinkers/images";
 import { getGroupedImageSource, getImageMarkerConnections } from "../../../src/layer-specification/images/grouped-image-source";
-import { getImageDragPreviewSource, getImageSourceWithDraggingState, getImageSourceWithAnchors, ImageFeature } from "../../../src/layer-specification/images/images-sources";
+import { getImageDragPreviewSource, getImageSourceWithAnchors, ImageFeature } from "../../../src/layer-specification/images/images-sources";
 import {
     expandedImageGroupId$,
     selectedImageId$,
@@ -166,8 +166,6 @@ describe("Image marker groups", () => {
         ).to.equal(true);
         expect(anchors.map(({ geometry }) => geometry.coordinates)).to.deep.equal(source.features.map(({ geometry }) => geometry.coordinates));
         expect(anchors[1].properties.markerSelected).to.equal(true);
-        expect(getImageSourceWithDraggingState(grouped, 2).features).to.have.length(2);
-        expect(grouped.features).to.have.length(2);
     });
 
     it("keeps separate route passes apart and limits each stack to a 100-metre route span at any zoom", async () => {

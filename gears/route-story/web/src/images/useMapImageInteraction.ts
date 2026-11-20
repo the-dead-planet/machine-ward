@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef } from "react";
 import type * as maplibregl from "maplibre-gl";
-import { FeatureStateProps } from "@apparatus";
 import { GeoJson, useSubjectState } from "@tinker-chest";
 import { MapDataHandlers } from "@web-apparatus";
 import {
@@ -8,8 +7,6 @@ import {
     draggingImage$,
     draggingPlacement$,
     DRAGGED_IMAGE_ID,
-    getImageMarkerAnchorId,
-    getImageMarkerFeatureId,
     getRoutePlacement,
     highlightIdsBySourceId$,
     ImageMarkerSource,
@@ -21,6 +18,7 @@ import {
 import { useLoadedWebImages } from "../hooks/useLoadedWebImages";
 import { WebRouteStoryProps } from "../model";
 import { findMapImageFeature } from "./tinkers";
+import { useImageDragFeatureState } from "./useImageDragFeatureState";
 
 interface Options extends Pick<WebRouteStoryProps, "images$" | "state$"> {
     map: maplibregl.Map;
@@ -137,26 +135,7 @@ export const useMapImageInteraction = ({
         [map, sourceDataGeojson, state$],
     );
 
-    useEffect(() => {
-        if (draggingImage === null) {
-            return;
-        }
-        const update = (value: boolean) => {
-            if (map.getSource(imageSourceIds.thumbnails)) {
-                for (const id of [
-                    getImageMarkerFeatureId(draggingImage.id),
-                    getImageMarkerAnchorId(draggingImage.id),
-                ]) {
-                    map.setFeatureState(
-                        { source: imageSourceIds.thumbnails, id },
-                        { [FeatureStateProps.Dragging]: value },
-                    );
-                }
-            }
-        };
-        update(true);
-        return () => update(false);
-    }, [map, draggingImage]);
+    useImageDragFeatureState(map);
 
     useEffect(() => {
         if (draggingImage === null || draggingImage.interaction !== "map") {

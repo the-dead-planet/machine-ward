@@ -41,4 +41,35 @@ describe("Route player alignment", () => {
             });
         }
     });
+
+    it("keeps extracted slider markers keyboard-selectable", () => {
+        cy.get('span[role="button"][aria-label*="Image"]', { timeout: 20000 }).first()
+            .focus()
+            .trigger("keydown", { key: "Enter" });
+        cy.get('span[role="button"][aria-label*="Image"]').first().should("have.attr", "aria-pressed", "true");
+        cy.get('span[role="button"][aria-label*="Image"]').first()
+            .trigger("keydown", { key: " " });
+        cy.get('span[role="button"][aria-label*="Image"]').first().should("have.attr", "aria-pressed", "false");
+    });
+
+    it("keeps slider markers above the range input so pointer hover reaches them", () => {
+        cy.get('span[role="button"][aria-label*="Image"]', { timeout: 20000 })
+            .first()
+            .should("be.visible");
+        cy.get('span[role="button"][aria-label*="Image"]').first()
+            .trigger("mouseover", { waitForAnimations: false });
+        cy.get('span[role="button"][aria-label*="Image"]').first()
+            .invoke("attr", "class").should("match", /highlight/);
+        cy.get('span[role="button"][aria-label*="Image"]').first()
+            .trigger("mouseout", { waitForAnimations: false });
+        cy.get('span[role="button"][aria-label*="Image"]').first()
+            .invoke("attr", "class").should("not.match", /highlight/);
+        cy.get('input[aria-label="Slider"]').should(($range) => {
+            const input = $range[0];
+            const bounds = input.getBoundingClientRect();
+            const hasReachableTrack = Array.from({ length: 9 }, (_, index) => (index + 1) / 10)
+                .some((fraction) => input.ownerDocument.elementFromPoint(bounds.left + bounds.width * fraction, bounds.top + bounds.height / 2) === input);
+            expect(hasReachableTrack, "the range remains pointer-accessible between markers").to.equal(true);
+        });
+    });
 });

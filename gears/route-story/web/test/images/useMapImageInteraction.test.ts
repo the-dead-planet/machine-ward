@@ -47,6 +47,7 @@ it("keeps handlers stable, distinguishes taps from drags, preserves grab offsets
         },
         getSource: () => ({}),
         setFeatureState: () => {},
+        removeFeatureState: () => {},
         dragPan: {
             enable: () => {
                 panning = true;

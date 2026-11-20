@@ -14,6 +14,6 @@ export interface MobileMap {
     onLongPressHandlers$: BehaviorSubject<Map<string, (event: PressEvent) => Promise<void>>>
     onPanResponderStartHandlers$: BehaviorSubject<Map<string, (event: GestureResponderEvent) => Promise<void>>>
     onPanResponderShouldStartHandlers$: BehaviorSubject<Map<string, (event: GestureResponderEvent) => boolean>>
-    onPanResponderMoveHandlers$: BehaviorSubject<Map<string, (lngLat: number[], event: GestureResponderEvent) => Promise<void>>>
-    onPanResponderEndHandlers$: BehaviorSubject<Map<string, (lngLat: number[], event: GestureResponderEvent, cancelled?: boolean) => Promise<void>>>
+    onPanResponderMoveHandlers$: BehaviorSubject<Map<string, (event: GestureResponderEvent) => Promise<void>>>
+    onPanResponderEndHandlers$: BehaviorSubject<Map<string, (event: GestureResponderEvent, cancelled?: boolean) => Promise<void>>>
 }

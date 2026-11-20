@@ -2,32 +2,6 @@ import { useMemo } from "react";
 import { GestureResponderEvent, PanResponder } from "react-native";
 import { MobileMap } from "@mobile-apparatus";
 
-type PanHandler = (
-    lngLat: number[],
-    event: GestureResponderEvent,
-    cancelled?: boolean,
-) => Promise<void>;
-
-const dispatch = async (
-    map: MobileMap,
-    handlers: ReadonlyMap<string, PanHandler>,
-    event: GestureResponderEvent,
-    cancelled = false,
-) => {
-    const mapRef = map.map$.value;
-    if (!mapRef || !handlers.size) {
-        return;
-    }
-    const { locationX, locationY } = event.nativeEvent;
-    const [offsetX, offsetY] = map.panResponderOffset;
-    const lngLat = await mapRef.unproject([locationX + offsetX, locationY + offsetY]);
-    await Promise.all(
-        [...handlers.values()].map((handler) =>
-            handler(lngLat, event, cancelled),
-        ),
-    );
-};
-
 export const useMapPanResponder = (map: MobileMap) =>
     useMemo(() => {
         let acceptingMoves = false;
@@ -52,10 +26,8 @@ export const useMapPanResponder = (map: MobileMap) =>
                 ) {
                     const event = latestMove;
                     latestMove = null;
-                    await dispatch(
-                        map,
-                        map.onPanResponderMoveHandlers$.value,
-                        event,
+                    await Promise.all(
+                        [...map.onPanResponderMoveHandlers$.value.values()].map((handler) => handler(event)),
                     );
                 }
             })().finally(() => {
@@ -74,11 +46,8 @@ export const useMapPanResponder = (map: MobileMap) =>
                 try {
                     await ready;
                     await moving;
-                    await dispatch(
-                        map,
-                        map.onPanResponderEndHandlers$.value,
-                        event,
-                        cancelled,
+                    await Promise.all(
+                        [...map.onPanResponderEndHandlers$.value.values()].map((handler) => handler(event, cancelled)),
                     );
                 } finally {
                     map.panResponderOffset = [0, 0];

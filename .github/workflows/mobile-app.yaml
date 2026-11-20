@@ -44,6 +44,9 @@ jobs:
   android-instrumentation:
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    env:
+      # Fresh NDK installs must not invalidate unchanged compiler binaries.
+      CCACHE_COMPILERCHECK: content
     concurrency:
       group: ${{ github.workflow }}-android-${{ github.event.pull_request.number || github.run_id }}
       cancel-in-progress: true

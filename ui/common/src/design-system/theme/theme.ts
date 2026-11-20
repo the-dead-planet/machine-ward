@@ -31,6 +31,7 @@ import {
 import { ColorShade, ColorVariant, DesignSystemColor, SpacingVariant, StatusColor, SurfaceVariant } from '../model';
 import { DEFAULT_COLOR, DEFAULT_VARIANT, translucentSurfaceOpacity } from '../tinkers';
 import { palette, resolveContrastShade } from './palette';
+import { themeSpecifications } from './specifications';
 import {
     elevationSpecifications,
     themeBreakpointThresholds,
@@ -734,10 +735,7 @@ export class Theme {
         let theme = this.modeThemes.get(mode);
         if (!theme) {
             theme = new Theme(
-                {
-                    ...this.specification,
-                    mode,
-                },
+                themeSpecifications[this.specification.themeName][mode],
                 this.media,
                 this.supportsBackdropBlur,
             );
