@@ -8,5 +8,6 @@ export * from './model';
 export * from './layer-specification';
 export * from './tinkers';
 export * from './player/player-slider/slider-markers/useSliderMarkerGroups';
+export * from './player/player-slider/slider-markers/useSliderMarkerReadout';
 
 export default RouteStoryGear;

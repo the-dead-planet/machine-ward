@@ -6,6 +6,7 @@ import { MarkerImage, useMultipleTranslations } from "@apparatus";
 import { ParsingResultWithError, useSubjectState } from "@tinker-chest";
 import {
     RouteGeometryData,
+    Animatrix,
     RouteTimes,
     RouteStoryTranslationKey,
     draggingImage$,
@@ -17,6 +18,7 @@ import { Icons } from "@ui";
 import { Button, Tooltip } from "@web-ui";
 import { WebMarkerImageData } from "../../../images/image-parser";
 import { SliderMarker } from "./SliderMarker";
+import { SliderMarkerHoverReadout } from "./SliderMarkerReadout";
 import { useSliderMarkerDrag } from "./useSliderMarkerDrag";
 import styles from "./slider-markers.module.css";
 
@@ -30,6 +32,7 @@ interface Props {
     data$: BehaviorSubject<ParsingResultWithError>;
     routeGeometryData$: BehaviorSubject<RouteGeometryData | null>;
     routeTimes$: BehaviorSubject<RouteTimes | null>;
+    animatrix: Animatrix;
     drag: ReturnType<typeof useSliderMarkerDrag>;
     fitBoundsHandler: (map: maplibregl.Map, boundingBox?: GeoJSON.BBox) => void;
 }
@@ -69,7 +72,14 @@ export const SliderMarkerGroup: FC<Props> = (props) => {
                     })}
                 />
             </Tooltip>
-            <SliderMarker imageId={image.id} imageIds={imageIds} gearId={gearId} translationKey={translationKey} drag={props.drag} />
+            <SliderMarker
+                imageId={image.id}
+                imageIds={imageIds}
+                gearId={gearId}
+                translationKey={translationKey}
+                drag={props.drag}
+                readout={<SliderMarkerHoverReadout {...props} distanceFraction={image.distanceFraction} />}
+            />
         </div>
     );
 };

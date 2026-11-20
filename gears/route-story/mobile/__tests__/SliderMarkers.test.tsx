@@ -32,22 +32,37 @@ jest.mock("react-native", () => {
         }),
     });
 });
-jest.mock("@apparatus", () => ({
-    useMultipleTranslations: (keys: { t: string }[]) => keys.map(({ t }) => t),
-}));
+jest.mock("@apparatus", () => {
+    const { BehaviorSubject } = jest.requireActual<typeof import("rxjs")>("rxjs");
+    const settings$ = new BehaviorSubject({ distanceUnit: "metric", locale: "en" });
+    return {
+        useMultipleTranslations: (keys: { t: string }[]) => keys.map(({ t }) => t),
+        useMachineWard: () => ({
+            individuator: {
+                settings$,
+                formatTimestamp: (epoch: number) => new Date(epoch).toISOString(),
+            },
+        }),
+    };
+});
 jest.mock("@mobile-apparatus", () => ({}));
-jest.mock("@ui", () => ({
-    ...jest.requireActual("../../../../ui/common/src/forms/clock-input/math"),
-    useTheme: () => ({ color: () => "yellow", isDark: false }),
-    Icons: { NounProject: { Target: "target" } },
-}));
+jest.mock("@ui", () => {
+    const { BehaviorSubject } = jest.requireActual<typeof import("rxjs")>("rxjs");
+    const media$ = new BehaviorSubject({ isLessThanMd: false });
+    return {
+        ...jest.requireActual("../../../../ui/common/src/forms/clock-input/math"),
+        useTheme: () => ({ color: () => "yellow", isDark: false, media$ }),
+        FontType: { Numeric: "numeric" },
+        Icons: { NounProject: { Target: "target" } },
+    };
+});
 jest.mock("@mobile-ui", () => {
     const { View, Text } = jest.requireActual<typeof import("react-native")>("react-native");
-    return { Button: View, Text, Tooltip: View };
+    return { Button: View, Caption: Text, Text, Tooltip: View };
 });
 jest.mock("../../common/src/layer-specification/images/images-layers", () => {
     const { BehaviorSubject } = jest.requireActual<typeof import("rxjs")>("rxjs");
-    return { selectedImageId$: new BehaviorSubject(null) };
+    return { selectedImageId$: new BehaviorSubject(null), draggingPlacement$: new BehaviorSubject(null) };
 });
 jest.mock("@the-dead-planet/nav-gauge-gears-route-story-common", () => {
     const { BehaviorSubject } = jest.requireActual<typeof import("rxjs")>("rxjs");
@@ -55,9 +70,9 @@ jest.mock("@the-dead-planet/nav-gauge-gears-route-story-common", () => {
         ...jest.requireActual("../../common/src/tinkers/images"),
         ...jest.requireActual("../../common/src/animatrix/animatrix"),
         ...jest.requireActual("../../common/src/player/player-slider/slider-markers/useSliderMarkerGroups"),
+        ...jest.requireActual("../../common/src/player/player-slider/slider-markers/useSliderMarkerReadout"),
         ...jest.requireMock("../../common/src/layer-specification/images/images-layers"),
         draggingImage$: new BehaviorSubject(null),
-        draggingPlacement$: new BehaviorSubject(null),
         highlightIdsBySourceId$: new BehaviorSubject(new Map()),
         imageSourceIds: { thumbnails: "thumbnails" },
         RouteStoryTranslationKey: { Image: "Image", PanToImage: "Pan to image" },
@@ -86,14 +101,23 @@ test("slider taps never enter drag state; movement commits on release but not ca
     const subscription = draggingImage$.subscribe((value) => dragStates.push(value));
     const touch = { nativeEvent: { pageX: 100, pageY: 30 } } as GestureResponderEvent;
     const gesture = { moveX: 102 } as PanResponderGestureState;
+    const routeTimes$ = new BehaviorSubject<RouteTimes | null>({ startTimeEpoch: 0, duration: 1000 } as RouteTimes);
     const screen = await render(
         <SliderMarkers
             gearId="route-story"
             translationKey={RouteStoryTranslationKey}
             map={{} as MobileMap}
-            data$={new BehaviorSubject<ParsingResultWithError>({ geojson: { type: "FeatureCollection", features: [] } })}
-            routeGeometryData$={new BehaviorSubject<RouteGeometryData | null>({ totalDistanceMeters: 1000 } as RouteGeometryData)}
-            routeTimes$={new BehaviorSubject<RouteTimes | null>({ startTimeEpoch: 0, duration: 1000 } as RouteTimes)}
+            data$={new BehaviorSubject<ParsingResultWithError>({
+                geojson: {
+                    type: "FeatureCollection",
+                    features: [
+                        { type: "Feature", geometry: { type: "Point", coordinates: [0, 0] }, properties: { id: 1, time: "1970-01-01T00:00:00Z" } },
+                        { type: "Feature", geometry: { type: "Point", coordinates: [1, 1] }, properties: { id: 2, time: "1970-01-01T00:00:01Z" } },
+                    ],
+                },
+            })}
+            routeGeometryData$={new BehaviorSubject<RouteGeometryData | null>({ totalDistanceMeters: 1000, lookup: [{ t: 0, lineProgress: 0 }, { t: 1, lineProgress: 1 }] } as RouteGeometryData)}
+            routeTimes$={routeTimes$}
             images$={images$}
             animatrix={new Animatrix()}
             fitBoundsHandler={() => {}}
@@ -116,6 +140,12 @@ test("slider taps never enter drag state; movement commits on release but not ca
             });
             expect(draggingImage$.value).toEqual({ id: 1, interaction: "player" });
             expect(draggingPlacement$.value?.distanceFraction).toBe(0.6);
+            expect(screen.getByText("60% · 0.60 km", { includeHiddenElements: true })).toBeTruthy();
+            expect(screen.getByText("1970-01-01T00:00:00.600Z", { includeHiddenElements: true })).toBeTruthy();
+            await act(() => routeTimes$.next(null));
+            expect(screen.getByText("60% · 0.60 km", { includeHiddenElements: true })).toBeTruthy();
+            expect(screen.queryByText("1970-01-01T00:00:00.600Z", { includeHiddenElements: true })).toBeNull();
+            await act(() => routeTimes$.next({ startTimeEpoch: 0, duration: 1000 } as RouteTimes));
             await act(() => {
                 if (cancelled) {
                     responder.onPanResponderTerminate?.(touch, gesture);
@@ -125,6 +155,7 @@ test("slider taps never enter drag state; movement commits on release but not ca
             });
             expect(draggingImage$.value).toBeNull();
             expect(draggingPlacement$.value).toBeNull();
+            expect(screen.queryByText("60% · 0.60 km", { includeHiddenElements: true })).toBeNull();
         }
         expect(updateImageDistanceFraction).toHaveBeenCalledTimes(1);
         expect(updateImageDistanceFraction).toHaveBeenCalledWith(images$, 1, 0.6);

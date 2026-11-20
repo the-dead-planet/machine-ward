@@ -105,6 +105,15 @@
     pointer-events: none;
 }
 
+.drag-readout {
+    pointer-events: none;
+    position: absolute;
+    bottom: calc(100% + 12px);
+    left: 1px;
+    width: max-content;
+    transform: translateX(-50%);
+}
+
 .route-end-marker-container {
     position: absolute;
     top: 0;

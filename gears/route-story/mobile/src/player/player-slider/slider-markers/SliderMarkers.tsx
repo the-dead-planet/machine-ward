@@ -34,7 +34,7 @@ interface Props {
 }
 
 export const SliderMarkers: FC<Props> = (props) => {
-    const { gearId, translationKey, map, data$, animatrix, fitBoundsHandler } = props;
+    const { map, data$, animatrix, fitBoundsHandler } = props;
     const [animationControls] = useSubjectState(animatrix.controls$);
     const [containerWidth, setContainerWidth] = useState(0);
     const { containerRef, panHandlers, draggingPosition } = useSliderMarkerDrag(props);
@@ -43,7 +43,7 @@ export const SliderMarkers: FC<Props> = (props) => {
         <View ref={containerRef} style={styles.container} onLayout={(event) => setContainerWidth(event.nativeEvent.layout.width)} {...panHandlers}>
             {animationControls.panToWholeRouteAtEnd ? <SliderMarkerPanToWholeRoute map={map} data$={data$} animatrix={animatrix} fitBoundsHandler={fitBoundsHandler} /> : null}
             <SliderMarkerGroups {...props} width={containerWidth} />
-            <DraggedSliderMarker position={draggingPosition} gearId={gearId} translationKey={translationKey} />
+            <DraggedSliderMarker {...props} position={draggingPosition} />
         </View>
     );
 };

@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, ReactNode, useState } from "react";
 import classNames from "classnames";
 import { useMultipleTranslations } from "@apparatus";
 import { useSubjectState } from "@tinker-chest";
@@ -11,7 +11,7 @@ import {
     formatImageMarkerCount,
     RouteStoryTranslationKey,
 } from "@the-dead-planet/nav-gauge-gears-route-story-common";
-import { Span, Tooltip } from "@web-ui";
+import { Span } from "@web-ui";
 import { useSliderMarkerDrag } from "./useSliderMarkerDrag";
 import styles from "./slider-markers.module.css";
 
@@ -21,10 +21,13 @@ interface Props {
     gearId: string;
     translationKey: typeof RouteStoryTranslationKey;
     drag: ReturnType<typeof useSliderMarkerDrag>;
+    readout: ReactNode;
 }
 
 export const SliderMarker: FC<Props> = (props) => {
-    const { imageId, imageIds, gearId, translationKey, drag } = props;
+    const { imageId, imageIds, gearId, translationKey, drag, readout } = props;
+    const [hovered, setHovered] = useState(false);
+    const [focused, setFocused] = useState(false);
     const [imageLabel] = useMultipleTranslations([{ n: gearId, t: translationKey.Image }]);
     const [selectedImageId] = useSubjectState(selectedImageId$);
     const [draggingImage] = useSubjectState(draggingImage$);
@@ -34,7 +37,8 @@ export const SliderMarker: FC<Props> = (props) => {
         selectedImageId === imageId || (draggingImage?.id !== imageId && imageIds.some((id) => highlightIdsBySourceId.get(imageSourceIds.thumbnails)?.has(String(id))));
 
     return (
-        <Tooltip color="tertiary" content={`${imageLabel} ${imageId}`} placement="top" size="xs">
+        <>
+            {(hovered || focused) && draggingImage === null ? readout : null}
             <span
                 role="button"
                 tabIndex={0}
@@ -52,8 +56,16 @@ export const SliderMarker: FC<Props> = (props) => {
                         toggleImageMarkerGroup(imageIds);
                     }
                 }}
-                onMouseEnter={() => highlightIdsBySourceId$.next(new Map([[imageSourceIds.thumbnails, new Set(imageIds.map(String))]]))}
-                onMouseLeave={() => highlightIdsBySourceId$.next(new Map())}
+                onMouseEnter={() => {
+                    setHovered(true);
+                    highlightIdsBySourceId$.next(new Map([[imageSourceIds.thumbnails, new Set(imageIds.map(String))]]));
+                }}
+                onMouseLeave={() => {
+                    setHovered(false);
+                    highlightIdsBySourceId$.next(new Map());
+                }}
+                onFocus={() => setFocused(true)}
+                onBlur={() => setFocused(false)}
                 onPointerDown={(event) => {
                     event.preventDefault();
                     event.currentTarget.setPointerCapture(event.pointerId);
@@ -70,6 +82,6 @@ export const SliderMarker: FC<Props> = (props) => {
                     </Span>
                 )}
             </span>
-        </Tooltip>
+        </>
     );
 };

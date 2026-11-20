@@ -72,4 +72,24 @@ describe("Route player alignment", () => {
             expect(hasReachableTrack, "the range remains pointer-accessible between markers").to.equal(true);
         });
     });
+
+    it("centers the live drag readout above the pan-to icon and removes it on cancellation", () => {
+        cy.get('span[role="button"][aria-label*="Image"]', { timeout: 20000 }).first().then(($marker) => {
+            const marker = $marker[0].getBoundingClientRect();
+            const track = $marker[0].parentElement!.parentElement!.getBoundingClientRect();
+            cy.stub($marker[0], "setPointerCapture");
+            cy.wrap($marker).trigger("pointerdown", { button: 0, clientX: marker.left, clientY: marker.top });
+            cy.get("body").trigger("pointermove", { clientX: marker.left - 10, clientY: marker.top });
+            cy.get("body").trigger("pointermove", { clientX: track.left + track.width / 2, clientY: marker.top });
+        });
+        cy.get('[inert] > span').first().should(($readout) => {
+            expect($readout.text()).to.match(/^50% · /);
+            const readout = $readout[0].getBoundingClientRect();
+            const icon = $readout[0].parentElement!.querySelector("button")!.getBoundingClientRect();
+            expect(Math.abs(readout.left + readout.width / 2 - icon.left - icon.width / 2)).to.be.lessThan(1);
+            expect(readout.bottom).to.be.at.most(icon.top);
+        });
+        cy.get("body").trigger("pointercancel");
+        cy.get('[inert] > span').should("not.exist");
+    });
 });
