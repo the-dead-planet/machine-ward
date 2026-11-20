@@ -15,11 +15,10 @@ import {
     clearImageMarkerSelection,
     toggleImageMarkerGroup,
     updateImageDistanceFraction,
-    getDistanceFractionPercent,
     getRoutePlacementAtPercent,
-    getSliderImageMarkers,
+    getSliderMarkerGroups,
 } from "@the-dead-planet/nav-gauge-gears-route-story-common";
-import { MobileMarkerImageData } from "../../images/image-parser";
+import { MobileMarkerImageData } from "../../../images/image-parser";
 import { MARKER_ACTION_HEIGHT, MARKER_HEIGHT } from "./slider-markers.styles";
 
 const GRAB_RADIUS_PX = 20;
@@ -102,13 +101,7 @@ export const useSliderMarkerDrag = ({ data$, routeGeometryData$, routeTimes$, im
                 return false;
             }
             const offsetX = event.nativeEvent.pageX - metrics.pageX;
-            const groups = getSliderImageMarkers(
-                images$.value,
-                (fraction) => getDistanceFractionPercent(fraction, geojson, routeGeometryData, routeTimes.startTimeEpoch, routeTimes.duration, animationControls.playbackPacing),
-                metrics.width,
-                routeGeometryData.totalDistanceMeters,
-                selectedImageId$.value,
-            );
+            const groups = getSliderMarkerGroups(images$.value, geojson, routeGeometryData, routeTimes, animationControls.playbackPacing, metrics.width, selectedImageId$.value);
             const grabbed = groups.reduce<(typeof groups)[number] | undefined>((nearest, group) => {
                 const distance = Math.abs((group.percent / 100) * metrics.width - offsetX);
                 return distance <= GRAB_RADIUS_PX && (!nearest || distance < Math.abs((nearest.percent / 100) * metrics.width - offsetX)) ? group : nearest;

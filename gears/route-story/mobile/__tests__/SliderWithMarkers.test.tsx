@@ -30,7 +30,7 @@ jest.mock("../src/layers/RouteLayer", () => ({
     currentPointRef$: {},
     linesRef$: {},
 }));
-jest.mock("../src/player/player-slider/SliderMarkers", () => {
+jest.mock("../src/player/player-slider/slider-markers/SliderMarkers", () => {
     const { View } = jest.requireActual<typeof import("react-native")>("react-native");
     return { SliderMarkers: () => <View testID="player-image-markers" /> };
 });

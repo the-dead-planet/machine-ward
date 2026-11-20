@@ -12,7 +12,7 @@ import {
     getRoutePlacementAtPercent,
     clearImageMarkerSelection,
 } from "@the-dead-planet/nav-gauge-gears-route-story-common";
-import { WebMarkerImageData } from "../../images/image-parser";
+import { WebMarkerImageData } from "../../../images/image-parser";
 
 interface Props {
     containerRef: RefObject<HTMLDivElement | null>;

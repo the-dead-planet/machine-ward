@@ -6,7 +6,7 @@ import { ParsingResultWithError, useSubjectState } from "@tinker-chest";
 import { RouteStoryState, RouteStoryTranslationKey, RouteTimes, Animatrix, RouteGeometryData, getRouteDistanceFraction, getRouteTimelinePositionForDistanceFraction } from "@the-dead-planet/nav-gauge-gears-route-story-common";
 import { Slider } from "@mobile-ui";
 import { currentPointRef$, linesRef$ } from "../../layers/RouteLayer";
-import { SliderMarkers } from "./SliderMarkers";
+import { SliderMarkers } from "./slider-markers/SliderMarkers";
 import { PlayerSliderLabels } from "./PlayerSliderLabels";
 import { MobileMarkerImageData } from "../../images/image-parser";
 import { MobileMap } from "@mobile-apparatus";

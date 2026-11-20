@@ -3,6 +3,7 @@ import { expect } from "chai";
 import { getDistanceFractionPercent, getRouteDistanceFraction, getRouteGeometryData, getRoutePlacement, getRoutePlacementPercent, getRouteSourceData, getRouteTimelinePositionForDistanceFraction, getSplineHeading, getRouteLngLatAtDistanceFraction } from "../src/tinkers";
 import { GeoJson } from "@tinker-chest";
 import { defaultRouteStoryState } from "../src";
+import { getSliderMarkerGroups } from "../src/player/player-slider/slider-markers/useSliderMarkerGroups";
 const route: GeoJson = {
     type: "FeatureCollection",
     features: [
@@ -64,6 +65,16 @@ describe("Route story gear", () => {
             expect(getRouteDistanceFraction(90_000, route, routeTimes, routeGeometryData)).to.equal(0.625);
             expect(getDistanceFractionPercent(0.25, route, routeGeometryData, startTimeEpoch, routeTimes.duration, 'distance')).to.equal(25);
             expect(getDistanceFractionPercent(0.25, route, routeGeometryData, startTimeEpoch, routeTimes.duration, 'timeline')).to.equal(50);
+            const images = [{ id: 1, distanceFraction: 0.25 }];
+            expect(getSliderMarkerGroups(images, route, routeGeometryData, routeTimes, 'distance', 200, 1)[0].percent).to.equal(25);
+            expect(getSliderMarkerGroups(images, route, routeGeometryData, routeTimes, 'timeline', 200, 1)[0].percent).to.equal(50);
+        });
+
+        it("omits slider marker groups until route data is available", () => {
+            const images = [{ id: 1, distanceFraction: 0.25 }];
+            expect(getSliderMarkerGroups(images, undefined, routeGeometryData, routeTimes, 'distance', 200, null)).to.deep.equal([]);
+            expect(getSliderMarkerGroups(images, route, null, routeTimes, 'distance', 200, null)).to.deep.equal([]);
+            expect(getSliderMarkerGroups(images, route, routeGeometryData, null, 'distance', 200, null)).to.deep.equal([]);
         });
 
         it("provides finite headings at both route ends", () => {

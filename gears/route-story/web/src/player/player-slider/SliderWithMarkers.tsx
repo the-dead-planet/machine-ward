@@ -8,7 +8,7 @@ import { RouteStoryState, RouteStoryTranslationKey, RouteTimes, Animatrix, Route
 import { updateRouteLayer } from "../../tinkers";
 import { Slider } from "@web-ui";
 import { WebMarkerImageData } from "../../images/image-parser";
-import { SliderMarkers } from "./SliderMarkers";
+import { SliderMarkers } from "./slider-markers/SliderMarkers";
 import { PlayerSliderLabels } from "./PlayerSliderLabels";
 import { WebPlayerOperator } from "../../model";
 import styles from './player-slider.module.css';

@@ -13,7 +13,7 @@ import {
 } from "@the-dead-planet/nav-gauge-gears-route-story-common";
 import { Icons } from "@ui";
 import { Button, Tooltip } from "@mobile-ui";
-import { MobileMarkerImageData } from "../../images/image-parser";
+import { MobileMarkerImageData } from "../../../images/image-parser";
 import { SliderMarker } from "./SliderMarker";
 import { styles as sharedStyles } from "./slider-markers.styles";
 

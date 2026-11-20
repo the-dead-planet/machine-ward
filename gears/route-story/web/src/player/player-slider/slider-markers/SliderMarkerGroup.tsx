@@ -15,7 +15,7 @@ import {
 } from "@the-dead-planet/nav-gauge-gears-route-story-common";
 import { Icons } from "@ui";
 import { Button, Tooltip } from "@web-ui";
-import { WebMarkerImageData } from "../../images/image-parser";
+import { WebMarkerImageData } from "../../../images/image-parser";
 import { SliderMarker } from "./SliderMarker";
 import { useSliderMarkerDrag } from "./useSliderMarkerDrag";
 import styles from "./slider-markers.module.css";

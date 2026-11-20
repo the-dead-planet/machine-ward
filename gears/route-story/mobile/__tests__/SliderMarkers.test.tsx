@@ -15,9 +15,9 @@ import {
     toggleImageMarkerGroup,
     updateImageDistanceFraction,
 } from "@the-dead-planet/nav-gauge-gears-route-story-common";
-import { SliderMarkers } from "../src/player/player-slider/SliderMarkers";
-import { SliderMarkerGroup } from "../src/player/player-slider/SliderMarkerGroup";
-import { SliderMarkerPanToWholeRoute } from "../src/player/player-slider/SliderMarkerPanToWholeRoute";
+import { SliderMarkers } from "../src/player/player-slider/slider-markers/SliderMarkers";
+import { SliderMarkerGroup } from "../src/player/player-slider/slider-markers/SliderMarkerGroup";
+import { SliderMarkerPanToWholeRoute } from "../src/player/player-slider/slider-markers/SliderMarkerPanToWholeRoute";
 import { MobileMarkerImageData } from "../src/images/image-parser";
 
 jest.mock("react-native", () => {
@@ -45,15 +45,20 @@ jest.mock("@mobile-ui", () => {
     const { View, Text } = jest.requireActual<typeof import("react-native")>("react-native");
     return { Button: View, Text, Tooltip: View };
 });
+jest.mock("../../common/src/layer-specification/images/images-layers", () => {
+    const { BehaviorSubject } = jest.requireActual<typeof import("rxjs")>("rxjs");
+    return { selectedImageId$: new BehaviorSubject(null) };
+});
 jest.mock("@the-dead-planet/nav-gauge-gears-route-story-common", () => {
     const { BehaviorSubject } = jest.requireActual<typeof import("rxjs")>("rxjs");
     return {
         ...jest.requireActual("../../common/src/tinkers/images"),
         ...jest.requireActual("../../common/src/animatrix/animatrix"),
+        ...jest.requireActual("../../common/src/player/player-slider/slider-markers/useSliderMarkerGroups"),
+        ...jest.requireMock("../../common/src/layer-specification/images/images-layers"),
         draggingImage$: new BehaviorSubject(null),
         draggingPlacement$: new BehaviorSubject(null),
         highlightIdsBySourceId$: new BehaviorSubject(new Map()),
-        selectedImageId$: new BehaviorSubject(null),
         imageSourceIds: { thumbnails: "thumbnails" },
         RouteStoryTranslationKey: { Image: "Image", PanToImage: "Pan to image" },
         getDistanceFractionPercent: (fraction: number) => fraction * 100,
