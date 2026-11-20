@@ -11,9 +11,11 @@ import { useMapPanResponder } from "../src/machine/map-canvas/useMapPanResponder
 test("keeps the responder stable, coalesces stale moves, and marks cancellation", async () => {
     const create = jest.spyOn(PanResponder, "create");
     const moves: number[] = [];
+    const move = jest.fn(async (event: GestureResponderEvent) => {
+        moves.push(event.nativeEvent.locationX);
+    });
     const ended = jest.fn(
         async (
-            _coordinate: number[],
             _event: GestureResponderEvent,
             _cancelled?: boolean,
         ) => {},
@@ -33,9 +35,7 @@ test("keeps the responder stable, coalesces stale moves, and marks cancellation"
             new Map([
                 [
                     "image",
-                    async (coordinate: number[]) => {
-                        moves.push(coordinate[0]);
-                    },
+                    move,
                 ],
             ]),
         ),
@@ -62,13 +62,14 @@ test("keeps the responder stable, coalesces stale moves, and marks cancellation"
         expect(map.dragPan$.value).toBe(false);
         await starting;
         expect(unproject).not.toHaveBeenCalled();
-        let releaseProjection: (coordinate: number[]) => void = () => {
-            throw new Error("Projection was not started");
+        let releaseMove: () => void = () => {
+            throw new Error("Move was not started");
         };
-        unproject.mockImplementationOnce(
-            () =>
+        move.mockImplementationOnce(
+            (event) =>
                 new Promise((resolve) => {
-                    releaseProjection = resolve;
+                    moves.push(event.nativeEvent.locationX);
+                    releaseMove = resolve;
                 }),
         );
         await act(async () => {
@@ -77,13 +78,16 @@ test("keeps the responder stable, coalesces stale moves, and marks cancellation"
             callbacks.onPanResponderMove?.(event(2), gesture);
             callbacks.onPanResponderMove?.(event(3), gesture);
             callbacks.onPanResponderMove?.(event(4), gesture);
-            releaseProjection([1, 0]);
+            releaseMove();
             await new Promise<void>((resolve) => setImmediate(resolve));
         });
         expect(moves).toEqual([1, 4]);
-        await callbacks.onPanResponderRelease?.(event(5), gesture);
+        const release = event(5);
+        const projectionCalls = unproject.mock.calls.length;
+        await callbacks.onPanResponderRelease?.(release, gesture);
         expect(map.dragPan$.value).toBe(true);
-        expect(ended.mock.calls[0][0]).toEqual([5, 0]);
+        expect(ended).toHaveBeenCalledWith(release, false);
+        expect(unproject).toHaveBeenCalledTimes(projectionCalls);
 
         map.onPanResponderMoveHandlers$.next(new Map());
         await hook.rerender(undefined);
@@ -92,11 +96,11 @@ test("keeps the responder stable, coalesces stale moves, and marks cancellation"
 
         await callbacks.onPanResponderGrant?.(event(6), gesture);
         map.panResponderOffset = [0, 35];
-        await callbacks.onPanResponderTerminate?.(event(7), gesture);
-        expect(ended.mock.calls[1][0]).toEqual([7, 35]);
+        const cancellation = event(7);
+        await callbacks.onPanResponderTerminate?.(cancellation, gesture);
+        expect(ended).toHaveBeenLastCalledWith(cancellation, true);
         expect(map.panResponderOffset).toEqual([0, 0]);
         callbacks.onPanResponderMove?.(event(8), gesture);
-        expect(ended.mock.calls[1][2]).toBe(true);
         expect(moves).toEqual([1, 4]);
     } finally {
         await hook.unmount();

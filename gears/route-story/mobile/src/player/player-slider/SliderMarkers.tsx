@@ -140,13 +140,12 @@ export const SliderMarkers: FC<Props> = ({
     const containerRef = useRef<HostInstance>(null);
     const containerMetricsRef = useRef({ pageX: 0, pageY: 0, width: 0 });
     const draggingPositionRef = useRef(new Animated.Value(0));
-    const isDraggingPlayerRef = useRef(false);
     const dragGestureRef = useRef<{
         startX: number;
+        imageId: number;
         imageIds: number[];
         moved: boolean;
     } | null>(null);
-    isDraggingPlayerRef.current = draggingImage?.interaction === "player";
 
     useEffect(() => {
         containerRef.current?.measureInWindow((x, y, width) => {
@@ -176,14 +175,6 @@ export const SliderMarkers: FC<Props> = ({
             )
             : [];
 
-    const beginDrag = (image: MarkerImage<MobileMarkerImageData>) => {
-        setDraggingImage({ id: image.id, interaction: "player" });
-        setHighlightIdsBySourceId(new Map([[imageSourceIds.thumbnails, new Set([String(image.id)])]]));
-        containerRef.current?.measureInWindow((x, y, width) => {
-            containerMetricsRef.current = { pageX: x, pageY: y, width };
-        });
-    };
-
     const updateDraggingFeature = (pageX: number) => {
         const gesture = dragGestureRef.current;
         if (
@@ -192,7 +183,11 @@ export const SliderMarkers: FC<Props> = ({
         ) {
             return;
         }
-        gesture.moved = true;
+        if (!gesture.moved) {
+            gesture.moved = true;
+            setDraggingImage({ id: gesture.imageId, interaction: "player" });
+            setHighlightIdsBySourceId(new Map([[imageSourceIds.thumbnails, new Set([String(gesture.imageId)])]]));
+        }
         const metrics = containerMetricsRef.current;
         if (metrics.width <= 0) {
             return;
@@ -285,11 +280,14 @@ export const SliderMarkers: FC<Props> = ({
             }
             dragGestureRef.current = {
                 startX: event.nativeEvent.pageX,
+                imageId: grabbed.image.id,
                 imageIds: grabbed.imageIds,
                 moved: false,
             };
             draggingPositionRef.current.setValue(grabbed.percent);
-            beginDrag(grabbed.image);
+            containerRef.current?.measureInWindow((x, y, width) => {
+                containerMetricsRef.current = { pageX: x, pageY: y, width };
+            });
 
             return true;
         },
@@ -306,7 +304,7 @@ export const SliderMarkers: FC<Props> = ({
         () =>
             PanResponder.create({
                 onStartShouldSetPanResponderCapture: (event) => tryBeginDragAt(event),
-                onMoveShouldSetPanResponderCapture: () => isDraggingPlayerRef.current,
+                onMoveShouldSetPanResponderCapture: () => dragGestureRef.current !== null,
                 onPanResponderMove: (_event, gestureState) => updateDraggingFeature(gestureState.moveX),
                 onPanResponderRelease: () => endDrag(),
                 onPanResponderTerminate: () => endDrag(true),

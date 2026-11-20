@@ -151,25 +151,30 @@ export const useMapImageInteraction = (
             }
             const [routeX, routeY] = target.routePoint;
             map.panResponderOffset = [routeX - locationX, routeY - locationY];
-            draggingImage$.next({
-                id: gesture.imageId,
-                interaction: "map",
-            });
             const handlers = new Map(map.onPanResponderMoveHandlers$.value);
             handlers.set(id, moveHandler);
             map.onPanResponderMoveHandlers$.next(handlers);
         });
         map.onPanResponderStartHandlers$.next(startHandlers);
 
-        const moveHandler = async (coordinate: number[], event: GestureResponderEvent) => {
+        const moveHandler = async (event: GestureResponderEvent) => {
             const gesture = gestureRef.current;
             if (!gesture) {
                 return;
             }
             const x = event.nativeEvent.pageX;
             const y = event.nativeEvent.pageY;
-            gesture.moved ||= Math.hypot(x - gesture.x, y - gesture.y) >= 4;
-            if (!geojson || !gesture.moved) {
+            if (!geojson || !map.map$.value || (!gesture.moved && Math.hypot(x - gesture.x, y - gesture.y) < 4)) {
+                return;
+            }
+            if (!gesture.moved) {
+                gesture.moved = true;
+                draggingImage$.next({ id: gesture.imageId, interaction: "map" });
+            }
+            const { locationX, locationY } = event.nativeEvent;
+            const [offsetX, offsetY] = map.panResponderOffset;
+            const coordinate = await map.map$.value.unproject([locationX + offsetX, locationY + offsetY]);
+            if (gestureRef.current !== gesture) {
                 return;
             }
             const placement = getRoutePlacement({ lng: coordinate[0], lat: coordinate[1] }, geojson, routeGeometryData);
@@ -179,7 +184,7 @@ export const useMapImageInteraction = (
         };
 
         const endHandlers = new Map(map.onPanResponderEndHandlers$.value);
-        endHandlers.set(id, async (coordinate, event, cancelled) => {
+        endHandlers.set(id, async (event, cancelled) => {
             const gesture = gestureRef.current;
             if (!gesture) {
                 return;
@@ -204,7 +209,10 @@ export const useMapImageInteraction = (
             }
             if (!gesture.moved) {
                 selectMapImageMarker(gesture.imageId, gesture.groupSize, gesture.groupId);
-            } else if (geojson) {
+            } else if (geojson && map.map$.value) {
+                const { locationX, locationY } = event.nativeEvent;
+                const [offsetX, offsetY] = map.panResponderOffset;
+                const coordinate = await map.map$.value.unproject([locationX + offsetX, locationY + offsetY]);
                 const placement = getRoutePlacement(
                     { lng: coordinate[0], lat: coordinate[1] },
                     geojson,
