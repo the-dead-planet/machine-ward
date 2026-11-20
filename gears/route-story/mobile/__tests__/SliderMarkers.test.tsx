@@ -16,6 +16,8 @@ import {
     updateImageDistanceFraction,
 } from "@the-dead-planet/nav-gauge-gears-route-story-common";
 import { SliderMarkers } from "../src/player/player-slider/SliderMarkers";
+import { SliderMarkerGroup } from "../src/player/player-slider/SliderMarkerGroup";
+import { SliderMarkerPanToWholeRoute } from "../src/player/player-slider/SliderMarkerPanToWholeRoute";
 import { MobileMarkerImageData } from "../src/images/image-parser";
 
 jest.mock("react-native", () => {
@@ -30,9 +32,12 @@ jest.mock("react-native", () => {
         }),
     });
 });
-jest.mock("@apparatus", () => ({ useMultipleTranslations: () => ["Image", "Pan to image", "Pan to route"] }));
+jest.mock("@apparatus", () => ({
+    useMultipleTranslations: (keys: { t: string }[]) => keys.map(({ t }) => t),
+}));
 jest.mock("@mobile-apparatus", () => ({}));
 jest.mock("@ui", () => ({
+    ...jest.requireActual("../../../../ui/common/src/forms/clock-input/math"),
     useTheme: () => ({ color: () => "yellow", isDark: false }),
     Icons: { NounProject: { Target: "target" } },
 }));
@@ -44,13 +49,16 @@ jest.mock("@the-dead-planet/nav-gauge-gears-route-story-common", () => {
     const { BehaviorSubject } = jest.requireActual<typeof import("rxjs")>("rxjs");
     return {
         ...jest.requireActual("../../common/src/tinkers/images"),
+        ...jest.requireActual("../../common/src/animatrix/animatrix"),
         draggingImage$: new BehaviorSubject(null),
         draggingPlacement$: new BehaviorSubject(null),
         highlightIdsBySourceId$: new BehaviorSubject(new Map()),
         selectedImageId$: new BehaviorSubject(null),
         imageSourceIds: { thumbnails: "thumbnails" },
+        RouteStoryTranslationKey: { Image: "Image", PanToImage: "Pan to image" },
         getDistanceFractionPercent: (fraction: number) => fraction * 100,
         getRoutePlacementAtPercent: (percent: number) => ({ distanceFraction: percent / 100 }),
+        getRouteLngLatAtDistanceFraction: () => ({ lng: 2, lat: 3 }),
         clearImageMarkerSelection: jest.fn(),
         toggleImageMarkerGroup: jest.fn(),
         updateImageDistanceFraction: jest.fn(),
@@ -76,16 +84,13 @@ test("slider taps never enter drag state; movement commits on release but not ca
     const screen = await render(
         <SliderMarkers
             gearId="route-story"
-            translationKey={{} as typeof RouteStoryTranslationKey}
+            translationKey={RouteStoryTranslationKey}
             map={{} as MobileMap}
             data$={new BehaviorSubject<ParsingResultWithError>({ geojson: { type: "FeatureCollection", features: [] } })}
             routeGeometryData$={new BehaviorSubject<RouteGeometryData | null>({ totalDistanceMeters: 1000 } as RouteGeometryData)}
             routeTimes$={new BehaviorSubject<RouteTimes | null>({ startTimeEpoch: 0, duration: 1000 } as RouteTimes)}
             images$={images$}
-            animatrix={{
-                controls$: new BehaviorSubject({ playbackPacing: "distance" }),
-                translationKey: {},
-            } as Animatrix}
+            animatrix={new Animatrix()}
             fitBoundsHandler={() => {}}
         />,
     );
@@ -122,6 +127,54 @@ test("slider taps never enter drag state; movement commits on release but not ca
     } finally {
         subscription.unsubscribe();
         spy.mockRestore();
+        await screen.unmount();
+    }
+});
+
+test("extracted markers retain group accessibility, selection, and both pan actions", async () => {
+    draggingImage$.next(null);
+    selectedImageId$.next(2);
+    jest.mocked(toggleImageMarkerGroup).mockClear();
+    const easeTo = jest.fn();
+    const fitBoundsHandler = jest.fn();
+    const animatrix = new Animatrix();
+    const map = { camera$: new BehaviorSubject({ easeTo }) } as unknown as MobileMap;
+    const data$ = new BehaviorSubject<ParsingResultWithError>({
+        geojson: { type: "FeatureCollection", features: [] },
+        boundingBox: [0, 1, 2, 3],
+    });
+    const screen = await render(
+        <>
+            <SliderMarkerGroup
+                image={{ id: 1, name: "photo.jpg", progress: 100, distanceFraction: 0.5 }}
+                imageIds={[1, 2]}
+                percent={50}
+                gearId="route-story"
+                translationKey={RouteStoryTranslationKey}
+                map={map}
+                data$={data$}
+                routeGeometryData$={new BehaviorSubject<RouteGeometryData | null>({ totalDistanceMeters: 1000 } as RouteGeometryData)}
+            />
+            <SliderMarkerPanToWholeRoute
+                map={map}
+                data$={data$}
+                animatrix={animatrix}
+                fitBoundsHandler={fitBoundsHandler}
+            />
+        </>,
+    );
+    try {
+        const marker = screen.getByRole("button", { name: "2 × Image: 1, 2" });
+        expect(marker.props.accessibilityState.selected).toBe(true);
+        await act(() => marker.props.onAccessibilityTap());
+        expect(toggleImageMarkerGroup).toHaveBeenCalledWith([1, 2]);
+        await act(() => screen.getByLabelText("Pan to image").props.onPress());
+        expect(easeTo).toHaveBeenCalledWith({ center: [2, 3], duration: 300 });
+        await act(() => screen.getByLabelText(animatrix.translationKey.PanToWholeRouteAtEnd).props.onPress());
+        expect(fitBoundsHandler).toHaveBeenCalledWith(map, [0, 1, 2, 3]);
+        await act(() => selectedImageId$.next(null));
+        expect(screen.getByRole("button", { name: "2 × Image: 1, 2" }).props.accessibilityState.selected).toBe(false);
+    } finally {
         await screen.unmount();
     }
 });

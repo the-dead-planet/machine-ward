@@ -42,6 +42,16 @@ describe("Route player alignment", () => {
         }
     });
 
+    it("keeps extracted slider markers keyboard-selectable", () => {
+        cy.get('span[role="button"][aria-label*="Image"]', { timeout: 20000 }).first()
+            .focus()
+            .trigger("keydown", { key: "Enter" });
+        cy.get('span[role="button"][aria-label*="Image"]').first().should("have.attr", "aria-pressed", "true");
+        cy.get('span[role="button"][aria-label*="Image"]').first()
+            .trigger("keydown", { key: " " });
+        cy.get('span[role="button"][aria-label*="Image"]').first().should("have.attr", "aria-pressed", "false");
+    });
+
     it("keeps slider markers above the range input so pointer hover reaches them", () => {
         cy.get('span[role="button"][aria-label*="Image"]', { timeout: 20000 })
             .first()
