@@ -18,6 +18,9 @@ jest.mock("@the-dead-planet/nav-gauge-gears-route-story-common", () => ({
     draggingImage$: jest.requireActual(
         "../../common/src/layer-specification/images/images-layers",
     ).draggingImage$,
+    useImageDragState: jest.requireActual(
+        "../../common/src/layer-specification/images/useImageDragState",
+    ).useImageDragState,
 }));
 
 const createSource = (): GeoJSONSourceRef => ({

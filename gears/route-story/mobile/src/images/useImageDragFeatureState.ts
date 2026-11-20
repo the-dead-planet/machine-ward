@@ -1,24 +1,22 @@
-import { useEffect, useRef } from "react";
+import { useCallback, useRef } from "react";
 import type { GeoJSONSourceRef } from "@maplibre/maplibre-react-native";
-import { distinctUntilChanged, map } from "rxjs";
 import { FeatureStateProps, glitchmitter } from "@apparatus";
 import {
-    draggingImage$,
     getImageMarkerAnchorId,
     getImageMarkerFeatureId,
+    useImageDragState,
 } from "@the-dead-planet/nav-gauge-gears-route-story-common";
 
 export const useImageDragFeatureState = () => {
     const sourceRef = useRef<GeoJSONSourceRef>(null);
 
-    useEffect(() => {
+    const apply = useCallback((imageId: number) => {
         const source = sourceRef.current;
         if (!source) {
             return;
         }
         let active = true;
-        let imageId: number | null = null;
-        const update = async (imageId: number, dragging: boolean) => {
+        const update = async (dragging: boolean) => {
             try {
                 await Promise.all(
                     [
@@ -45,29 +43,15 @@ export const useImageDragFeatureState = () => {
                 }
             }
         };
-        const subscription = draggingImage$
-            .pipe(
-                map((image) => image?.id ?? null),
-                distinctUntilChanged(),
-            )
-            .subscribe((nextImageId) => {
-                if (imageId !== null) {
-                    void update(imageId, false);
-                }
-                imageId = nextImageId;
-                if (imageId !== null) {
-                    void update(imageId, true);
-                }
-            });
+        void update(true);
 
         return () => {
             active = false;
-            subscription.unsubscribe();
-            if (imageId !== null) {
-                void update(imageId, false);
-            }
+            void update(false);
         };
     }, []);
+    
+    useImageDragState(apply);
 
     return sourceRef;
 };
