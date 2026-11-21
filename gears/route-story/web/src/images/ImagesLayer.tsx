@@ -1,6 +1,6 @@
 import { FC, useMemo } from "react";
 import type { Map as MapLibreMap } from "maplibre-gl";
-import { OverlayComponentProps, FeatureStateProps } from "@apparatus";
+import { OverlayComponentProps } from "@apparatus";
 import { useSubjectState } from "@tinker-chest";
 import { MapLayerData, MapSourceAndLayers } from "@web-apparatus";
 import { useReducedMotion } from "@web-ui";
@@ -134,23 +134,10 @@ export const ImagesLayer: FC<OverlayComponentProps<MapLibreMap> & WebRouteStoryP
     }, [highlightIdsBySourceId]);
     
     const updatedData = useMemo(() => {
-        const source = getImageSourceWithAnchors(sourceDataGeojson, visibleSource);
         const highlighted = highlightIdsBySourceId.get(imageSourceIds.thumbnails);
         return {
             sourceId: imageSourceIds.thumbnails,
-            data: {
-                ...source,
-                features: source.features.map((feature) => ({
-                    ...feature,
-                    properties: {
-                        ...feature.properties,
-                        [FeatureStateProps.Highlight]:
-                            feature.properties.markerSelected ||
-                            highlighted?.has(String(feature.properties.imageId)) ||
-                            false,
-                    },
-                })),
-            },
+            data: getImageSourceWithAnchors(sourceDataGeojson, visibleSource, highlighted),
         };
     }, [sourceDataGeojson, visibleSource, highlightIdsBySourceId]);
 

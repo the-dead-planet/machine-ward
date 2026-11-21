@@ -3,7 +3,7 @@ import { Animated, StyleSheet, View } from "react-native";
 import { BehaviorSubject } from "rxjs";
 import { useMultipleTranslations } from "@apparatus";
 import { ParsingResultWithError, useSubjectState } from "@tinker-chest";
-import { Animatrix, draggingImage$, RouteGeometryData, RouteStoryTranslationKey, RouteTimes, useSliderMarkerReadout } from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { Animatrix, draggingImage$, RouteGeometryData, RouteStoryTranslationKey, RouteTimes, sliderMarkerSpecification, useSliderMarkerReadout } from "@the-dead-planet/nav-gauge-gears-route-story-common";
 import { FontType, Icons, useTheme } from "@ui";
 import { Button, Caption } from "@mobile-ui";
 import { styles as sharedStyles } from "./slider-markers.styles";
@@ -14,8 +14,8 @@ const styles = StyleSheet.create({
     },
     readout: {
         position: "absolute",
-        bottom: "100%",
-        marginBottom: 12,
+        top: sharedStyles.panToButton.top,
+        transform: [{ translateY: "-100%" }],
         alignItems: "center",
         width: 260,
     },
@@ -36,9 +36,11 @@ export const DraggedSliderMarker: FC<Props> = ({ position, gearId, translationKe
     const [draggingImage] = useSubjectState(draggingImage$);
     const [label] = useMultipleTranslations([{ n: gearId, t: translationKey.PanToImage }]);
     const theme = useTheme();
-    const color = theme.color("tertiary", theme.isDark ? 400 : 800);
+    const specification = sliderMarkerSpecification;
+    const color = theme.color(specification.color, specification.highlightedShade);
+    const borderColor = theme.color(specification.color, specification.borderShade);
     
-    if (draggingImage?.interaction !== "player" || !preview) {
+    if (draggingImage === null || !preview) {
         return null;
     }
 
@@ -51,10 +53,12 @@ export const DraggedSliderMarker: FC<Props> = ({ position, gearId, translationKe
                 sharedStyles.marker,
                 styles.dragMarker,
                 {
-                    left: position.interpolate({
-                        inputRange: [0, 100],
-                        outputRange: ["0%", "100%"],
-                    }),
+                    left: draggingImage.interaction === "map"
+                        ? `${preview.position}%`
+                        : position.interpolate({
+                            inputRange: [0, 100],
+                            outputRange: ["0%", "100%"],
+                        }),
                 },
             ]}
         >
@@ -69,8 +73,12 @@ export const DraggedSliderMarker: FC<Props> = ({ position, gearId, translationKe
                 ) : null}
             </View>
             <Button icon={Icons.NounProject.Target} size="xs" color="tertiary" accessibilityLabel={label} style={sharedStyles.panToButton} />
-            <View style={[sharedStyles.markerLine, { backgroundColor: color }]} />
-            <View style={[sharedStyles.markerHead, { backgroundColor: color }]} />
+            <View style={[sharedStyles.markerLine, { borderColor }]}>
+                <View style={[sharedStyles.markerLineFill, { backgroundColor: color }]} />
+            </View>
+            <View style={[sharedStyles.markerHead, { borderColor }]}>
+                <View style={[sharedStyles.markerHeadFill, { backgroundColor: color }]} />
+            </View>
         </Animated.View>
     );
 };

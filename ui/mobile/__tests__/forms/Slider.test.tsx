@@ -100,6 +100,11 @@ test("native slider labels stay independent while the thumb animates once and nu
 
     try {
         const screen = await render(content());
+        let wrapper = screen.getByRole("adjustable").parent;
+        for (let index = 0; index < 3; index++) {
+            expect(wrapper?.props.pointerEvents).toBe("box-none");
+            wrapper = wrapper?.parent ?? null;
+        }
         const labelColor = StyleSheet.flatten(
             screen.getByText("Position").props.style,
         ).color;

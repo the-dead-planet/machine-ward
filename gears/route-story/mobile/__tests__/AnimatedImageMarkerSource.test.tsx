@@ -1,7 +1,7 @@
 import { act, renderHook } from "@testing-library/react-native";
 import { ImageMarkerSource } from "@the-dead-planet/nav-gauge-gears-route-story-common/src/layer-specification/images/images-sources";
 import { useAnimatedImageMarkerSource } from "@the-dead-planet/nav-gauge-gears-route-story-common/src/layer-specification/images/useAnimatedImageMarkerSource";
-import { getGroupedImageSource } from "@the-dead-planet/nav-gauge-gears-route-story-common/src/layer-specification/images/grouped-image-source";
+import { getGroupedImageSource, getImageMarkerConnections } from "@the-dead-planet/nav-gauge-gears-route-story-common/src/layer-specification/images/grouped-image-source";
 
 test("animates paging, reverses from the displayed frame, and skips paging motion when reduced", async () => {
     jest.useFakeTimers();
@@ -120,6 +120,53 @@ test("finishes interrupted group motion at the latest target and respects reduce
         expect(hook.result.current).toBe(expanded);
         await hook.rerender({ source: selected, reducedMotion: true });
         expect(hook.result.current).toBe(selected);
+    } finally {
+        await hook.unmount();
+        jest.useRealTimers();
+    }
+});
+
+test("commits moved route anchors and thumbnails together without a transient connector", async () => {
+    jest.useFakeTimers();
+    const initial: ImageMarkerSource = {
+        type: "FeatureCollection",
+        features: [{
+            type: "Feature",
+            geometry: { type: "Point", coordinates: [0, 0] },
+            properties: {
+                imageId: 1,
+                distanceFromStartMeters: 0,
+                markerVisible: true,
+                markerScale: 1,
+                iconImageId: "image",
+                iconImageThumbnailId: "thumbnail",
+            },
+        }],
+    };
+    const moved: ImageMarkerSource = {
+        ...initial,
+        features: initial.features.map((feature) => ({
+            ...feature,
+            geometry: { type: "Point", coordinates: [10, 10] },
+            properties: {
+                ...feature.properties,
+                distanceFromStartMeters: 100,
+                markerScale: 0.9,
+            },
+        })),
+    };
+    const connectorCounts: number[] = [];
+    const hook = await renderHook(({ source }: { source: ImageMarkerSource }) => {
+        const rendered = useAnimatedImageMarkerSource(source, false);
+        connectorCounts.push(getImageMarkerConnections(source, rendered).features.length);
+        return rendered;
+    }, { initialProps: { source: initial } });
+    try {
+        await hook.rerender({ source: moved });
+        expect(hook.result.current.features[0].geometry.coordinates).toEqual([10, 10]);
+        await act(() => jest.advanceTimersByTimeAsync(300));
+        expect(connectorCounts.every((count) => count === 0)).toBe(true);
+        expect(hook.result.current).toBe(moved);
     } finally {
         await hook.unmount();
         jest.useRealTimers();

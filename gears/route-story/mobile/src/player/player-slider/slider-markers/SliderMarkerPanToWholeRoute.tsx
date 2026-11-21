@@ -7,17 +7,13 @@ import { ParsingResultWithError } from "@tinker-chest";
 import { Animatrix } from "@the-dead-planet/nav-gauge-gears-route-story-common";
 import { Icons, useTheme } from "@ui";
 import { Button, Tooltip } from "@mobile-ui";
-import { MARKER_ACTION_HEIGHT, MARKER_HEIGHT, styles as sharedStyles } from "./slider-markers.styles";
+import { styles as sharedStyles } from "./slider-markers.styles";
 
 const styles = StyleSheet.create({
     routeEndMarker: {
-        position: "absolute",
         right: 0,
-        top: MARKER_ACTION_HEIGHT,
-        width: 16,
-        height: MARKER_HEIGHT,
-        marginRight: -8,
-        alignItems: "center",
+        marginLeft: 0,
+        marginRight: -20,
     },
 });
 
@@ -34,9 +30,13 @@ export const SliderMarkerPanToWholeRoute: FC<Props> = ({ map, data$, fitBoundsHa
     const [label] = useMultipleTranslations([{ n: animatrix.namespace, t: animatrix.translationKey.PanToWholeRouteAtEnd }]);
 
     return (
-        <View style={styles.routeEndMarker}>
-            <View style={[sharedStyles.markerLine, { backgroundColor: color }]} />
-            <View style={[sharedStyles.markerHead, { backgroundColor: color }]} />
+        <View pointerEvents="box-none" style={[sharedStyles.marker, styles.routeEndMarker]}>
+            <View pointerEvents="none" style={sharedStyles.markerLine}>
+                <View style={[sharedStyles.markerLineFill, { backgroundColor: color }]} />
+            </View>
+            <View pointerEvents="none" style={sharedStyles.markerHead}>
+                <View style={[sharedStyles.markerHeadFill, { backgroundColor: color }]} />
+            </View>
             <Tooltip content={label} placement="top" size="xs">
                 <Button
                     icon={Icons.NounProject.Target}

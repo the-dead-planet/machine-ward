@@ -25,7 +25,7 @@ export const useImageMarkerSource = (
     const [selectedImageId] = useSubjectState(selectedImageId$);
     const [expandedImageGroupId] = useSubjectState(expandedImageGroupId$);
     const [offset] = useSubjectState(imageGroupOffset$);
-    const [groupedSource, setGroupedSource] = useState(source);
+    const [grouping, setGrouping] = useState({ source, groupedSource: source });
     const cache = useRef<ImageGroupCache | null>(null);
 
     useEffect(() => {
@@ -70,7 +70,7 @@ export const useImageMarkerSource = (
                 offset,
             );
             if (active && revision === currentRevision) {
-                setGroupedSource(grouped);
+                setGrouping({ source, groupedSource: grouped });
             }
         };
         const invalidate = () => {
@@ -96,5 +96,5 @@ export const useImageMarkerSource = (
         isDisplayingImage,
     ]);
 
-    return groupedSource;
+    return grouping.source === source ? grouping.groupedSource : source;
 };

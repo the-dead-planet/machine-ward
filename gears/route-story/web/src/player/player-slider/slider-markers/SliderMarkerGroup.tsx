@@ -11,6 +11,8 @@ import {
     RouteStoryTranslationKey,
     draggingImage$,
     draggingPlacement$,
+    highlightIdsBySourceId$,
+    imageSourceIds,
     selectedImageId$,
     getRouteLngLatAtDistanceFraction,
 } from "@the-dead-planet/nav-gauge-gears-route-story-common";
@@ -43,6 +45,8 @@ export const SliderMarkerGroup: FC<Props> = (props) => {
     const [draggingImage] = useSubjectState(draggingImage$);
     const [draggingPlacement] = useSubjectState(draggingPlacement$);
     const [label] = useMultipleTranslations([{ n: gearId, t: translationKey.PanToImage }]);
+    const highlightImages = () => highlightIdsBySourceId$.next(new Map([[imageSourceIds.thumbnails, new Set(imageIds.map(String))]]));
+    const clearHighlight = () => highlightIdsBySourceId$.next(new Map());
 
     return (
         <div
@@ -57,6 +61,10 @@ export const SliderMarkerGroup: FC<Props> = (props) => {
                     size="xs"
                     color="tertiary"
                     aria-label={label}
+                    onMouseEnter={highlightImages}
+                    onMouseLeave={clearHighlight}
+                    onFocus={highlightImages}
+                    onBlur={clearHighlight}
                     onClick={(event) => {
                         event.stopPropagation();
                         const { geojson } = data$.value;

@@ -97,25 +97,32 @@ export function getImageSourceWithMarkerVisibility(
 export const getImageMarkerFeatureId = (imageId: number | string): number => Math.abs(Number(imageId)) * 2 + 1;
 export const getImageMarkerAnchorId = (imageId: number | string): number => getImageMarkerFeatureId(imageId) + 1;
 
-export function getImageSourceWithAnchors(original: ReturnType<typeof getImageSource>, grouped: ReturnType<typeof getImageSource>): typeof grouped {
+export function getImageSourceWithAnchors(original: ImageMarkerSource, grouped: ImageMarkerSource, highlightedIds?: ReadonlySet<string>): ImageMarkerSource {
     const coordinates = new Map(original.features.map((feature) => [feature.properties.imageId, feature.geometry]));
     return {
         ...grouped,
-        features: grouped.features.flatMap((feature) => [{
-            ...feature,
-            id: getImageMarkerFeatureId(feature.properties.imageId),
-            geometry: feature.properties.markerCenter
-                ? { type: 'Point', coordinates: feature.properties.markerCenter }
-                : feature.geometry,
-        }, {
-            ...feature,
-            id: getImageMarkerAnchorId(feature.properties.imageId),
-            geometry: coordinates.get(feature.properties.imageId) ?? feature.geometry,
-            properties: {
+        features: grouped.features.flatMap((feature) => {
+            const properties: ImageFeatureProperties = {
                 ...feature.properties,
-                markerAnchor: true,
-            },
-        }]),
+                [FeatureStateProps.Highlight]: !!(feature.properties.markerSelected || feature.properties[FeatureStateProps.Highlight] || highlightedIds?.has(String(feature.properties.imageId))),
+            };
+            return [{
+                ...feature,
+                properties,
+                id: getImageMarkerFeatureId(feature.properties.imageId),
+                geometry: feature.properties.markerCenter
+                    ? { type: 'Point', coordinates: feature.properties.markerCenter }
+                    : feature.geometry,
+            }, {
+                ...feature,
+                id: getImageMarkerAnchorId(feature.properties.imageId),
+                geometry: coordinates.get(feature.properties.imageId) ?? feature.geometry,
+                properties: {
+                    ...properties,
+                    markerAnchor: true,
+                },
+            }];
+        }),
     };
 }
 

@@ -6,6 +6,8 @@ import { MobileMap } from "@mobile-apparatus";
 import { ParsingResultWithError, useSubjectState } from "@tinker-chest";
 import {
     draggingImage$,
+    highlightIdsBySourceId$,
+    imageSourceIds,
     selectedImageId$,
     getRouteLngLatAtDistanceFraction,
     RouteGeometryData,
@@ -16,6 +18,7 @@ import { Button, Tooltip } from "@mobile-ui";
 import { MobileMarkerImageData } from "../../../images/image-parser";
 import { SliderMarker } from "./SliderMarker";
 import { styles as sharedStyles } from "./slider-markers.styles";
+import { SliderMarkerGestureHandlers } from "./useSliderMarkerDrag";
 
 const styles = StyleSheet.create({
     hiddenPanToButton: {
@@ -35,13 +38,16 @@ interface Props {
     map: MobileMap;
     data$: BehaviorSubject<ParsingResultWithError>;
     routeGeometryData$: BehaviorSubject<RouteGeometryData | null>;
+    drag: SliderMarkerGestureHandlers;
 }
 
-export const SliderMarkerGroup: FC<Props> = ({ image, imageIds, percent, gearId, translationKey, map, data$, routeGeometryData$ }) => {
+export const SliderMarkerGroup: FC<Props> = ({ image, imageIds, percent, gearId, translationKey, map, data$, routeGeometryData$, drag }) => {
     const [selectedImageId] = useSubjectState(selectedImageId$);
     const [draggingImage] = useSubjectState(draggingImage$);
     const [label] = useMultipleTranslations([{ n: gearId, t: translationKey.PanToImage }]);
     const isDragged = draggingImage?.id === image.id && draggingImage.interaction === "player";
+    const highlightImages = () => highlightIdsBySourceId$.next(new Map([[imageSourceIds.thumbnails, new Set(imageIds.map(String))]]));
+    const clearHighlight = () => highlightIdsBySourceId$.next(new Map());
 
     const panToImage = () => {
         const { geojson } = data$.value;
@@ -56,7 +62,7 @@ export const SliderMarkerGroup: FC<Props> = ({ image, imageIds, percent, gearId,
     };
 
     return (
-        <View style={[sharedStyles.marker, selectedImageId !== null && !imageIds.includes(selectedImageId) && styles.unselected, { left: `${percent}%` }]}>
+        <View pointerEvents="box-none" style={[sharedStyles.marker, selectedImageId !== null && !imageIds.includes(selectedImageId) && styles.unselected, { left: `${percent}%` }]}>
             <Tooltip color="tertiary" content={label} placement="top" size="xs">
                 <Button
                     icon={Icons.NounProject.Target}
@@ -64,10 +70,16 @@ export const SliderMarkerGroup: FC<Props> = ({ image, imageIds, percent, gearId,
                     color="tertiary"
                     accessibilityLabel={label}
                     onPress={panToImage}
+                    onHoverIn={highlightImages}
+                    onHoverOut={clearHighlight}
+                    onFocus={highlightImages}
+                    onBlur={clearHighlight}
+                    onPressIn={highlightImages}
+                    onPressOut={clearHighlight}
                     style={[sharedStyles.panToButton, isDragged && styles.hiddenPanToButton]}
                 />
             </Tooltip>
-            <SliderMarker imageId={image.id} imageIds={imageIds} gearId={gearId} translationKey={translationKey} />
+            <SliderMarker imageId={image.id} imageIds={imageIds} percent={percent} gearId={gearId} translationKey={translationKey} drag={drag} />
         </View>
     );
 };

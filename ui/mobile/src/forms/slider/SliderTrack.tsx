@@ -112,7 +112,7 @@ export const SliderTrack: FC<Props> = ({
     const fillWidth = width * getSliderRatio(value, min, max);
 
     return (
-        <View style={[styles.slider, { height: controlSize.height }]}>
+        <View pointerEvents="box-none" style={[styles.slider, { height: controlSize.height }]}>
             <View
                 {...interaction}
                 accessible

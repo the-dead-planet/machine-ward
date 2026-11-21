@@ -34,7 +34,7 @@ export const SliderMarker: FC<Props> = (props) => {
     const [highlightIdsBySourceId] = useSubjectState(highlightIdsBySourceId$);
     const { beginDrag, didDrag } = drag;
     const highlighted =
-        selectedImageId === imageId || (draggingImage?.id !== imageId && imageIds.some((id) => highlightIdsBySourceId.get(imageSourceIds.thumbnails)?.has(String(id))));
+        hovered || focused || imageIds.includes(selectedImageId ?? -1) || (draggingImage?.id !== imageId && imageIds.some((id) => highlightIdsBySourceId.get(imageSourceIds.thumbnails)?.has(String(id))));
 
     return (
         <>

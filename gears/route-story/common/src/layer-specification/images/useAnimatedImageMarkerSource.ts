@@ -8,6 +8,11 @@ export const useAnimatedImageMarkerSource = (
 ): ImageMarkerSource => {
     const [renderedSource, setRenderedSource] = useState(source);
     const currentSource = useRef(source);
+    const previousDistances = new Map(renderedSource.features.map((feature) => [feature.properties.imageId, feature.properties.distanceFromStartMeters]));
+    const placementChanged = source.features.some((feature) => {
+        const previousDistance = previousDistances.get(feature.properties.imageId);
+        return previousDistance !== undefined && previousDistance !== feature.properties.distanceFromStartMeters;
+    });
 
     useEffect(() => {
         const previous = currentSource.current;
@@ -25,7 +30,7 @@ export const useAnimatedImageMarkerSource = (
             );
         });
 
-        if (reducedMotion || (previousGroup === nextGroup && !scaleChanged && !isImageGroupPaging(previous, source))) {
+        if (placementChanged || reducedMotion || (previousGroup === nextGroup && !scaleChanged && !isImageGroupPaging(previous, source))) {
             currentSource.current = source;
             setRenderedSource(source);
 
@@ -49,7 +54,7 @@ export const useAnimatedImageMarkerSource = (
         frame = requestAnimationFrame(update);
 
         return () => cancelAnimationFrame(frame);
-    }, [source, reducedMotion]);
+    }, [source, reducedMotion, placementChanged]);
 
-    return renderedSource;
+    return placementChanged ? source : renderedSource;
 };

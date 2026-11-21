@@ -1,5 +1,6 @@
 import { expect } from "chai";
 import { describe, it } from "mocha";
+import { FeatureStateProps } from "@apparatus";
 import { getSliderImageMarkers, groupImageMarkers } from "../../../src/tinkers/images";
 import { getGroupedImageSource, getImageMarkerConnections } from "../../../src/layer-specification/images/grouped-image-source";
 import { getImageDragPreviewSource, getImageSourceWithAnchors, ImageFeature } from "../../../src/layer-specification/images/images-sources";
@@ -166,6 +167,16 @@ describe("Image marker groups", () => {
         ).to.equal(true);
         expect(anchors.map(({ geometry }) => geometry.coordinates)).to.deep.equal(source.features.map(({ geometry }) => geometry.coordinates));
         expect(anchors[1].properties.markerSelected).to.equal(true);
+        const hovered = getImageSourceWithAnchors(source, expanded, new Set(["1"]));
+        expect(hovered.features.map(({ properties }) => [properties.imageId, !!properties.markerAnchor, properties[FeatureStateProps.Highlight]])).to.deep.equal([
+            [1, false, true],
+            [1, true, true],
+            [2, false, true],
+            [2, true, true],
+        ]);
+        const unhovered = getImageSourceWithAnchors(source, expanded, new Set());
+        expect(unhovered.features.filter(({ properties }) => properties.imageId === 1).map(({ properties }) => properties[FeatureStateProps.Highlight])).to.deep.equal([false, false]);
+        expect(unhovered.features.filter(({ properties }) => properties.imageId === 2).map(({ properties }) => properties[FeatureStateProps.Highlight])).to.deep.equal([true, true]);
     });
 
     it("keeps separate route passes apart and limits each stack to a 100-metre route span at any zoom", async () => {
