@@ -33,6 +33,7 @@ interface Props {
     image: MarkerImage<MobileMarkerImageData>;
     imageIds: number[];
     percent: number;
+    touchWidth: number;
     gearId: string;
     translationKey: typeof RouteStoryTranslationKey;
     map: MobileMap;
@@ -41,7 +42,7 @@ interface Props {
     drag: SliderMarkerGestureHandlers;
 }
 
-export const SliderMarkerGroup: FC<Props> = ({ image, imageIds, percent, gearId, translationKey, map, data$, routeGeometryData$, drag }) => {
+export const SliderMarkerGroup: FC<Props> = ({ image, imageIds, percent, touchWidth, gearId, translationKey, map, data$, routeGeometryData$, drag }) => {
     const [selectedImageId] = useSubjectState(selectedImageId$);
     const [draggingImage] = useSubjectState(draggingImage$);
     const [label] = useMultipleTranslations([{ n: gearId, t: translationKey.PanToImage }]);
@@ -79,7 +80,15 @@ export const SliderMarkerGroup: FC<Props> = ({ image, imageIds, percent, gearId,
                     style={[sharedStyles.panToButton, isDragged && styles.hiddenPanToButton]}
                 />
             </Tooltip>
-            <SliderMarker imageId={image.id} imageIds={imageIds} percent={percent} gearId={gearId} translationKey={translationKey} drag={drag} />
+            <SliderMarker
+                imageId={image.id}
+                imageIds={imageIds}
+                percent={percent}
+                touchWidth={touchWidth}
+                gearId={gearId}
+                translationKey={translationKey}
+                drag={drag}
+            />
         </View>
     );
 };

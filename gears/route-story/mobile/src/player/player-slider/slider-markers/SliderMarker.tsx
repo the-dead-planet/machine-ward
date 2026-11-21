@@ -20,7 +20,6 @@ import { SliderMarkerGestureHandlers } from "./useSliderMarkerDrag";
 const styles = StyleSheet.create({
     markerBody: {
         flex: 1,
-        width: 40,
         alignItems: "center",
     },
     dragging: {
@@ -28,7 +27,8 @@ const styles = StyleSheet.create({
     },
     markerCount: {
         position: "absolute",
-        left: 26,
+        left: "50%",
+        marginLeft: 6,
         bottom: -7,
         fontSize: 8,
         lineHeight: 10,
@@ -41,10 +41,11 @@ interface Props {
     gearId: string;
     translationKey: typeof RouteStoryTranslationKey;
     percent: number;
+    touchWidth: number;
     drag: SliderMarkerGestureHandlers;
 }
 
-export const SliderMarker: FC<Props> = ({ imageId, imageIds, gearId, translationKey, percent, drag }) => {
+export const SliderMarker: FC<Props> = ({ imageId, imageIds, gearId, translationKey, percent, touchWidth, drag }) => {
     const theme = useTheme();
     const [imageLabel] = useMultipleTranslations([{ n: gearId, t: translationKey.Image }]);
     const [selectedImageId] = useSubjectState(selectedImageId$);
@@ -71,16 +72,16 @@ export const SliderMarker: FC<Props> = ({ imageId, imageIds, gearId, translation
             onResponderTerminate={() => drag.endDrag(true)}
             onResponderReject={() => drag.endDrag(true)}
             hitSlop={{ bottom: MARKER_TOUCH_PADDING }}
-            style={styles.markerBody}
+            style={[styles.markerBody, { width: touchWidth }]}
         >
-            <View style={[sharedStyles.markerLine, isDragged && styles.dragging, { borderColor }]}>
+            <View pointerEvents="none" style={[sharedStyles.markerLine, isDragged && styles.dragging, { borderColor }]}>
                 <View style={[sharedStyles.markerLineFill, { backgroundColor: color }]} />
             </View>
-            <View style={[sharedStyles.markerHead, isDragged && styles.dragging, { borderColor }]}>
+            <View pointerEvents="none" style={[sharedStyles.markerHead, isDragged && styles.dragging, { borderColor }]}>
                 <View style={[sharedStyles.markerHeadFill, { backgroundColor: color }]} />
             </View>
             {imageIds.length > 1 && (
-                <Text accessible={false} fontWeight={highlighted ? 600 : 300} style={styles.markerCount}>
+                <Text accessible={false} pointerEvents="none" fontWeight={highlighted ? 600 : 300} style={styles.markerCount}>
                     {formatImageMarkerCount(imageIds.length)}
                 </Text>
             )}

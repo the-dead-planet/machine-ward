@@ -54,11 +54,11 @@ export const useSliderMarkerDrag = ({ data$, routeGeometryData$, routeTimes$, im
 
     const updateDraggingFeature = (pageX: number) => {
         const gesture = dragGestureRef.current;
-        if (!gesture || (!gesture.moved && Math.abs(pageX - gesture.startX) < 4)) {
+        if (!gesture) {
             return;
         }
         gesture.pendingPageX = pageX;
-        if (!gesture.boundsReady) {
+        if (!gesture.boundsReady || (!gesture.moved && Math.abs(pageX - gesture.startX) < 4)) {
             return;
         }
         if (!gesture.moved) {

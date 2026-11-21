@@ -4,16 +4,17 @@ import { sliderMarkerSpecification } from "@the-dead-planet/nav-gauge-gears-rout
 export const MARKER_HEIGHT = 44;
 export const MARKER_ACTION_HEIGHT = 14;
 export const MARKER_TOUCH_PADDING = 8;
+export const MARKER_TOUCH_WIDTH = 40;
 
 export const styles = StyleSheet.create({
     marker: {
         position: "absolute",
         top: 0,
-        width: 40,
+        width: MARKER_TOUCH_WIDTH,
         height: MARKER_ACTION_HEIGHT + MARKER_HEIGHT + MARKER_TOUCH_PADDING,
         paddingTop: MARKER_ACTION_HEIGHT,
         paddingBottom: MARKER_TOUCH_PADDING,
-        marginLeft: -20,
+        marginLeft: -MARKER_TOUCH_WIDTH / 2,
         alignItems: "center",
     },
     markerHead: {

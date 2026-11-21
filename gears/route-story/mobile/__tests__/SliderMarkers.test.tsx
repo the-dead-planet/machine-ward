@@ -1,5 +1,5 @@
 import { act, render } from "@testing-library/react-native";
-import { GestureResponderEvent, StyleSheet } from "react-native";
+import { Animated, GestureResponderEvent, StyleSheet } from "react-native";
 import { BehaviorSubject } from "rxjs";
 import { MarkerImage } from "@apparatus";
 import { MobileMap } from "@mobile-apparatus";
@@ -20,6 +20,7 @@ import {
 } from "@the-dead-planet/nav-gauge-gears-route-story-common";
 import { SliderWithMarkers } from "../src/player/player-slider/SliderWithMarkers";
 import { SliderMarkerGroup } from "../src/player/player-slider/slider-markers/SliderMarkerGroup";
+import { SliderMarkerGroups } from "../src/player/player-slider/slider-markers/SliderMarkerGroups";
 import { SliderMarkerPanToWholeRoute } from "../src/player/player-slider/slider-markers/SliderMarkerPanToWholeRoute";
 import { MobileMarkerImageData } from "../src/images/image-parser";
 import { MobilePlayerOperator } from "../src/model";
@@ -207,6 +208,20 @@ test("slider diamond taps never enter drag state; movement commits on release bu
         expect(draggingImage$.value).toBeNull();
         expect(updateImageDistanceFraction).toHaveBeenCalledTimes(1);
         expect(toggleImageMarkerGroup).toHaveBeenCalledTimes(1);
+        mockDeferMeasurement = true;
+        await act(() => {
+            marker().props.onStartShouldSetResponder(touch);
+            marker().props.onResponderGrant(touch);
+            marker().props.onResponderMove(move);
+            marker().props.onResponderMove({ nativeEvent: { pageX: 102 } });
+        });
+        mockDeferMeasurement = false;
+        await act(() => mockMeasurementCallback?.(0, 813, 200, 78));
+        expect(draggingImage$.value).toBeNull();
+        expect(draggingPlacement$.value).toBeNull();
+        await act(() => marker().props.onResponderRelease());
+        expect(updateImageDistanceFraction).toHaveBeenCalledTimes(1);
+        expect(toggleImageMarkerGroup).toHaveBeenCalledTimes(2);
         await act(() => {
             draggingImage$.next({ id: 1, interaction: "map" });
             draggingPlacement$.next({ distanceFraction: 0.25, lngLat: { lng: 0.25, lat: 0.25 } });
@@ -219,6 +234,55 @@ test("slider diamond taps never enter drag state; movement commits on release bu
         subscription.unsubscribe();
         mockDeferMeasurement = false;
         mockMeasurementCallback = undefined;
+        await screen.unmount();
+    }
+});
+
+test("nearby slider markers keep separate touch areas even when photos arrive out of order", async () => {
+    draggingImage$.next(null);
+    selectedImageId$.next(null);
+    const images: MarkerImage<MobileMarkerImageData>[] = [
+        { id: 3, name: "far.jpg", progress: 100, distanceFraction: 0.8 },
+        { id: 1, name: "left.jpg", progress: 100, distanceFraction: 0.2 },
+        { id: 2, name: "right.jpg", progress: 100, distanceFraction: 0.28 },
+    ];
+    const screen = await render(
+        <SliderMarkerGroups
+            gearId="route-story"
+            translationKey={RouteStoryTranslationKey}
+            map={{} as MobileMap}
+            data$={new BehaviorSubject<ParsingResultWithError>({ geojson: { type: "FeatureCollection", features: [] } })}
+            routeGeometryData$={new BehaviorSubject<RouteGeometryData | null>({ totalDistanceMeters: 1000 } as RouteGeometryData)}
+            routeTimes$={new BehaviorSubject<RouteTimes | null>({ startTimeEpoch: 0, duration: 1000 } as RouteTimes)}
+            images$={new BehaviorSubject(images)}
+            animatrix={new Animatrix()}
+            fitBoundsHandler={() => {}}
+            width={200}
+            drag={{
+                containerRef: { current: null },
+                draggingPosition: new Animated.Value(0),
+                beginDrag: jest.fn(),
+                grantDrag: jest.fn(),
+                moveDrag: jest.fn(),
+                endDrag: jest.fn(),
+            }}
+        />,
+    );
+    try {
+        const left = screen.getByRole("button", { name: "Image 1" });
+        const right = screen.getByRole("button", { name: "Image 2" });
+        const leftWidth = StyleSheet.flatten(left.props.style).width;
+        const rightWidth = StyleSheet.flatten(right.props.style).width;
+        expect(leftWidth).toBeCloseTo(16);
+        expect(rightWidth).toBeCloseTo(16);
+        expect(40 + leftWidth / 2).toBeCloseTo(56 - rightWidth / 2);
+        expect(StyleSheet.flatten(screen.getByRole("button", { name: "Image 3" }).props.style).width).toBe(40);
+        for (const marker of [left, right]) {
+            const shapes = marker.children.filter((child) => typeof child !== "string");
+            expect(shapes).toHaveLength(2);
+            expect(shapes.every((shape) => shape.props.pointerEvents === "none")).toBe(true);
+        }
+    } finally {
         await screen.unmount();
     }
 });
@@ -241,6 +305,7 @@ test("extracted markers retain group accessibility, selection, and both pan acti
                 image={{ id: 1, name: "photo.jpg", progress: 100, distanceFraction: 0.5 }}
                 imageIds={[1, 2]}
                 percent={50}
+                touchWidth={40}
                 gearId="route-story"
                 translationKey={RouteStoryTranslationKey}
                 map={map}
