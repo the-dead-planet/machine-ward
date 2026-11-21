@@ -9,12 +9,9 @@ import { Button, Caption } from "@mobile-ui";
 import { styles as sharedStyles } from "./slider-markers.styles";
 
 const styles = StyleSheet.create({
-    dragMarker: {
-        opacity: 0.5,
-    },
     readout: {
         position: "absolute",
-        top: sharedStyles.panToButton.top,
+        top: sharedStyles.panToButton.top + 2,
         transform: [{ translateY: "-100%" }],
         alignItems: "center",
         width: 260,
@@ -51,7 +48,6 @@ export const DraggedSliderMarker: FC<Props> = ({ position, gearId, translationKe
             importantForAccessibility="no-hide-descendants"
             style={[
                 sharedStyles.marker,
-                styles.dragMarker,
                 {
                     left: draggingImage.interaction === "map"
                         ? `${preview.position}%`
@@ -64,13 +60,8 @@ export const DraggedSliderMarker: FC<Props> = ({ position, gearId, translationKe
         >
             <View style={styles.readout}>
                 <Caption fontType={FontType.Numeric} color="tertiary" tabular nowrap>
-                    {preview.percentage} · {preview.distance}
+                    {[preview.percentage, preview.distance, preview.timestamp].filter(Boolean).join(" · ")}
                 </Caption>
-                {preview.timestamp ? (
-                    <Caption fontType={FontType.Numeric} color="tertiary" tabular nowrap>
-                        {preview.timestamp}
-                    </Caption>
-                ) : null}
             </View>
             <Button icon={Icons.NounProject.Target} size="xs" color="tertiary" accessibilityLabel={label} style={sharedStyles.panToButton} />
             <View style={[sharedStyles.markerLine, { borderColor }]}>

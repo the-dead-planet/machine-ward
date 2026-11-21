@@ -174,11 +174,13 @@ test("slider diamond taps never enter drag state; movement commits on release bu
             }
             expect(draggingImage$.value).toEqual({ id: 1, interaction: "player" });
             expect(draggingPlacement$.value?.distanceFraction).toBe(0.6);
-            expect(screen.getByText("60% · 0.60 km", { includeHiddenElements: true })).toBeTruthy();
-            expect(screen.getByText("1970-01-01T00:00:00.600Z", { includeHiddenElements: true })).toBeTruthy();
+            const draggedReadout = screen.getByText("60% · 0.60 km · 1970-01-01T00:00:00.600Z", { includeHiddenElements: true });
+            expect(StyleSheet.flatten(draggedReadout.parent?.parent?.props.style).opacity ?? 1).toBe(1);
+            const originalLine = marker().children.find((child) => typeof child !== "string");
+            expect(StyleSheet.flatten(originalLine?.props.style).opacity).toBe(0.5);
             await act(() => routeTimes$.next(null));
             expect(screen.getByText("60% · 0.60 km", { includeHiddenElements: true })).toBeTruthy();
-            expect(screen.queryByText("1970-01-01T00:00:00.600Z", { includeHiddenElements: true })).toBeNull();
+            expect(screen.queryByText(/1970-01-01T00:00:00.600Z/, { includeHiddenElements: true })).toBeNull();
             await act(() => routeTimes$.next({ startTimeEpoch: 0, duration: 1000 } as RouteTimes));
             await act(() => {
                 if (cancelled) {
@@ -189,7 +191,7 @@ test("slider diamond taps never enter drag state; movement commits on release bu
             });
             expect(draggingImage$.value).toBeNull();
             expect(draggingPlacement$.value).toBeNull();
-            expect(screen.queryByText("60% · 0.60 km", { includeHiddenElements: true })).toBeNull();
+            expect(screen.queryByText(/^60% · 0.60 km/, { includeHiddenElements: true })).toBeNull();
         }
         expect(updateImageDistanceFraction).toHaveBeenCalledTimes(1);
         expect(updateImageDistanceFraction).toHaveBeenCalledWith(images$, 1, 0.6);
@@ -209,7 +211,7 @@ test("slider diamond taps never enter drag state; movement commits on release bu
             draggingImage$.next({ id: 1, interaction: "map" });
             draggingPlacement$.next({ distanceFraction: 0.25, lngLat: { lng: 0.25, lat: 0.25 } });
         });
-        const readout = screen.getByText("25% · 0.25 km", { includeHiddenElements: true });
+        const readout = screen.getByText("25% · 0.25 km · 1970-01-01T00:00:00.250Z", { includeHiddenElements: true });
         expect(StyleSheet.flatten(readout.parent?.parent?.props.style).left).toBe("25%");
     } finally {
         draggingImage$.next(null);
