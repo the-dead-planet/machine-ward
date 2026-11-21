@@ -31,6 +31,7 @@ export const styles = StyleSheet.create({
     },
     markerLine: {
         width: sliderMarkerSpecification.stickWidth + sliderMarkerSpecification.borderWidth * 2,
+        marginBottom: 2,
         borderLeftWidth: sliderMarkerSpecification.borderWidth,
         borderRightWidth: sliderMarkerSpecification.borderWidth,
         borderColor: "transparent",
