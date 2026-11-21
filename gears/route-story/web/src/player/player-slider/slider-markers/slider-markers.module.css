@@ -2,7 +2,6 @@
     height: calc(100% - 2px);
     pointer-events: none;
     position: absolute;
-    z-index: 2;
     top: 2px;
     left: 8px;
     right: 8px;
@@ -16,12 +15,7 @@
 }
 
 .image-marker {
-    --marker-thumb-size: 8px;
-    --marker-width: 2px;
-    --marker-border-width: 2px;
-    --marker-border-color: var(--color-tertiary-400);
-    --marker-color: var(--color-tertiary);
-    --marker-highlight-color: var(--color-tertiary-800);
+    --marker-color: var(--marker-default-color);
 
     position: absolute;
     top: 0px;
@@ -29,6 +23,10 @@
     display: block;
     width: var(--marker-width);
     background-color: var(--marker-color);
+    background-clip: padding-box;
+    border-left: var(--marker-border-width) solid transparent;
+    border-right: var(--marker-border-width) solid transparent;
+    transform: translateX(calc(-1 * var(--marker-border-width)));
     cursor: grab;
     pointer-events: auto;
 }
@@ -36,7 +34,7 @@
 .image-marker:hover,
 .image-marker:focus,
 .image-marker.highlight {
-    background-color: var(--marker-highlight-color);
+    --marker-color: var(--marker-highlight-color);
     border-left: var(--marker-border-width) solid var(--marker-border-color);
     border-right: var(--marker-border-width) solid var(--marker-border-color);
 }
@@ -47,17 +45,13 @@
     border: var(--marker-border-width) solid var(--marker-border-color);
 }
 
-.image-marker:hover,
-.image-marker:focus,
-.image-marker.highlight {
-    transform: translateX(calc(-1 * var(--marker-border-width)));
-}
-
 .image-marker::after {
     content: "";
     position: absolute;
     left: calc(var(--marker-width) / 2);
     background-color: var(--marker-color);
+    background-clip: padding-box;
+    border: var(--marker-border-width) solid transparent;
     bottom: calc(var(--marker-thumb-size) / 2);
     transform: translate(-50%, 50%) rotate(45deg);
     width: var(--marker-thumb-size);
@@ -66,6 +60,11 @@
 
 .dragging {
     opacity: 0.5;
+}
+
+:global(body):has(.image-marker.dragging),
+:global(body):has(.image-marker.dragging) * {
+    cursor: grabbing;
 }
 
 .drag-marker {
@@ -103,6 +102,15 @@
 
 .drag-marker .pan-to-icon {
     pointer-events: none;
+}
+
+.drag-readout {
+    pointer-events: none;
+    position: absolute;
+    bottom: calc(100% + 12px);
+    left: 1px;
+    width: max-content;
+    transform: translateX(-50%);
 }
 
 .route-end-marker-container {

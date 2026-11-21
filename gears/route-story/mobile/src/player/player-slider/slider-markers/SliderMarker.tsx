@@ -10,15 +10,16 @@ import {
     toggleImageMarkerGroup,
     formatImageMarkerCount,
     RouteStoryTranslationKey,
+    sliderMarkerSpecification,
 } from "@the-dead-planet/nav-gauge-gears-route-story-common";
 import { useTheme } from "@ui";
 import { Text } from "@mobile-ui";
-import { styles as sharedStyles } from "./slider-markers.styles";
+import { MARKER_TOUCH_PADDING, styles as sharedStyles } from "./slider-markers.styles";
+import { SliderMarkerGestureHandlers } from "./useSliderMarkerDrag";
 
 const styles = StyleSheet.create({
     markerBody: {
         flex: 1,
-        width: 16,
         alignItems: "center",
     },
     dragging: {
@@ -26,7 +27,8 @@ const styles = StyleSheet.create({
     },
     markerCount: {
         position: "absolute",
-        left: 14,
+        left: "50%",
+        marginLeft: 6,
         bottom: -7,
         fontSize: 8,
         lineHeight: 10,
@@ -38,9 +40,12 @@ interface Props {
     imageIds: number[];
     gearId: string;
     translationKey: typeof RouteStoryTranslationKey;
+    percent: number;
+    touchWidth: number;
+    drag: SliderMarkerGestureHandlers;
 }
 
-export const SliderMarker: FC<Props> = ({ imageId, imageIds, gearId, translationKey }) => {
+export const SliderMarker: FC<Props> = ({ imageId, imageIds, gearId, translationKey, percent, touchWidth, drag }) => {
     const theme = useTheme();
     const [imageLabel] = useMultipleTranslations([{ n: gearId, t: translationKey.Image }]);
     const [selectedImageId] = useSubjectState(selectedImageId$);
@@ -49,7 +54,9 @@ export const SliderMarker: FC<Props> = ({ imageId, imageIds, gearId, translation
     const selected = imageIds.includes(selectedImageId ?? -1);
     const isDragged = draggingImage?.id === imageId && draggingImage.interaction === "player";
     const highlighted = selected || isDragged || imageIds.some((id) => highlightIdsBySourceId.get(imageSourceIds.thumbnails)?.has(String(id)));
-    const color = theme.color("tertiary", highlighted ? (theme.isDark ? 400 : 800) : 500);
+    const specification = sliderMarkerSpecification;
+    const color = theme.color(specification.color, highlighted ? specification.highlightedShade : specification.defaultShade);
+    const borderColor = highlighted ? theme.color(specification.color, specification.borderShade) : "transparent";
 
     return (
         <View
@@ -58,12 +65,23 @@ export const SliderMarker: FC<Props> = ({ imageId, imageIds, gearId, translation
             accessibilityState={{ selected }}
             accessibilityLabel={imageIds.length > 1 ? `${imageIds.length} × ${imageLabel}: ${imageIds.join(", ")}` : `${imageLabel} ${imageId}`}
             onAccessibilityTap={() => toggleImageMarkerGroup(imageIds)}
-            style={styles.markerBody}
+            onStartShouldSetResponder={(event) => drag.beginDrag(imageId, imageIds, percent, event.nativeEvent.pageX)}
+            onResponderGrant={drag.grantDrag}
+            onResponderMove={(event) => drag.moveDrag(event.nativeEvent.pageX)}
+            onResponderRelease={() => drag.endDrag()}
+            onResponderTerminate={() => drag.endDrag(true)}
+            onResponderReject={() => drag.endDrag(true)}
+            hitSlop={{ bottom: MARKER_TOUCH_PADDING }}
+            style={[styles.markerBody, { width: touchWidth }]}
         >
-            <View style={[sharedStyles.markerLine, isDragged && styles.dragging, { backgroundColor: color }]} />
-            <View style={[sharedStyles.markerHead, isDragged && styles.dragging, { backgroundColor: color }]} />
+            <View pointerEvents="none" style={[sharedStyles.markerLine, isDragged && styles.dragging, { borderColor }]}>
+                <View style={[sharedStyles.markerLineFill, { backgroundColor: color }]} />
+            </View>
+            <View pointerEvents="none" style={[sharedStyles.markerHead, isDragged && styles.dragging, { borderColor }]}>
+                <View style={[sharedStyles.markerHeadFill, { backgroundColor: color }]} />
+            </View>
             {imageIds.length > 1 && (
-                <Text accessible={false} fontWeight={highlighted ? 600 : 300} style={styles.markerCount}>
+                <Text accessible={false} pointerEvents="none" fontWeight={highlighted ? 600 : 300} style={styles.markerCount}>
                     {formatImageMarkerCount(imageIds.length)}
                 </Text>
             )}

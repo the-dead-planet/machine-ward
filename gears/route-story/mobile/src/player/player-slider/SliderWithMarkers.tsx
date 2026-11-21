@@ -11,6 +11,7 @@ import { PlayerSliderLabels } from "./PlayerSliderLabels";
 import { MobileMarkerImageData } from "../../images/image-parser";
 import { MobileMap } from "@mobile-apparatus";
 import { MobilePlayerOperator } from "../../model";
+import { useSliderMarkerDrag } from "./slider-markers/useSliderMarkerDrag";
 
 interface Props {
     gearId: string;
@@ -61,6 +62,7 @@ export const SliderWithMarkers: FC<Props> = ({
     const [routeGeometryData] = useSubjectState(routeGeometryData$);
     const [animationControls] = useSubjectState(animatrix.controls$);
     const [{ markerPlayerVisibility: showImageMarkers }] = useSubjectState(state$);
+    const markerDrag = useSliderMarkerDrag({ data$, routeGeometryData$, routeTimes$, images$, animatrix });
 
     const handleProgressChange = (value: number) => {
         const nextProgressMs = animationControls.playbackPacing === 'distance' && geojson && routeGeometryData && routeTimes
@@ -76,6 +78,7 @@ export const SliderWithMarkers: FC<Props> = ({
         <View
             nativeID="route-story-player-slider"
             collapsable={false}
+            pointerEvents="box-none"
             style={[styles.sliderContainer, style]}
         >
             {showImageMarkers ? (
@@ -89,6 +92,7 @@ export const SliderWithMarkers: FC<Props> = ({
                     images$={images$}
                     animatrix={animatrix}
                     fitBoundsHandler={fitBoundsHandler}
+                    drag={markerDrag}
                 />
             ) : null}
             <Slider

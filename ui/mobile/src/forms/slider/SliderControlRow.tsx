@@ -30,6 +30,7 @@ export const SliderControlRow: FC<SliderControlRowProps> = ({
 
     return (
         <View
+            pointerEvents="box-none"
             style={[
                 styles.row,
                 { gap: controlSize.gap, minHeight: controlSize.height },

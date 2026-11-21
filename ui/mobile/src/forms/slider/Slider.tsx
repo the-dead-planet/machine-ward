@@ -59,7 +59,7 @@ export const Slider = forwardRef<
         };
 
         return (
-            <View ref={ref} style={[styles.container, style]}>
+            <View ref={ref} pointerEvents="box-none" style={[styles.container, style]}>
                 {typeof label === "string" ? (
                     <Label
                         color={color}

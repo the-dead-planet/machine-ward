@@ -1,5 +1,5 @@
 import { act, render } from "@testing-library/react-native";
-import { GestureResponderEvent, PanResponder, PanResponderCallbacks, PanResponderGestureState } from "react-native";
+import { Animated, GestureResponderEvent, StyleSheet } from "react-native";
 import { BehaviorSubject } from "rxjs";
 import { MarkerImage } from "@apparatus";
 import { MobileMap } from "@mobile-apparatus";
@@ -8,17 +8,26 @@ import {
     Animatrix,
     draggingImage$,
     draggingPlacement$,
+    highlightIdsBySourceId$,
+    imageSourceIds,
     RouteGeometryData,
     RouteStoryTranslationKey,
     RouteTimes,
+    RouteStoryState,
     selectedImageId$,
     toggleImageMarkerGroup,
     updateImageDistanceFraction,
 } from "@the-dead-planet/nav-gauge-gears-route-story-common";
-import { SliderMarkers } from "../src/player/player-slider/slider-markers/SliderMarkers";
+import { SliderWithMarkers } from "../src/player/player-slider/SliderWithMarkers";
 import { SliderMarkerGroup } from "../src/player/player-slider/slider-markers/SliderMarkerGroup";
+import { SliderMarkerGroups } from "../src/player/player-slider/slider-markers/SliderMarkerGroups";
 import { SliderMarkerPanToWholeRoute } from "../src/player/player-slider/slider-markers/SliderMarkerPanToWholeRoute";
 import { MobileMarkerImageData } from "../src/images/image-parser";
+import { MobilePlayerOperator } from "../src/model";
+
+let mockMeasurementY = 989;
+let mockDeferMeasurement = false;
+let mockMeasurementCallback: ((x: number, y: number, width: number, height: number) => void) | undefined;
 
 jest.mock("react-native", () => {
     const native = jest.requireActual<typeof import("react-native")>("react-native");
@@ -26,38 +35,64 @@ jest.mock("react-native", () => {
     return Object.defineProperty(Object.create(native), "View", {
         value: React.forwardRef((props: React.ComponentProps<typeof native.View>, reference) => {
             React.useImperativeHandle(reference, () => ({
-                measureInWindow: (callback: (x: number, y: number, width: number, height: number) => void) => callback(0, 0, 200, 48),
+                measureInWindow: (callback: (x: number, y: number, width: number, height: number) => void) => {
+                    if (mockDeferMeasurement) {
+                        mockMeasurementCallback = callback;
+                        return;
+                    }
+                    callback(0, mockMeasurementY, 200, 78);
+                },
             }));
             return <native.View {...props} />;
         }),
     });
 });
-jest.mock("@apparatus", () => ({
-    useMultipleTranslations: (keys: { t: string }[]) => keys.map(({ t }) => t),
+jest.mock("@apparatus", () => {
+    const { BehaviorSubject } = jest.requireActual<typeof import("rxjs")>("rxjs");
+    const settings$ = new BehaviorSubject({ distanceUnit: "metric", locale: "en" });
+    return {
+        useMultipleTranslations: (keys: { t: string }[]) => keys.map(({ t }) => t),
+        useMachineWard: () => ({
+            individuator: {
+                settings$,
+                formatTimestamp: (epoch: number) => new Date(epoch).toISOString(),
+            },
+        }),
+    };
+});
+jest.mock("@mobile-apparatus", () => ({
+    useMobileMachineWard: () => jest.requireMock("@apparatus").useMachineWard(),
 }));
-jest.mock("@mobile-apparatus", () => ({}));
-jest.mock("@ui", () => ({
-    ...jest.requireActual("../../../../ui/common/src/forms/clock-input/math"),
-    useTheme: () => ({ color: () => "yellow", isDark: false }),
-    Icons: { NounProject: { Target: "target" } },
-}));
+jest.mock("../src/layers/RouteLayer", () => ({}));
+jest.mock("@ui", () => {
+    const { BehaviorSubject } = jest.requireActual<typeof import("rxjs")>("rxjs");
+    const media$ = new BehaviorSubject({ isLessThanMd: false });
+    return {
+        ...jest.requireActual("../../../../ui/common/src/forms/clock-input/math"),
+        useTheme: () => ({ color: (palette: string, shade: number) => `${palette}-${shade}`, isDark: false, media$ }),
+        FontType: { Numeric: "numeric" },
+        Icons: { NounProject: { Target: "target" } },
+    };
+});
 jest.mock("@mobile-ui", () => {
     const { View, Text } = jest.requireActual<typeof import("react-native")>("react-native");
-    return { Button: View, Text, Tooltip: View };
+    return { Button: View, Caption: Text, Text, Tooltip: View, Slider: View };
 });
 jest.mock("../../common/src/layer-specification/images/images-layers", () => {
     const { BehaviorSubject } = jest.requireActual<typeof import("rxjs")>("rxjs");
-    return { selectedImageId$: new BehaviorSubject(null) };
+    return { selectedImageId$: new BehaviorSubject(null), draggingPlacement$: new BehaviorSubject(null) };
 });
 jest.mock("@the-dead-planet/nav-gauge-gears-route-story-common", () => {
     const { BehaviorSubject } = jest.requireActual<typeof import("rxjs")>("rxjs");
     return {
         ...jest.requireActual("../../common/src/tinkers/images"),
+        ...jest.requireActual("../../common/src/tinkers/player"),
         ...jest.requireActual("../../common/src/animatrix/animatrix"),
         ...jest.requireActual("../../common/src/player/player-slider/slider-markers/useSliderMarkerGroups"),
+        ...jest.requireActual("../../common/src/player/player-slider/slider-markers/useSliderMarkerReadout"),
+        ...jest.requireActual("../../common/src/player/player-slider/slider-markers/slider-marker-specification"),
         ...jest.requireMock("../../common/src/layer-specification/images/images-layers"),
         draggingImage$: new BehaviorSubject(null),
-        draggingPlacement$: new BehaviorSubject(null),
         highlightIdsBySourceId$: new BehaviorSubject(new Map()),
         imageSourceIds: { thumbnails: "thumbnails" },
         RouteStoryTranslationKey: { Image: "Image", PanToImage: "Pan to image" },
@@ -70,68 +105,184 @@ jest.mock("@the-dead-planet/nav-gauge-gears-route-story-common", () => {
     };
 });
 
-test("slider taps never enter drag state; movement commits on release but not cancellation", async () => {
+test("slider diamond taps never enter drag state; movement commits on release but not cancellation", async () => {
     draggingImage$.next(null);
     selectedImageId$.next(null);
     const images$ = new BehaviorSubject<MarkerImage<MobileMarkerImageData>[]>([
         { id: 1, name: "photo.jpg", progress: 100, distanceFraction: 0.5 },
     ]);
-    let responder: PanResponderCallbacks = {};
-    const create = PanResponder.create;
-    const spy = jest.spyOn(PanResponder, "create").mockImplementation((callbacks) => {
-        responder = callbacks;
-        return create(callbacks);
-    });
     const dragStates: unknown[] = [];
     const subscription = draggingImage$.subscribe((value) => dragStates.push(value));
-    const touch = { nativeEvent: { pageX: 100, pageY: 30 } } as GestureResponderEvent;
-    const gesture = { moveX: 102 } as PanResponderGestureState;
+    const touch = { nativeEvent: { pageX: 100, pageY: 862 } } as GestureResponderEvent;
+    const move = { nativeEvent: { pageX: 120, pageY: 862 } } as GestureResponderEvent;
+    const routeTimes$ = new BehaviorSubject<RouteTimes | null>({ startTimeEpoch: 0, duration: 1000 } as RouteTimes);
     const screen = await render(
-        <SliderMarkers
+        <SliderWithMarkers
             gearId="route-story"
             translationKey={RouteStoryTranslationKey}
             map={{} as MobileMap}
-            data$={new BehaviorSubject<ParsingResultWithError>({ geojson: { type: "FeatureCollection", features: [] } })}
-            routeGeometryData$={new BehaviorSubject<RouteGeometryData | null>({ totalDistanceMeters: 1000 } as RouteGeometryData)}
-            routeTimes$={new BehaviorSubject<RouteTimes | null>({ startTimeEpoch: 0, duration: 1000 } as RouteTimes)}
+            data$={new BehaviorSubject<ParsingResultWithError>({
+                geojson: {
+                    type: "FeatureCollection",
+                    features: [
+                        { type: "Feature", geometry: { type: "Point", coordinates: [0, 0] }, properties: { id: 1, time: "1970-01-01T00:00:00Z" } },
+                        { type: "Feature", geometry: { type: "Point", coordinates: [1, 1] }, properties: { id: 2, time: "1970-01-01T00:00:01Z" } },
+                    ],
+                },
+            })}
+            routeGeometryData$={new BehaviorSubject<RouteGeometryData | null>({ totalDistanceMeters: 1000, lookup: [{ t: 0, lineProgress: 0 }, { t: 1, lineProgress: 1 }] } as RouteGeometryData)}
+            routeTimes$={routeTimes$}
             images$={images$}
             animatrix={new Animatrix()}
             fitBoundsHandler={() => {}}
+            progressMs$={new BehaviorSubject(0)}
+            state$={new BehaviorSubject<RouteStoryState>({ markerPlayerVisibility: true } as RouteStoryState)}
+            playerOperator={{} as MobilePlayerOperator}
         />,
     );
+    const marker = () => screen.getByRole("button", { name: "Image 1" });
     try {
+        mockMeasurementY = 813;
+        let gestureOwner = marker().parent;
+        while (gestureOwner && gestureOwner.props.nativeID !== "route-story-player-slider") {
+            gestureOwner = gestureOwner.parent;
+        }
+        expect(gestureOwner?.props.onStartShouldSetResponderCapture).toBeUndefined();
         await act(() => {
-            expect(responder.onStartShouldSetPanResponderCapture?.(touch, gesture)).toBe(true);
-            responder.onPanResponderMove?.(touch, gesture);
-            responder.onPanResponderRelease?.(touch, gesture);
+            expect(marker().props.onStartShouldSetResponder(touch)).toBe(true);
+            marker().props.onResponderGrant(touch);
+        });
+        expect(highlightIdsBySourceId$.value.get(imageSourceIds.thumbnails)).toEqual(new Set(["1"]));
+        await act(() => {
+            marker().props.onResponderMove({ nativeEvent: { pageX: 102 } });
+            marker().props.onResponderRelease();
         });
         expect(dragStates.every((value) => value === null)).toBe(true);
         expect(toggleImageMarkerGroup).toHaveBeenCalledWith([1]);
         expect(updateImageDistanceFraction).not.toHaveBeenCalled();
 
         for (const cancelled of [false, true]) {
+            mockDeferMeasurement = !cancelled;
             await act(() => {
-                responder.onStartShouldSetPanResponderCapture?.(touch, gesture);
-                responder.onPanResponderMove?.(touch, { ...gesture, moveX: 120 });
+                marker().props.onStartShouldSetResponder(touch);
+                marker().props.onResponderGrant(touch);
+                marker().props.onResponderMove(move);
             });
+            if (mockDeferMeasurement) {
+                expect(draggingImage$.value).toBeNull();
+                mockDeferMeasurement = false;
+                await act(() => mockMeasurementCallback?.(0, 813, 200, 78));
+            }
             expect(draggingImage$.value).toEqual({ id: 1, interaction: "player" });
             expect(draggingPlacement$.value?.distanceFraction).toBe(0.6);
+            const draggedReadout = screen.getByText("60% · 0.60 km · 1970-01-01T00:00:00.600Z", { includeHiddenElements: true });
+            expect(StyleSheet.flatten(draggedReadout.parent?.parent?.props.style).opacity ?? 1).toBe(1);
+            const originalLine = marker().children.find((child) => typeof child !== "string");
+            expect(StyleSheet.flatten(originalLine?.props.style).opacity).toBe(0.5);
+            await act(() => routeTimes$.next(null));
+            expect(screen.getByText("60% · 0.60 km", { includeHiddenElements: true })).toBeTruthy();
+            expect(screen.queryByText(/1970-01-01T00:00:00.600Z/, { includeHiddenElements: true })).toBeNull();
+            await act(() => routeTimes$.next({ startTimeEpoch: 0, duration: 1000 } as RouteTimes));
             await act(() => {
                 if (cancelled) {
-                    responder.onPanResponderTerminate?.(touch, gesture);
+                    marker().props.onResponderTerminate();
                 } else {
-                    responder.onPanResponderRelease?.(touch, gesture);
+                    marker().props.onResponderRelease();
                 }
             });
             expect(draggingImage$.value).toBeNull();
             expect(draggingPlacement$.value).toBeNull();
+            expect(screen.queryByText(/^60% · 0.60 km/, { includeHiddenElements: true })).toBeNull();
         }
         expect(updateImageDistanceFraction).toHaveBeenCalledTimes(1);
         expect(updateImageDistanceFraction).toHaveBeenCalledWith(images$, 1, 0.6);
         expect(toggleImageMarkerGroup).toHaveBeenCalledTimes(1);
+        mockDeferMeasurement = true;
+        await act(() => {
+            marker().props.onStartShouldSetResponder(touch);
+            marker().props.onResponderMove(move);
+            marker().props.onResponderRelease();
+        });
+        mockDeferMeasurement = false;
+        await act(() => mockMeasurementCallback?.(0, 813, 200, 78));
+        expect(draggingImage$.value).toBeNull();
+        expect(updateImageDistanceFraction).toHaveBeenCalledTimes(1);
+        expect(toggleImageMarkerGroup).toHaveBeenCalledTimes(1);
+        mockDeferMeasurement = true;
+        await act(() => {
+            marker().props.onStartShouldSetResponder(touch);
+            marker().props.onResponderGrant(touch);
+            marker().props.onResponderMove(move);
+            marker().props.onResponderMove({ nativeEvent: { pageX: 102 } });
+        });
+        mockDeferMeasurement = false;
+        await act(() => mockMeasurementCallback?.(0, 813, 200, 78));
+        expect(draggingImage$.value).toBeNull();
+        expect(draggingPlacement$.value).toBeNull();
+        await act(() => marker().props.onResponderRelease());
+        expect(updateImageDistanceFraction).toHaveBeenCalledTimes(1);
+        expect(toggleImageMarkerGroup).toHaveBeenCalledTimes(2);
+        await act(() => {
+            draggingImage$.next({ id: 1, interaction: "map" });
+            draggingPlacement$.next({ distanceFraction: 0.25, lngLat: { lng: 0.25, lat: 0.25 } });
+        });
+        const readout = screen.getByText("25% · 0.25 km · 1970-01-01T00:00:00.250Z", { includeHiddenElements: true });
+        expect(StyleSheet.flatten(readout.parent?.parent?.props.style).left).toBe("25%");
     } finally {
+        draggingImage$.next(null);
+        draggingPlacement$.next(null);
         subscription.unsubscribe();
-        spy.mockRestore();
+        mockDeferMeasurement = false;
+        mockMeasurementCallback = undefined;
+        await screen.unmount();
+    }
+});
+
+test("nearby slider markers keep separate touch areas even when photos arrive out of order", async () => {
+    draggingImage$.next(null);
+    selectedImageId$.next(null);
+    const images: MarkerImage<MobileMarkerImageData>[] = [
+        { id: 3, name: "far.jpg", progress: 100, distanceFraction: 0.8 },
+        { id: 1, name: "left.jpg", progress: 100, distanceFraction: 0.2 },
+        { id: 2, name: "right.jpg", progress: 100, distanceFraction: 0.28 },
+    ];
+    const screen = await render(
+        <SliderMarkerGroups
+            gearId="route-story"
+            translationKey={RouteStoryTranslationKey}
+            map={{} as MobileMap}
+            data$={new BehaviorSubject<ParsingResultWithError>({ geojson: { type: "FeatureCollection", features: [] } })}
+            routeGeometryData$={new BehaviorSubject<RouteGeometryData | null>({ totalDistanceMeters: 1000 } as RouteGeometryData)}
+            routeTimes$={new BehaviorSubject<RouteTimes | null>({ startTimeEpoch: 0, duration: 1000 } as RouteTimes)}
+            images$={new BehaviorSubject(images)}
+            animatrix={new Animatrix()}
+            fitBoundsHandler={() => {}}
+            width={200}
+            drag={{
+                containerRef: { current: null },
+                draggingPosition: new Animated.Value(0),
+                beginDrag: jest.fn(),
+                grantDrag: jest.fn(),
+                moveDrag: jest.fn(),
+                endDrag: jest.fn(),
+            }}
+        />,
+    );
+    try {
+        const left = screen.getByRole("button", { name: "Image 1" });
+        const right = screen.getByRole("button", { name: "Image 2" });
+        const leftWidth = StyleSheet.flatten(left.props.style).width;
+        const rightWidth = StyleSheet.flatten(right.props.style).width;
+        expect(leftWidth).toBeCloseTo(16);
+        expect(rightWidth).toBeCloseTo(16);
+        expect(40 + leftWidth / 2).toBeCloseTo(56 - rightWidth / 2);
+        expect(StyleSheet.flatten(screen.getByRole("button", { name: "Image 3" }).props.style).width).toBe(40);
+        for (const marker of [left, right]) {
+            const shapes = marker.children.filter((child) => typeof child !== "string");
+            expect(shapes).toHaveLength(2);
+            expect(shapes.every((shape) => shape.props.pointerEvents === "none")).toBe(true);
+        }
+    } finally {
         await screen.unmount();
     }
 });
@@ -154,11 +305,13 @@ test("extracted markers retain group accessibility, selection, and both pan acti
                 image={{ id: 1, name: "photo.jpg", progress: 100, distanceFraction: 0.5 }}
                 imageIds={[1, 2]}
                 percent={50}
+                touchWidth={40}
                 gearId="route-story"
                 translationKey={RouteStoryTranslationKey}
                 map={map}
                 data$={data$}
                 routeGeometryData$={new BehaviorSubject<RouteGeometryData | null>({ totalDistanceMeters: 1000 } as RouteGeometryData)}
+                drag={{ beginDrag: jest.fn(), grantDrag: jest.fn(), moveDrag: jest.fn(), endDrag: jest.fn() }}
             />
             <SliderMarkerPanToWholeRoute
                 map={map}
@@ -171,6 +324,12 @@ test("extracted markers retain group accessibility, selection, and both pan acti
     try {
         const marker = screen.getByRole("button", { name: "2 × Image: 1, 2" });
         expect(marker.props.accessibilityState.selected).toBe(true);
+        const shapes = marker.children.filter((child) => typeof child !== "string").slice(0, 2);
+        for (const shape of shapes) {
+            expect(StyleSheet.flatten(shape.props.style).borderColor).toBe("tertiary-500");
+            const fill = shape.children.find((child) => typeof child !== "string");
+            expect(StyleSheet.flatten(fill?.props.style).backgroundColor).toBe("tertiary-800");
+        }
         await act(() => marker.props.onAccessibilityTap());
         expect(toggleImageMarkerGroup).toHaveBeenCalledWith([1, 2]);
         await act(() => screen.getByLabelText("Pan to image").props.onPress());
@@ -179,6 +338,22 @@ test("extracted markers retain group accessibility, selection, and both pan acti
         expect(fitBoundsHandler).toHaveBeenCalledWith(map, [0, 1, 2, 3]);
         await act(() => selectedImageId$.next(null));
         expect(screen.getByRole("button", { name: "2 × Image: 1, 2" }).props.accessibilityState.selected).toBe(false);
+        const unselected = screen.getByRole("button", { name: "2 × Image: 1, 2" }).children.filter((child) => typeof child !== "string").slice(0, 2);
+        for (const shape of unselected) {
+            expect(StyleSheet.flatten(shape.props.style).borderColor).toBe("transparent");
+            const fill = shape.children.find((child) => typeof child !== "string");
+            expect(StyleSheet.flatten(fill?.props.style).backgroundColor).toBe("tertiary-500");
+        }
+        await act(() => screen.getByLabelText("Pan to image").props.onHoverIn());
+        expect(highlightIdsBySourceId$.value.get(imageSourceIds.thumbnails)).toEqual(new Set(["1", "2"]));
+        const hovered = screen.getByRole("button", { name: "2 × Image: 1, 2" }).children.filter((child) => typeof child !== "string").slice(0, 2);
+        for (const shape of hovered) {
+            expect(StyleSheet.flatten(shape.props.style).borderColor).toBe("tertiary-500");
+            const fill = shape.children.find((child) => typeof child !== "string");
+            expect(StyleSheet.flatten(fill?.props.style).backgroundColor).toBe("tertiary-800");
+        }
+        await act(() => screen.getByLabelText("Pan to image").props.onHoverOut());
+        expect(highlightIdsBySourceId$.value.get(imageSourceIds.thumbnails)).toBeUndefined();
     } finally {
         await screen.unmount();
     }

@@ -14,6 +14,7 @@ import {
     IMAGE_MARKER_OUTLINE_SDF_URI,
     useImageMarkerConnections,
     selectedImageId$,
+    highlightIdsBySourceId$,
     ImagesLayers,
     routeLayerIds,
     imageLayerIds,
@@ -54,6 +55,7 @@ export const ImagesLayer: FC<OverlayComponentProps<MobileMap> & MobileRouteStory
     const [{ markerLayerVisibility }] = useSubjectState(state$);
     const thumbnailsSourceRef = useImageDragFeatureState();
     const [selectedImageId] = useSubjectState(selectedImageId$);
+    const [highlightIdsBySourceId] = useSubjectState(highlightIdsBySourceId$);
     const loadedImages = useLoadedMobileImages(images);
     const originalSource = useMemo(
         () => getImageSource(loadedImages, geojson, routeGeometryData),
@@ -67,8 +69,8 @@ export const ImagesLayer: FC<OverlayComponentProps<MobileMap> & MobileRouteStory
     const connections = useImageMarkerConnections(originalSource, visibleSource);
     useMapImageInteraction(map, images$, geojson, routeGeometryData, markerLayerVisibility, hitTargets, paginationTarget, paginationDimensions, groupedSource === targetSource);
     const renderedSource = useMemo(
-        () => getImageSourceWithAnchors(originalSource, visibleSource),
-        [originalSource, visibleSource],
+        () => getImageSourceWithAnchors(originalSource, visibleSource, highlightIdsBySourceId.get(imageSourceIds.thumbnails)),
+        [originalSource, visibleSource, highlightIdsBySourceId],
     );
 
     const imageSources: Record<string, ImageEntry> = Object.fromEntries(

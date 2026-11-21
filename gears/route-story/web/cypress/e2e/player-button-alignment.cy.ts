@@ -45,25 +45,59 @@ describe("Route player alignment", () => {
     it("keeps extracted slider markers keyboard-selectable", () => {
         cy.get('span[role="button"][aria-label*="Image"]', { timeout: 20000 }).first()
             .focus()
-            .trigger("keydown", { key: "Enter" });
+            .trigger("keydown", { key: "Enter", force: true });
         cy.get('span[role="button"][aria-label*="Image"]').first().should("have.attr", "aria-pressed", "true");
+        cy.get('span[role="button"][aria-label*="Image"]').first().should(($marker) => {
+            const marker = $marker[0];
+            const view = marker.ownerDocument.defaultView!;
+            const paint = marker.ownerDocument.createElement("span");
+            marker.append(paint);
+            try {
+                paint.style.color = "var(--color-tertiary-800)";
+                expect(view.getComputedStyle(marker).backgroundColor).to.equal(view.getComputedStyle(paint).color);
+                expect(view.getComputedStyle(marker, "::after").backgroundColor).to.equal(view.getComputedStyle(paint).color);
+                paint.style.color = "var(--color-tertiary-500)";
+                expect(view.getComputedStyle(marker).borderLeftColor).to.equal(view.getComputedStyle(paint).color);
+                expect(view.getComputedStyle(marker, "::after").borderColor).to.equal(view.getComputedStyle(paint).color);
+            } finally {
+                paint.remove();
+            }
+        });
         cy.get('span[role="button"][aria-label*="Image"]').first()
-            .trigger("keydown", { key: " " });
+            .trigger("keydown", { key: " ", force: true });
         cy.get('span[role="button"][aria-label*="Image"]').first().should("have.attr", "aria-pressed", "false");
     });
 
-    it("keeps slider markers above the range input so pointer hover reaches them", () => {
+    it("keeps markers behind the slider while their exposed thumbs remain interactive", () => {
         cy.get('span[role="button"][aria-label*="Image"]', { timeout: 20000 })
             .first()
-            .should("be.visible");
+            .should(($marker) => {
+                const marker = $marker[0];
+                const bounds = marker.getBoundingClientRect();
+                const range = marker.ownerDocument.querySelector('input[aria-label="Slider"]')!;
+                const track = range.getBoundingClientRect();
+                const centerX = bounds.left + bounds.width / 2;
+                expect(marker.ownerDocument.elementFromPoint(centerX, track.top + track.height / 2), "the slider receives pointers at the crossing").to.equal(range);
+                expect(marker.ownerDocument.elementFromPoint(centerX, bounds.bottom - 4), "the marker thumb remains reachable below the slider").to.equal(marker);
+            });
         cy.get('span[role="button"][aria-label*="Image"]').first()
-            .trigger("mouseover", { waitForAnimations: false });
+            .trigger("mouseover", "bottom", { waitForAnimations: false });
         cy.get('span[role="button"][aria-label*="Image"]').first()
             .invoke("attr", "class").should("match", /highlight/);
         cy.get('span[role="button"][aria-label*="Image"]').first()
-            .trigger("mouseout", { waitForAnimations: false });
+            .siblings('span').should(($readout) => {
+                expect($readout.text()).to.match(/^\d+% · .* (km|mi)/);
+                const readout = $readout[0].getBoundingClientRect();
+                const icon = $readout[0].parentElement!.querySelector("button")!.getBoundingClientRect();
+                expect(Math.abs(readout.left + readout.width / 2 - icon.left - icon.width / 2)).to.be.lessThan(1);
+                expect(readout.bottom).to.be.at.most(icon.top);
+            });
+        cy.get('[role="tooltip"]').should("not.exist");
+        cy.get('span[role="button"][aria-label*="Image"]').first()
+            .trigger("mouseout", "bottom", { waitForAnimations: false });
         cy.get('span[role="button"][aria-label*="Image"]').first()
             .invoke("attr", "class").should("not.match", /highlight/);
+        cy.get('span[role="button"][aria-label*="Image"]').first().siblings('span').should("not.exist");
         cy.get('input[aria-label="Slider"]').should(($range) => {
             const input = $range[0];
             const bounds = input.getBoundingClientRect();
@@ -71,5 +105,45 @@ describe("Route player alignment", () => {
                 .some((fraction) => input.ownerDocument.elementFromPoint(bounds.left + bounds.width * fraction, bounds.top + bounds.height / 2) === input);
             expect(hasReachableTrack, "the range remains pointer-accessible between markers").to.equal(true);
         });
+    });
+
+    it("centers the live drag readout above the pan-to icon and removes it on cancellation", () => {
+        cy.get('span[role="button"][aria-label*="Image"]', { timeout: 20000 }).first().then(($marker) => {
+            const marker = $marker[0].getBoundingClientRect();
+            const track = $marker[0].parentElement!.parentElement!.getBoundingClientRect();
+            cy.stub($marker[0], "setPointerCapture");
+            cy.wrap($marker).trigger("pointerdown", "bottom", { button: 0, clientX: marker.left, clientY: marker.bottom - 4 });
+            cy.get("body").trigger("pointermove", { clientX: marker.left - 10, clientY: marker.top });
+            cy.get("body").trigger("pointermove", { clientX: track.left + track.width / 2, clientY: marker.top });
+        });
+        cy.get('[inert] > span').first().should(($readout) => {
+            expect($readout.text()).to.match(/^50% · /);
+            const readout = $readout[0].getBoundingClientRect();
+            const icon = $readout[0].parentElement!.querySelector("button")!.getBoundingClientRect();
+            expect(Math.abs(readout.left + readout.width / 2 - icon.left - icon.width / 2)).to.be.lessThan(1);
+            expect(readout.bottom).to.be.at.most(icon.top);
+        });
+        cy.get('input[aria-label="Slider"]').should("have.css", "cursor", "grabbing");
+        cy.get("body").trigger("pointercancel");
+        cy.get('[inert] > span').should("not.exist");
+        cy.get('input[aria-label="Slider"]').should("have.css", "cursor", "pointer");
+    });
+
+    it("highlights the linked marker while its pan-to icon is hovered or focused", () => {
+        cy.get('span[role="button"][aria-label*="Image"]', { timeout: 20000 }).first().parent()
+            .find('button[aria-label="Pan to image"]').as("panIcon");
+        cy.get("@panIcon").trigger("mouseover");
+        cy.get('span[role="button"][aria-label*="Image"]').first()
+            .should("have.attr", "aria-pressed", "false")
+            .invoke("attr", "class").should("match", /highlight/);
+        cy.get("@panIcon").trigger("mouseout");
+        cy.get('span[role="button"][aria-label*="Image"]').first()
+            .invoke("attr", "class").should("not.match", /highlight/);
+        cy.get("@panIcon").focus();
+        cy.get('span[role="button"][aria-label*="Image"]').first()
+            .invoke("attr", "class").should("match", /highlight/);
+        cy.get("@panIcon").blur();
+        cy.get('span[role="button"][aria-label*="Image"]').first()
+            .invoke("attr", "class").should("not.match", /highlight/);
     });
 });

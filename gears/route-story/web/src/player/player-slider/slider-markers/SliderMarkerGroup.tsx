@@ -6,10 +6,13 @@ import { MarkerImage, useMultipleTranslations } from "@apparatus";
 import { ParsingResultWithError, useSubjectState } from "@tinker-chest";
 import {
     RouteGeometryData,
+    Animatrix,
     RouteTimes,
     RouteStoryTranslationKey,
     draggingImage$,
     draggingPlacement$,
+    highlightIdsBySourceId$,
+    imageSourceIds,
     selectedImageId$,
     getRouteLngLatAtDistanceFraction,
 } from "@the-dead-planet/nav-gauge-gears-route-story-common";
@@ -17,6 +20,7 @@ import { Icons } from "@ui";
 import { Button, Tooltip } from "@web-ui";
 import { WebMarkerImageData } from "../../../images/image-parser";
 import { SliderMarker } from "./SliderMarker";
+import { SliderMarkerHoverReadout } from "./SliderMarkerReadout";
 import { useSliderMarkerDrag } from "./useSliderMarkerDrag";
 import styles from "./slider-markers.module.css";
 
@@ -30,6 +34,7 @@ interface Props {
     data$: BehaviorSubject<ParsingResultWithError>;
     routeGeometryData$: BehaviorSubject<RouteGeometryData | null>;
     routeTimes$: BehaviorSubject<RouteTimes | null>;
+    animatrix: Animatrix;
     drag: ReturnType<typeof useSliderMarkerDrag>;
     fitBoundsHandler: (map: maplibregl.Map, boundingBox?: GeoJSON.BBox) => void;
 }
@@ -40,6 +45,8 @@ export const SliderMarkerGroup: FC<Props> = (props) => {
     const [draggingImage] = useSubjectState(draggingImage$);
     const [draggingPlacement] = useSubjectState(draggingPlacement$);
     const [label] = useMultipleTranslations([{ n: gearId, t: translationKey.PanToImage }]);
+    const highlightImages = () => highlightIdsBySourceId$.next(new Map([[imageSourceIds.thumbnails, new Set(imageIds.map(String))]]));
+    const clearHighlight = () => highlightIdsBySourceId$.next(new Map());
 
     return (
         <div
@@ -54,6 +61,10 @@ export const SliderMarkerGroup: FC<Props> = (props) => {
                     size="xs"
                     color="tertiary"
                     aria-label={label}
+                    onMouseEnter={highlightImages}
+                    onMouseLeave={clearHighlight}
+                    onFocus={highlightImages}
+                    onBlur={clearHighlight}
                     onClick={(event) => {
                         event.stopPropagation();
                         const { geojson } = data$.value;
@@ -69,7 +80,14 @@ export const SliderMarkerGroup: FC<Props> = (props) => {
                     })}
                 />
             </Tooltip>
-            <SliderMarker imageId={image.id} imageIds={imageIds} gearId={gearId} translationKey={translationKey} drag={props.drag} />
+            <SliderMarker
+                imageId={image.id}
+                imageIds={imageIds}
+                gearId={gearId}
+                translationKey={translationKey}
+                drag={props.drag}
+                readout={<SliderMarkerHoverReadout {...props} distanceFraction={image.distanceFraction} />}
+            />
         </div>
     );
 };
