@@ -61,7 +61,7 @@ export const getVisibleRouteRanges = (geojson: GeoJson | undefined, geometry: Ro
         const startValue = pacing === "distance" ? geometry.lookup[index - 1]?.lineProgress * maximum : new Date(first.properties.time).valueOf() - times.startTimeEpoch;
         const endValue = pacing === "distance" ? geometry.lookup[index]?.lineProgress * maximum : new Date(second.properties.time).valueOf() - times.startTimeEpoch;
 
-        const longitudeDelta = ((((end[0] - start[0] + 540) % 360) + 360) % 360) - 180;
+        const longitudeDelta = end[0] - start[0];
         const shift = Math.round((center - start[0] - longitudeDelta / 2) / 360) * 360;
 
         for (const copy of east - west >= 360 ? [0] : [-360, 0, 360]) {

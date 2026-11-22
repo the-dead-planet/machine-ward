@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { GeoJson } from "@tinker-chest";
 import { RouteTimes } from "../src/model";
-import { RouteGeometryData } from "../src/tinkers";
+import { getRouteLngLatAtDistanceFraction, RouteGeometryData } from "../src/tinkers";
 import { getVisibleRouteRanges } from "../src/player/player-slider/route-ranges/tinkers";
 
 const makeRoute = (coordinates: GeoJSON.Position[], milliseconds = coordinates.map((_, index) => index * 1000)) => {
@@ -72,10 +72,23 @@ describe("Route viewport ranges", () => {
         ]);
     });
 
-    it("handles antimeridian bounds, repeated worlds, and separate edges of a wide viewport", () => {
+    it("uses the rendered segment rather than inventing a shorter dateline crossing", () => {
+        const { route, geometry, times } = makeRoute([[178, 0], [-178, 0]]);
+        expect(getRouteLngLatAtDistanceFraction(route, geometry, 0.5)).to.deep.equal({ lng: 0, lat: 0 });
+        const ranges = getVisibleRouteRanges(route, geometry, times, [-1, -1, 1, 1], "distance");
+        expect(ranges).to.have.length(1);
+        const [range] = ranges;
+        expect(range.start).to.be.lessThan(50);
+        expect(range.end).to.be.greaterThan(50);
+        expect(getRouteLngLatAtDistanceFraction(route, geometry, range.start / geometry.totalDistanceMeters).lng).to.be.closeTo(1, 0.000001);
+        expect(getRouteLngLatAtDistanceFraction(route, geometry, range.end / geometry.totalDistanceMeters).lng).to.be.closeTo(-1, 0.000001);
+        expect(getVisibleRouteRanges(route, geometry, times, [179, -1, -179, 1], "distance")).to.deep.equal([]);
+    });
+
+    it("handles unwrapped antimeridian geometry, repeated worlds, and separate edges of a wide viewport", () => {
         const { route, geometry, times } = makeRoute([
             [179, 0],
-            [-179, 0],
+            [181, 0],
         ]);
         for (const bounds of [
             [170, -1, -170, 1],

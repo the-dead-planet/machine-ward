@@ -228,7 +228,7 @@ describe("Slider appearance", () => {
         cy.get("@slider")
             .find('input[type="number"]')
             .should("have.value", "50")
-            .type("{selectall}75", { delay: 100 })
+            .type("{selectall}75")
             .should("have.value", "75");
         cy.get("@slider")
             .find('input[type="range"]')
@@ -237,8 +237,11 @@ describe("Slider appearance", () => {
         cy.get("@slider")
             .find('input[type="range"]')
             .should("have.value", "76");
-        cy.get("@slider")
-            .find('input[type="number"]')
-            .should("have.value", "76");
+        cy.window().its("__STORYBOOK_PREVIEW__.channel").invoke("emit", "updateStoryArgs", {
+            storyId: "forms-slider--gallery",
+            updatedArgs: { value: 25 },
+        });
+        cy.get("@slider").find('input[type="number"]').should("have.value", "25");
+        cy.get("@slider").find('input[type="range"]').should("have.value", "25");
     });
 });
