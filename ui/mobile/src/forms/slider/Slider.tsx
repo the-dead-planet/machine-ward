@@ -33,6 +33,8 @@ export const Slider = forwardRef<
             max = 100,
             step = 1,
             value,
+            ranges,
+            rangeColor = color,
             onChange,
             highlighted = false,
             disabled = false,
@@ -87,6 +89,8 @@ export const Slider = forwardRef<
                     stepControlsProps={stepControlsProps}
                 >
                     <SliderTrack
+                        ranges={ranges}
+                        rangeColor={rangeColor}
                         color={color}
                         highlightColor={highlightColor}
                         size={size}

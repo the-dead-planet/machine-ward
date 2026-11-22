@@ -1,4 +1,4 @@
-import { SliderProps } from "./model";
+import { SliderProps, SliderRange } from "./model";
 import {
     allColorShades,
     activeGlowOptions,
@@ -19,6 +19,36 @@ export const getSliderRatio = (
 ): number =>
     max > min ? Math.max(0, Math.min(1, (value - min) / (max - min))) : 0;
 
+export const SLIDER_RANGE_EXTRA_THICKNESS = 4;
+
+export const getSliderRanges = (
+    ranges: readonly SliderRange[],
+    min: number,
+    max: number,
+): SliderRange[] => {
+    if (!Array.isArray(ranges) || !Number.isFinite(min) || !Number.isFinite(max) || max <= min) {
+        return [];
+    }
+    const normalized = ranges
+        .filter((range: SliderRange) => range && Number.isFinite(range.start) && Number.isFinite(range.end) && range.end > range.start)
+        .map(({ start, end }) => ({
+            start: getSliderRatio(start, min, max),
+            end: getSliderRatio(end, min, max),
+        }))
+        .filter(({ start, end }) => end > start)
+        .sort((first, second) => first.start - second.start);
+    const merged: SliderRange[] = [];
+    for (const range of normalized) {
+        const previous = merged[merged.length - 1];
+        if (previous && range.start <= previous.end) {
+            previous.end = Math.max(previous.end, range.end);
+        } else {
+            merged.push(range);
+        }
+    }
+    return merged;
+};
+
 export const snapSliderValue = (
     value: number,
     min: number,
@@ -37,6 +67,17 @@ export const snapSliderValue = (
 
 export const sliderStoryArgs: SliderProps = {
     value: 50,
+    ranges: [
+        {
+            start: 10,
+            end: 30,
+        },
+        {
+            start: 60,
+            end: 85,
+        },
+    ],
+    rangeColor: DEFAULT_COLOR,
     min: 0,
     max: 100,
     step: 1,
@@ -53,6 +94,13 @@ export const sliderStoryArgs: SliderProps = {
 };
 
 export const sliderStoryControls: StoryControls<SliderProps> = {
+    ranges: {
+        control: "object",
+    },
+    rangeColor: {
+        control: "select",
+        options: appearanceColorOptions,
+    },
     color: {
         control: "select",
         options: appearanceColorOptions,

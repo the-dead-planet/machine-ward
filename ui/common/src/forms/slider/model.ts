@@ -3,9 +3,17 @@ import {
     ActiveGlow,
     AppearanceProps,
     FillVariant,
+    ColorVariant,
 } from "../../design-system/model";
 
+export interface SliderRange {
+    start: number;
+    end: number;
+}
+
 export interface SliderProps extends AppearanceProps<FillVariant> {
+    ranges?: readonly SliderRange[];
+    rangeColor?: ColorVariant;
     activeGlow?: ActiveGlow;
     min?: number;
     max?: number;

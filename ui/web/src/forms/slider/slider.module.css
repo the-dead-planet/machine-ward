@@ -30,6 +30,7 @@
 }
 
 .track {
+    z-index: 1;
     position: absolute;
     top: 50%;
     inset-inline: calc(var(--size-control-thumb-size) / 2);
@@ -41,6 +42,25 @@
 
 .container[data-appearance-mode="dark"] .track {
     background: var(--appearance-color-700);
+}
+
+.range-tracks {
+    position: absolute;
+    top: 50%;
+    inset-inline: calc(var(--size-control-thumb-size) / 2);
+    height: calc(var(--size-control-track-thickness) + var(--range-extra-thickness));
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+.range-track {
+    position: absolute;
+    left: var(--range-start);
+    width: var(--range-width);
+    height: 100%;
+    background: var(--range-color);
+    --range-cap: min(50%, calc((var(--size-control-track-thickness) + var(--range-extra-thickness)) / 2));
+    clip-path: polygon(0 50%, var(--range-cap) 0, calc(100% - var(--range-cap)) 0, 100% 50%, calc(100% - var(--range-cap)) 100%, var(--range-cap) 100%);
 }
 
 .progress {
@@ -85,6 +105,7 @@
 }
 
 .slider {
+    z-index: 2;
     position: absolute;
     inset: 0;
     width: 100%;

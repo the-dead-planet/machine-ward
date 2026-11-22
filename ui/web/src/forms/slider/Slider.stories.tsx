@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "storybook-react-rsbuild";
 import { makeLiveEditStory } from "storybook-addon-code-editor";
-import { ComponentProps, useState } from "react";
+import { useArgs } from "storybook/preview-api";
 import {
     appearanceColorOptions,
     fillVariantOptions,
@@ -10,19 +10,15 @@ import {
 import { Slider } from "./Slider";
 import { VariantGallery } from "../../storybook/VariantGallery";
 
-const StorySlider = (args: ComponentProps<typeof Slider>) => {
-    const [value, setValue] = useState(args.value);
-    const [previousValue, setPreviousValue] = useState(args.value);
-    if (previousValue !== args.value) {
-        setPreviousValue(args.value);
-        setValue(args.value);
-    }
-    return <Slider {...args} value={value} onChange={setValue} />;
-};
-
 const meta = {
     title: "Forms/Slider",
     component: Slider,
+    decorators: [
+        (Story, context) => {
+            const [, updateArgs] = useArgs();
+            return <Story args={{ ...context.args, onChange: (value: number) => updateArgs({ value }) }} />;
+        },
+    ],
     args: sliderStoryArgs,
     argTypes: {
         ...sliderStoryControls,
@@ -38,7 +34,7 @@ export const Playground: Story = {
 };
 
 makeLiveEditStory(Playground, {
-    availableImports: { "@web-ui": { Slider: StorySlider } },
+    availableImports: { "@web-ui": { Slider } },
     code: `import { Slider } from '@web-ui';
 
 export default Slider;`,
@@ -56,7 +52,7 @@ export const Gallery: Story = {
             colors={appearanceColorOptions}
             variants={fillVariantOptions}
             render={({ color, size, variant }) => (
-                <StorySlider
+                <Slider
                     {...args}
                     color={color}
                     size={size}

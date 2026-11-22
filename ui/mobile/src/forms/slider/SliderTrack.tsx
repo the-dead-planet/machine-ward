@@ -10,6 +10,7 @@ import {
 } from "@ui";
 import { useSliderInteraction } from "./useSliderInteraction";
 import { useActiveGlow } from "../../motion/useActiveGlow";
+import { SliderRangeTrack } from "./SliderRangeTrack";
 
 const styles = StyleSheet.create({
     slider: {
@@ -51,10 +52,14 @@ type Props = Pick<
     | "highlighted"
     | "disabled"
     | "ariaLabel"
+    | "ranges"
+    | "rangeColor"
 >;
 
 export const SliderTrack: FC<Props> = ({
     value,
+    ranges,
+    rangeColor,
     onChange,
     min = 0,
     max = 100,
@@ -152,10 +157,18 @@ export const SliderTrack: FC<Props> = ({
                         {
                             height: trackThickness,
                             marginHorizontal: thumbRadius,
-                            backgroundColor: unfilledTrackColor,
                         },
                     ]}
                 >
+                    <SliderRangeTrack
+                        ranges={ranges}
+                        rangeColor={rangeColor}
+                        min={min}
+                        max={max}
+                        width={width}
+                        trackThickness={trackThickness}
+                    />
+                    <View style={[StyleSheet.absoluteFill, { backgroundColor: unfilledTrackColor }]} />
                     <View
                         style={[
                             styles.trackCap,
