@@ -8,8 +8,8 @@ on:
       - v*
   pull_request:
 env:
-  IMAGE_NAME: nav-gauge
-  STORYBOOK_IMAGE_NAME: nav-gauge-storybook
+  IMAGE_NAME: machine-ward
+  STORYBOOK_IMAGE_NAME: machine-ward-storybook
   IMAGE_REGISTRY: ghcr.io/the-dead-planet
 jobs:
   test:
@@ -64,7 +64,7 @@ jobs:
         uses: ./.github/actions/cypress-e2e
         with:
           start: yarn dev
-          command: yarn workspace @the-dead-planet/nav-gauge-gears-route-story-web test:e2e --browser chrome
+          command: yarn workspace @the-dead-planet/machine-ward-gears-route-story-web test:e2e --browser chrome
           artifact-name: cypress-route-story
 
   test-e2e-ui:

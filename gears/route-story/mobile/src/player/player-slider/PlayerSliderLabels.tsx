@@ -3,7 +3,7 @@ import { StyleSheet, View } from "react-native";
 import { BehaviorSubject } from "rxjs";
 import { useMobileMachineWard } from "@mobile-apparatus";
 import { formatDistance, formatTimeMsAsStandard, ParsingResultWithError, useSubjectState } from "@tinker-chest";
-import { Animatrix, getProgressPercentage, getRouteDistanceFraction, RouteTimes, RouteGeometryData } from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { Animatrix, getProgressPercentage, getRouteDistanceFraction, RouteTimes, RouteGeometryData } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { Caption } from "@mobile-ui";
 import { FontType, useTheme } from "@ui";
 

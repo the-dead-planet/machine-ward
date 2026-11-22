@@ -1,5 +1,5 @@
 import { ComponentProps, FC } from "react";
-import { useSliderMarkerGroups } from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { useSliderMarkerGroups } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import type { SliderMarkers } from "./SliderMarkers";
 import { SliderMarkerGroup } from "./SliderMarkerGroup";
 import { useSliderMarkerDrag } from "./useSliderMarkerDrag";

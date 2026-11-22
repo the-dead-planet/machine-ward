@@ -1,4 +1,4 @@
-# About nav-gauge
+# About machine-ward
 
 ## Mission
 
@@ -133,7 +133,7 @@ Depencencies:
 yarn workspace <workspace_name> add <package_name>
 ```
 
-For example `yarn workspace @the-dead-planet/nav-gauge-app-mobile add react-native`
+For example `yarn workspace @the-dead-planet/machine-ward-app-mobile add react-native`
 
 Same applies to removal of packages.
 

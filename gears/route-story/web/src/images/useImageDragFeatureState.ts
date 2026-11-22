@@ -6,7 +6,7 @@ import {
     getImageMarkerFeatureId,
     imageSourceIds,
     useImageDragState,
-} from "@the-dead-planet/nav-gauge-gears-route-story-common";
+} from "@the-dead-planet/machine-ward-gears-route-story-common";
 
 export const useImageDragFeatureState = (map: Map) => {
     const apply = useCallback(

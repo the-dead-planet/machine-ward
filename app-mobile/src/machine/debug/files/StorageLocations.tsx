@@ -21,7 +21,7 @@ const descriptions: Record<string, string> = {
     "External app files": "App-specific files kept on external storage.",
     "External app cache":
         "Temporary external storage used by native libraries.",
-    Recordings: "Videos saved to Downloads / NavGauge.",
+    Recordings: "Videos saved to Downloads / TheDeadPlanet / RouteStory.",
 };
 
 const styles = StyleSheet.create({

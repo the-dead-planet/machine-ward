@@ -9,7 +9,7 @@ import {
     imageSourceIds,
     imageLayerIds,
     ImagesLayers,
-} from "@the-dead-planet/nav-gauge-gears-route-story-common";
+} from "@the-dead-planet/machine-ward-gears-route-story-common";
 
 export const ImageDragPreview = ({
     source,

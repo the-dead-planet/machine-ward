@@ -23,8 +23,8 @@ const gearsWatchFolders = gearsDirs
 
 const gearsExtraNodeModules = gearsDirs
     .reduce((acc, dir) => {
-        acc[`@the-dead-planet/nav-gauge-gears-${dir.name}-common`] = path.resolve(root, `gears/${dir.name}/common/src`);
-        acc[`@the-dead-planet/nav-gauge-gears-${dir.name}-mobile`] = path.resolve(root, `gears/${dir.name}/mobile/src`);
+        acc[`@the-dead-planet/machine-ward-gears-${dir.name}-common`] = path.resolve(root, `gears/${dir.name}/common/src`);
+        acc[`@the-dead-planet/machine-ward-gears-${dir.name}-mobile`] = path.resolve(root, `gears/${dir.name}/mobile/src`);
 
         return acc;
     }, {});

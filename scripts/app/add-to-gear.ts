@@ -42,7 +42,7 @@ const main = () => {
         exit(`Gear not found at ${gearDir}.`);
     }
 
-    const workspaceName = `@the-dead-planet/nav-gauge-gears-${gearName}-${platform}`;
+    const workspaceName = `@the-dead-planet/machine-ward-gears-${gearName}-${platform}`;
     const pkgArgs = ['workspace', workspaceName, 'add', ...args.slice(2)];
 
     const result = spawnSync('yarn', pkgArgs, {

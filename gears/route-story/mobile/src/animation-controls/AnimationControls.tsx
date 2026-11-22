@@ -19,7 +19,7 @@ import { clamp } from "@tinker-chest";
 import {
     Animatrix,
     formatAnimationDuration,
-} from "@the-dead-planet/nav-gauge-gears-route-story-common";
+} from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { Icons, STEP_DEG } from "@ui";
 import { MobileRouteStoryProps } from "../model";
 import { useMobileAnimationControls } from "./useMobileAnimationControls";

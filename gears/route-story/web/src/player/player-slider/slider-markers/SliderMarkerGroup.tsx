@@ -15,7 +15,7 @@ import {
     imageSourceIds,
     selectedImageId$,
     getRouteLngLatAtDistanceFraction,
-} from "@the-dead-planet/nav-gauge-gears-route-story-common";
+} from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { Icons } from "@ui";
 import { Button, Tooltip } from "@web-ui";
 import { WebMarkerImageData } from "../../../images/image-parser";

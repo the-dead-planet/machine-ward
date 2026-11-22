@@ -1,6 +1,6 @@
 import RNFS from 'react-native-fs';
 import * as Exify from '@lodev09/react-native-exify';
-import { getRoutePlacement, RouteStoryGear } from '@the-dead-planet/nav-gauge-gears-route-story-common';
+import { getRoutePlacement, RouteStoryGear } from '@the-dead-planet/machine-ward-gears-route-story-common';
 import { RouteLayer } from './layers/RouteLayer';
 import { ImagesLayer } from './images/ImagesLayer';
 import { Player } from './player/Player';

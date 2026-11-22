@@ -6,7 +6,7 @@ import {
     routeLayerIds,
     routeSourceIds,
     RouteStoryState,
-} from "@the-dead-planet/nav-gauge-gears-route-story-common";
+} from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { updateRouteLayer, updateRouteLayerStyle } from "../src/tinkers";
 
 describe("Web route line layers", () => {

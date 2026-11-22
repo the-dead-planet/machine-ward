@@ -9,4 +9,4 @@ export const formatFileSize = (bytes: number): string => {
     return `${size.toLocaleString(undefined, { maximumFractionDigits: 1 })} ${units[unitIndex]}`;
 };
 
-export { isStorageImageFile as isImageFile } from "@the-dead-planet/nav-gauge-apparatus-mobile/src/storage-debug/image-files";
+export { isStorageImageFile as isImageFile } from "@the-dead-planet/machine-ward-apparatus-mobile/src/storage-debug/image-files";

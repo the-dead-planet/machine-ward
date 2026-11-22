@@ -1,5 +1,5 @@
 {
-    "name": "@the-dead-planet/nav-gauge-ui-mobile",
+    "name": "@the-dead-planet/machine-ward-ui-mobile",
     "version": "1.0.0",
     "private": true,
     "main": "src/index.ts",
@@ -13,8 +13,8 @@
         "typecheck": "tsc --noEmit"
     },
     "dependencies": {
-        "@the-dead-planet/nav-gauge-tinker-chest": "*",
-        "@the-dead-planet/nav-gauge-ui-common": "*"
+        "@the-dead-planet/machine-ward-tinker-chest": "*",
+        "@the-dead-planet/machine-ward-ui-common": "*"
     },
     "devDependencies": {
         "@babel/core": "^8.1.2",

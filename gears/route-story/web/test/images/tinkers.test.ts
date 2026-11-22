@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { describe, it } from "mocha";
-import { imageLayerIds } from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { imageLayerIds } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { findMapImageFeature } from "../../src/images/tinkers";
 
 const feature = (imageId: number, x: number, y: number, selected: boolean) => {

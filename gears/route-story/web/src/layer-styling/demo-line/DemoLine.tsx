@@ -1,5 +1,5 @@
 import { FC, RefObject, useId } from "react";
-import { RouteStoryState } from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { RouteStoryState } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { Icons } from "@ui";
 import { Icon } from "@web-ui";
 import styles from './demo-line.module.css';

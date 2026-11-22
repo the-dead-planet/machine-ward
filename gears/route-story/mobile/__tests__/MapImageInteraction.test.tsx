@@ -11,12 +11,12 @@ import {
     updateImageDistanceFraction,
     selectMapImageMarker,
     clearImageMarkerSelection,
-} from "@the-dead-planet/nav-gauge-gears-route-story-common";
+} from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { useMapImageInteraction } from "../src/images/useMapImageInteraction";
 import { MobileMarkerImageData } from "../src/images/image-parser";
 import { MapImageHitTarget } from "../src/images/model";
 
-jest.mock("@the-dead-planet/nav-gauge-gears-route-story-common", () => {
+jest.mock("@the-dead-planet/machine-ward-gears-route-story-common", () => {
     const { BehaviorSubject } = jest.requireActual<typeof import("rxjs")>("rxjs");
     return {
         draggingImage$: new BehaviorSubject(null),

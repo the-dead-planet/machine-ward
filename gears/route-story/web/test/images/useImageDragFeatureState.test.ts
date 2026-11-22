@@ -6,7 +6,7 @@ import type { Map } from "maplibre-gl";
 import {
     draggingImage$,
     imageSourceIds,
-} from "@the-dead-planet/nav-gauge-gears-route-story-common";
+} from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { useImageDragFeatureState } from "../../src/images/useImageDragFeatureState";
 
 it("targets the thumbnail source, retains paint ownership on rerender, and clears only drag state when changing maps", async () => {

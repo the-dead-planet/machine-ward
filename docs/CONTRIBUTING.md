@@ -64,7 +64,7 @@ Import paths are setup as `@package-name` in the `tsconfig.json` files in each w
 
 The import sequence is: `tinker-chest` → `apparatus/{common,web,mobile}` → `gears/*/{common,web,mobile}` → `app-{web,mobile}`.
 
-If suddenly something is imported, for example, from `../../apparatus/common/src` instead of `@the-dead-planet/nav-gauge-apparatus-common` when importing to a file in `tinker-chest` workspace, and importing from the alias is not possible... it's a sign of a forbidden import. Consider moving stuff around or creating another package to assure correct import flow. 
+If suddenly something is imported, for example, from `../../apparatus/common/src` instead of `@the-dead-planet/machine-ward-apparatus-common` when importing to a file in `tinker-chest` workspace, and importing from the alias is not possible... it's a sign of a forbidden import. Consider moving stuff around or creating another package to assure correct import flow.
 
 Remember about updating the [architectures chart](/docs/assets/architecture.drawio) and [svg](/docs/assets/architecture.svg) using [Draw.io](https://app.diagrams.net), if needed. The [UI layering diagram](/docs/assets/ui-architecture.drawio) is maintained the same way.
 
@@ -96,7 +96,7 @@ Avoid bloated comments which just take space and which nobody will read anyway.
 
 #### `TODO:`s
 
-At the moment, the architecture of this application is being structured and there are many `TODO:`s. Once a basic version of the API and the web and mobile app is structured, those will be handled and removed. Going forward from that moment, instead of adding a `TODO:` add an issue in the [GitHub repository](https://github.com/the-dead-planet/nav-gauge).
+At the moment, the architecture of this application is being structured and there are many `TODO:`s. Once a basic version of the API and the web and mobile app is structured, those will be handled and removed. Going forward from that moment, instead of adding a `TODO:` add an issue in the [GitHub repository](https://github.com/the-dead-planet/machine-ward).
 
 #### Dependencies
 
@@ -131,7 +131,7 @@ Follow [test ownership and value rules](../.opencode/rules/testing.mdc) when add
 
 `yarn test:all` runs common tests once, then the web and mobile platform suites. Each standalone `yarn test:web` or `yarn test:mobile` still includes common tests. Mobile Jest is not device E2E coverage; CI runs mobile platform suites and a separate Android instrumentation job.
 
-`yarn test:ui:mobile` runs the UI workspace's Mocha unit tests and native Jest component tests. For a focused native suite, use `yarn workspace @the-dead-planet/nav-gauge-ui-mobile test:native --runTestsByPath __tests__/forms/Fieldset.test.tsx`. Both `yarn typecheck:mobile` (watch) and `yarn typecheck:mobile:once` cover the app and UI workspace, including native tests.
+`yarn test:ui:mobile` runs the UI workspace's Mocha unit tests and native Jest component tests. For a focused native suite, use `yarn workspace @the-dead-planet/machine-ward-ui-mobile test:native --runTestsByPath __tests__/forms/Fieldset.test.tsx`. Both `yarn typecheck:mobile` (watch) and `yarn typecheck:mobile:once` cover the app and UI workspace, including native tests.
 
 ##### Web checks and CI parity
 

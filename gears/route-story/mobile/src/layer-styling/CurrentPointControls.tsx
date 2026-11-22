@@ -1,6 +1,6 @@
 import { FC } from "react";
 import { useMultipleTranslations } from "@apparatus";
-import { currentPointIconNames, CurrentPointIconName, CurrentPointStyle, RouteStoryTranslationKey } from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { currentPointIconNames, CurrentPointIconName, CurrentPointStyle, RouteStoryTranslationKey } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { Icons } from "@ui";
 import { ColorSelectField, Dropdown, IconRotateInput, Label, NumberInput, ToggleSwitch } from "@mobile-ui";
 import { useMobileMachineWard } from "@mobile-apparatus";

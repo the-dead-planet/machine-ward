@@ -1,14 +1,14 @@
 {
-    "name": "@the-dead-planet/nav-gauge-app-mobile",
+    "name": "@the-dead-planet/machine-ward-app-mobile",
     "version": "1.0.0",
     "description": "Navigation gauge and route story generator for mobile devices.",
     "private": true,
     "license": "AGPL-3.0",
     "author": "spookydoodle",
     "funding": "https://ko-fi.com/spookydoodle",
-    "repository": "https://github.com/the-dead-planet/nav-gauge",
+    "repository": "https://github.com/the-dead-planet/machine-ward",
     "bugs": {
-        "url": "https://github.com/the-dead-planet/nav-gauge/issues"
+        "url": "https://github.com/the-dead-planet/machine-ward/issues"
     },
     "scripts": {
         "build": "react-native build-android",
@@ -32,11 +32,11 @@
         "@react-native-documents/viewer": "^4.0.2",
         "@react-navigation/native": "^7.5.2",
         "@react-navigation/native-stack": "^7.21.1",
-        "@the-dead-planet/nav-gauge-apparatus-common": "*",
-        "@the-dead-planet/nav-gauge-apparatus-mobile": "*",
-        "@the-dead-planet/nav-gauge-tinker-chest": "*",
-        "@the-dead-planet/nav-gauge-ui-common": "*",
-        "@the-dead-planet/nav-gauge-ui-mobile": "*",
+        "@the-dead-planet/machine-ward-apparatus-common": "*",
+        "@the-dead-planet/machine-ward-apparatus-mobile": "*",
+        "@the-dead-planet/machine-ward-tinker-chest": "*",
+        "@the-dead-planet/machine-ward-ui-common": "*",
+        "@the-dead-planet/machine-ward-ui-mobile": "*",
         "fast-text-encoding": "^1.0.6",
         "pmtiles": "^4.5.0",
         "react-native": "0.88.1",

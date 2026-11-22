@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { sliderMarkerSpecification } from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { sliderMarkerSpecification } from "@the-dead-planet/machine-ward-gears-route-story-common";
 
 export const MARKER_HEIGHT = 44;
 export const MARKER_ACTION_HEIGHT = 14;

@@ -1,7 +1,7 @@
 import { FC, useRef, useState } from "react";
 import * as maplibregl from "maplibre-gl";
 import { ToolPopupProps, useMultipleTranslations } from "@apparatus";
-import { getDefaultRouteStoryState, CurrentPointStyle, RouteStoryLayerStylingPopupProps, RouteStoryLineStyle, RouteStoryState } from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { getDefaultRouteStoryState, CurrentPointStyle, RouteStoryLayerStylingPopupProps, RouteStoryLineStyle, RouteStoryState } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { useTheme } from "@ui";
 import { HudConnector, Popup, Tabstrip } from "@web-ui";
 import { useSubjectState } from "@tinker-chest";

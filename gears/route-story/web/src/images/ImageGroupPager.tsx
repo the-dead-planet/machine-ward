@@ -5,7 +5,7 @@ import classNames from "classnames";
 import { useMultipleTranslations } from "@apparatus";
 import { Button, Chip } from "@web-ui";
 import { FontType, Icons } from "@ui";
-import { shiftImageGroup, ImageGroupPagination, RouteStoryTranslationKey } from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { shiftImageGroup, ImageGroupPagination, RouteStoryTranslationKey } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import styles from "./image-group-pager.module.css";
 
 interface Props {

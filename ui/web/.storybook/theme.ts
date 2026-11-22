@@ -5,7 +5,7 @@ import {
     fontTypeToFamily,
     ThemeName,
     themeSpecifications,
-} from '@the-dead-planet/nav-gauge-ui-common';
+} from '@the-dead-planet/machine-ward-ui-common';
 
 const colors = themeSpecifications[ThemeName.Default].dark.colors;
 

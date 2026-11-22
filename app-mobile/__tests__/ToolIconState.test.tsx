@@ -1,7 +1,7 @@
 import { act, renderHook } from '@testing-library/react-native';
 import { useObservableState } from '@tinker-chest';
-import { ObservedToolIcon } from '@the-dead-planet/nav-gauge-apparatus-common/src/machine-ward/tools-station/model';
-import { ToolsStation } from '@the-dead-planet/nav-gauge-apparatus-common/src/machine-ward/tools-station/tools-station';
+import { ObservedToolIcon } from '@the-dead-planet/machine-ward-apparatus-common/src/machine-ward/tools-station/model';
+import { ToolsStation } from '@the-dead-planet/machine-ward-apparatus-common/src/machine-ward/tools-station/tools-station';
 
 test('observed tool icons preserve native component functions without invoking them', async () => {
     const initialIcon = jest.fn(() => null);

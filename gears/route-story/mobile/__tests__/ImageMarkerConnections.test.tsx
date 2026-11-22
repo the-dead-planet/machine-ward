@@ -1,6 +1,6 @@
 import { renderHook } from "@testing-library/react-native";
-import { ImageMarkerSource } from "@the-dead-planet/nav-gauge-gears-route-story-common/src/layer-specification/images/images-sources";
-import { useImageMarkerConnections } from "@the-dead-planet/nav-gauge-gears-route-story-common/src/layer-specification/images/useImageMarkerConnections";
+import { ImageMarkerSource } from "@the-dead-planet/machine-ward-gears-route-story-common/src/layer-specification/images/images-sources";
+import { useImageMarkerConnections } from "@the-dead-planet/machine-ward-gears-route-story-common/src/layer-specification/images/useImageMarkerConnections";
 
 jest.mock("@apparatus", () => ({ FeatureStateProps: {} }));
 

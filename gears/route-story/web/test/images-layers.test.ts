@@ -14,7 +14,7 @@ import {
     getOutlinedThumbnailId,
     OUTLINED_MAP_THUMBNAIL_SIZE,
     getMapImageThumbnailOffsetY,
-} from "@the-dead-planet/nav-gauge-gears-route-story-common";
+} from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { getImagesLayers, getImageDragPreviewLayers } from "../src/images/images-layers";
 
 describe("Image marker layers", () => {

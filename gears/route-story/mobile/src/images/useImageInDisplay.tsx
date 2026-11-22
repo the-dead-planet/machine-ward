@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useSubjectState } from "@tinker-chest";
-import { Animatrix, ImagesLayers } from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { Animatrix, ImagesLayers } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { MobileMap } from "@mobile-apparatus";
 import { MobilePlayerOperator } from "../model";
 

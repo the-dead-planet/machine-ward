@@ -9,7 +9,7 @@ import {
     RouteTimes,
     RouteStoryTranslationKey,
     useSliderMarkerReadout,
-} from "@the-dead-planet/nav-gauge-gears-route-story-common";
+} from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { Icons } from "@ui";
 import { Button } from "@web-ui";
 import { SliderMarkerReadout } from "./SliderMarkerReadout";

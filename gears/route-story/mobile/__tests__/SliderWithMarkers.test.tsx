@@ -10,15 +10,15 @@ import {
     RouteStoryState,
     RouteStoryTranslationKey,
     RouteTimes,
-} from "@the-dead-planet/nav-gauge-gears-route-story-common";
+} from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { SliderWithMarkers } from "../src/player/player-slider/SliderWithMarkers";
 import { MobileMarkerImageData } from "../src/images/image-parser";
 import { MobilePlayerOperator } from "../src/model";
 
 jest.mock("@apparatus", () => ({}));
 jest.mock("@mobile-apparatus", () => ({}));
-jest.mock("@the-dead-planet/nav-gauge-gears-route-story-common", () => ({
-    ...jest.requireActual("@the-dead-planet/nav-gauge-gears-route-story-common/src/animatrix/animatrix"),
+jest.mock("@the-dead-planet/machine-ward-gears-route-story-common", () => ({
+    ...jest.requireActual("@the-dead-planet/machine-ward-gears-route-story-common/src/animatrix/animatrix"),
     RouteStoryTranslationKey: {},
     getRouteDistanceFraction: () => 0,
 }));

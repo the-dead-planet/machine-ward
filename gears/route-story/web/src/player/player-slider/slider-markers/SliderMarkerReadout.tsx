@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { SliderMarkerReadoutProps, useSliderMarkerReadout } from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { SliderMarkerReadoutProps, useSliderMarkerReadout } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { FontType } from "@ui";
 import { Caption } from "@web-ui";
 import styles from "./slider-markers.module.css";

@@ -4,7 +4,7 @@ import { BehaviorSubject } from "rxjs";
 import classNames from "classnames";
 import { useMultipleTranslations } from "@apparatus";
 import { ParsingResultWithError } from "@tinker-chest";
-import { Animatrix } from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { Animatrix } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { Button, Tooltip } from "@web-ui";
 import { Icons } from "@ui";
 import styles from "./slider-markers.module.css";

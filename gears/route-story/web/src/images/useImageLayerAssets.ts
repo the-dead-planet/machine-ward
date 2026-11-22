@@ -11,7 +11,7 @@ import {
     IMAGE_MARKER_OUTLINE_ID,
     IMAGE_MARKER_OUTLINE_SDF_URI,
     IMAGE_MARKER_OUTLINE_SIZE,
-} from "@the-dead-planet/nav-gauge-gears-route-story-common";
+} from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { MapImageData, useRouteLayerImages } from "../hooks";
 import { useLoadedWebImages } from "../hooks/useLoadedWebImages";
 import { getOutlinedThumbnail } from "./outlined-thumbnail";

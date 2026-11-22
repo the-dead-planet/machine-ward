@@ -1,5 +1,5 @@
 import * as maplibregl from "maplibre-gl";
-import { getColorTransitionLengthPercent, getRouteLineLayers, getRoutePointsLayers, routeLayerIds, routeSourceIds, RouteStoryState } from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { getColorTransitionLengthPercent, getRouteLineLayers, getRoutePointsLayers, routeLayerIds, routeSourceIds, RouteStoryState } from "@the-dead-planet/machine-ward-gears-route-story-common";
 
 /**
  * Gets current point data, updates map sources, and returns it.

@@ -1,6 +1,6 @@
 import { FC } from "react";
 import { DropdownOption } from "@ui";
-import { RouteStoryLineStyle, RouteStoryTranslationKey } from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { RouteStoryLineStyle, RouteStoryTranslationKey } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { Checkbox, ColorSelectField, Dropdown, NumberInput, Text } from "@web-ui";
 import { useMultipleTranslations } from "@apparatus";
 import styles from './line-style-group.module.css';

@@ -9,7 +9,7 @@ metadata:
 
 ## What I do
 
-Scaffold a new **Gear** — the pluggable feature unit in nav-gauge — by running `yarn generate:gear <name>` from `/`. The script copies the relevant template from `/.templates/` (real TypeScript files that are linted and type-checked), replaces `__name__` and `__PascalName__` placeholders with the gear name, and removes unwanted platform directories.
+Scaffold a new **Gear** — the pluggable feature unit in machine-ward — by running `yarn generate:gear <name>` from `/`. The script copies the relevant template from `/.templates/` (real TypeScript files that are linted and type-checked), replaces `__name__` and `__PascalName__` placeholders with the gear name, and removes unwanted platform directories.
 
 ## When to use
 
@@ -39,9 +39,9 @@ View the actual template files at `/.templates/` for the exact structure — the
 | Abstract class | `{PascalName}Gear` | `RouteStoryGear` |
 | Web class | `Web{PascalName}Gear` | `WebRouteStoryGear` |
 | Mobile class | `Mobile{PascalName}Gear` | `MobileRouteStoryGear` |
-| Package (common) | `@the-dead-planet/nav-gauge-gears-{name}-common` | `@the-dead-planet/nav-gauge-gears-route-story-common` |
-| Package (web) | `@the-dead-planet/nav-gauge-gears-{name}-web` | `@the-dead-planet/nav-gauge-gears-route-story-web` |
-| Package (mobile) | `@the-dead-planet/nav-gauge-gears-{name}-mobile` | `@the-dead-planet/nav-gauge-gears-route-story-mobile` |
+| Package (common) | `@the-dead-planet/machine-ward-gears-{name}-common` | `@the-dead-planet/machine-ward-gears-route-story-common` |
+| Package (web) | `@the-dead-planet/machine-ward-gears-{name}-web` | `@the-dead-planet/machine-ward-gears-route-story-web` |
+| Package (mobile) | `@the-dead-planet/machine-ward-gears-{name}-mobile` | `@the-dead-planet/machine-ward-gears-route-story-mobile` |
 
 ## Auto-discovery
 

@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { RouteStoryLineStyle, RouteStoryTranslationKey } from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { RouteStoryLineStyle, RouteStoryTranslationKey } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { Checkbox, ColorSelectField, Dropdown, Label, NumberInput } from "@mobile-ui";
 import { View, StyleSheet } from "react-native";
 import { useMultipleTranslations } from "@apparatus";

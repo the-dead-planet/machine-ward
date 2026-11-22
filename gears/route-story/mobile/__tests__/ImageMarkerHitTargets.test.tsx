@@ -8,7 +8,7 @@ import {
     getImageSourceWithAnchors,
     imageGroupOffset$,
     selectedImageId$,
-} from "@the-dead-planet/nav-gauge-gears-route-story-common";
+} from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { useImageMarkerSource } from "../src/images/useImageMarkerSource";
 
 const mockCartomancer = {
@@ -20,7 +20,7 @@ jest.mock("@apparatus", () => jest.requireActual("../../../../apparatus/common/s
 jest.mock("@mobile-apparatus", () => ({
     useMobileMachineWard: () => ({ cartomancer: mockCartomancer }),
 }));
-jest.mock("@the-dead-planet/nav-gauge-gears-route-story-common", () => {
+jest.mock("@the-dead-planet/machine-ward-gears-route-story-common", () => {
     const { BehaviorSubject } = jest.requireActual<typeof import("rxjs")>("rxjs");
     return {
         ...jest.requireActual("../../common/src/layer-specification/images/images-sources"),

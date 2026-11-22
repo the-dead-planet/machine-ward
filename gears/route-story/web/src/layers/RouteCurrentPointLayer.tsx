@@ -1,7 +1,7 @@
 import { FC, useEffect, useMemo, useState } from "react";
 import * as maplibregl from "maplibre-gl";
 import { MapLayerData, MapSourceAndLayers, } from "@web-apparatus";
-import { defaultRouteStoryState, getCurrentPointImageName, getCurrentPointLayers, layerOrder, routeLayerIds, routeSourceIds, RouteStoryState } from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { defaultRouteStoryState, getCurrentPointImageName, getCurrentPointLayers, layerOrder, routeLayerIds, routeSourceIds, RouteStoryState } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { Icons } from "@ui";
 
 interface Props {

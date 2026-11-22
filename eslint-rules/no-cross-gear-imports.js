@@ -20,16 +20,16 @@ function getSourceInfo(filename) {
 }
 
 const IMPORT_PATTERNS = [
-    { re: /^@the-dead-planet\/nav-gauge-tinker-chest$/,                                        type: 'tinker-chest' },
-    { re: /^@the-dead-planet\/nav-gauge-apparatus$/,                                           type: 'apparatus' },
-    { re: /^@the-dead-planet\/nav-gauge-ui-common$/,                                           type: 'ui-common' },
-    { re: /^@the-dead-planet\/nav-gauge-ui-web$/,                                              type: 'ui-web' },
-    { re: /^@the-dead-planet\/nav-gauge-ui-mobile$/,                                           type: 'ui-mobile' },
-    { re: /^@the-dead-planet\/nav-gauge-gears-([a-z][a-z0-9]*(?:-[a-z0-9]+)*)-common$/,       type: 'gear-common', gearIdx: 1 },
-    { re: /^@the-dead-planet\/nav-gauge-gears-([a-z][a-z0-9]*(?:-[a-z0-9]+)*)-web$/,          type: 'gear-web',    gearIdx: 1 },
-    { re: /^@the-dead-planet\/nav-gauge-gears-([a-z][a-z0-9]*(?:-[a-z0-9]+)*)-mobile$/,       type: 'gear-mobile', gearIdx: 1 },
-    { re: /^@the-dead-planet\/nav-gauge-app-web$/,                                             type: 'app-web' },
-    { re: /^@the-dead-planet\/nav-gauge-app-mobile$/,                                          type: 'app-mobile' },
+    { re: /^@the-dead-planet\/machine-ward-tinker-chest$/,                                        type: 'tinker-chest' },
+    { re: /^@the-dead-planet\/machine-ward-apparatus$/,                                           type: 'apparatus' },
+    { re: /^@the-dead-planet\/machine-ward-ui-common$/,                                           type: 'ui-common' },
+    { re: /^@the-dead-planet\/machine-ward-ui-web$/,                                              type: 'ui-web' },
+    { re: /^@the-dead-planet\/machine-ward-ui-mobile$/,                                           type: 'ui-mobile' },
+    { re: /^@the-dead-planet\/machine-ward-gears-([a-z][a-z0-9]*(?:-[a-z0-9]+)*)-common$/,       type: 'gear-common', gearIdx: 1 },
+    { re: /^@the-dead-planet\/machine-ward-gears-([a-z][a-z0-9]*(?:-[a-z0-9]+)*)-web$/,          type: 'gear-web',    gearIdx: 1 },
+    { re: /^@the-dead-planet\/machine-ward-gears-([a-z][a-z0-9]*(?:-[a-z0-9]+)*)-mobile$/,       type: 'gear-mobile', gearIdx: 1 },
+    { re: /^@the-dead-planet\/machine-ward-app-web$/,                                             type: 'app-web' },
+    { re: /^@the-dead-planet\/machine-ward-app-mobile$/,                                          type: 'app-mobile' },
 ];
 
 function parseImport(source) {

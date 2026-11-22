@@ -1,7 +1,7 @@
 import { FC, useMemo } from "react";
 import * as maplibregl from "maplibre-gl";
 import { MapLayerData, MapSourceAndLayers } from "@web-apparatus";
-import { layerOrder, routeSourceIds, RouteGeometryData } from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { layerOrder, routeSourceIds, RouteGeometryData } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { cameraLineLayers } from "./route-layers";
 
 interface Props {

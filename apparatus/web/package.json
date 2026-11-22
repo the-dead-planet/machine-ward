@@ -1,5 +1,5 @@
 {
-    "name": "@the-dead-planet/nav-gauge-apparatus-web",
+    "name": "@the-dead-planet/machine-ward-apparatus-web",
     "version": "1.0.0",
     "private": true,
     "main": "src/index.ts",
@@ -10,9 +10,9 @@
         "test": "mocha"
     },
     "dependencies": {
-        "@the-dead-planet/nav-gauge-apparatus-common": "*",
-        "@the-dead-planet/nav-gauge-tinker-chest": "*",
-        "@the-dead-planet/nav-gauge-ui-common": "*"
+        "@the-dead-planet/machine-ward-apparatus-common": "*",
+        "@the-dead-planet/machine-ward-tinker-chest": "*",
+        "@the-dead-planet/machine-ward-ui-common": "*"
     },
     "devDependencies": {
         "@maplibre/maplibre-gl-style-spec": "^26.8.0",

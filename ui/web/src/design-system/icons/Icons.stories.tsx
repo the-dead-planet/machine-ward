@@ -8,7 +8,7 @@ import {
     DEFAULT_SIZE,
     themeAppearanceStateOptions,
 } from "@ui";
-import iconRegistry from "@the-dead-planet/nav-gauge-ui-common/src/design-system/icons/svg/noun-project/icon-registry.json";
+import iconRegistry from "@the-dead-planet/machine-ward-ui-common/src/design-system/icons/svg/noun-project/icon-registry.json";
 import { Icon } from "./Icon";
 import { LinkText } from "../typography";
 import styles from "./icons-gallery.module.css";

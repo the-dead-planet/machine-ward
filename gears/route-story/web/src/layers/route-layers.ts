@@ -5,7 +5,7 @@ import {
     getRouteLineLayers,
     getRoutePointsLayers,
     RouteStoryState,
-} from "@the-dead-planet/nav-gauge-gears-route-story-common";
+} from "@the-dead-planet/machine-ward-gears-route-story-common";
 
 export const getWebRouteLineLayers = (state: RouteStoryState): maplibregl.LayerSpecification[] =>
     getRouteLineLayers(state);

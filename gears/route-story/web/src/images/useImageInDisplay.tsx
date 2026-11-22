@@ -1,7 +1,7 @@
 import type * as maplibregl from "maplibre-gl";
 import { useEffect } from "react";
 import { useSubjectState } from "@tinker-chest";
-import { Animatrix, imageLayerIds, ImagesLayers } from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { Animatrix, imageLayerIds, ImagesLayers } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { WebPlayerOperator } from "../model";
 
 export const useImageInDisplay = (

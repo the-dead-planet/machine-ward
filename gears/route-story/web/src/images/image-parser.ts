@@ -1,8 +1,8 @@
 import EXIF from 'exif-js';
 import { ExifData, glitchmitter } from '@apparatus';
-import { FULL_SIZE_IMAGE_SIZE, MAP_THUMBNAIL_SIZE   } from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { FULL_SIZE_IMAGE_SIZE, MAP_THUMBNAIL_SIZE   } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { getExifError, getExifLngLat, LngLat } from "@tinker-chest";
-import { getResizeDimensions } from "@the-dead-planet/nav-gauge-gears-route-story-common/src/file-parser";
+import { getResizeDimensions } from "@the-dead-planet/machine-ward-gears-route-story-common/src/file-parser";
 
 export interface WebMarkerImageData {
     data?: string;

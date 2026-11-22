@@ -2,7 +2,7 @@ import { Fragment } from 'react';
 import { ScrollView, View, StyleSheet } from 'react-native';
 import { Text } from '../typography';
 import { appearanceColorOptions, DEFAULT_SIZE, IconAppearanceProps, Icons, iconStoryArgs, iconStoryControls, themeAppearanceStateOptions } from "@ui";
-import iconRegistry from '@the-dead-planet/nav-gauge-ui-common/src/design-system/icons/svg/noun-project/icon-registry.json';
+import iconRegistry from '@the-dead-planet/machine-ward-ui-common/src/design-system/icons/svg/noun-project/icon-registry.json';
 import { Icon } from './Icon';
 import { MobileStoryDefinition } from '../../storybook/model';
 

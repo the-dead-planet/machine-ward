@@ -3,7 +3,7 @@ import { StyleSheet, View } from "react-native";
 import { BehaviorSubject } from "rxjs";
 import { MarkerImage } from "@apparatus";
 import { ParsingResultWithError, useSubjectState } from "@tinker-chest";
-import { RouteStoryTranslationKey, RouteTimes, Animatrix, RouteGeometryData } from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { RouteStoryTranslationKey, RouteTimes, Animatrix, RouteGeometryData } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { MobileMap } from "@mobile-apparatus";
 import { MobileMarkerImageData } from "../../../images/image-parser";
 import { SliderMarkerPanToWholeRoute } from "./SliderMarkerPanToWholeRoute";

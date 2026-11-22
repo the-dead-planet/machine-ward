@@ -6,7 +6,7 @@ import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnabled
 import com.facebook.react.defaults.DefaultReactActivityDelegate
 import com.swmansion.rnscreens.fragment.restoration.RNScreensFragmentFactory
-import com.navgauge.routestory.SliderGestureExclusion
+import com.thedeadplanet.routestory.SliderGestureExclusion
 
 class MainActivity : ReactActivity() {
     private var sliderGestureExclusion: SliderGestureExclusion? = null

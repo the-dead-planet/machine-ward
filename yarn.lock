@@ -6712,9 +6712,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@the-dead-planet/nav-gauge-app-mobile@workspace:app-mobile":
+"@the-dead-planet/machine-ward-app-mobile@workspace:app-mobile":
   version: 0.0.0-use.local
-  resolution: "@the-dead-planet/nav-gauge-app-mobile@workspace:app-mobile"
+  resolution: "@the-dead-planet/machine-ward-app-mobile@workspace:app-mobile"
   dependencies:
     "@babel/core": "npm:^8.1.2"
     "@babel/preset-env": "npm:^8.0.7"
@@ -6734,11 +6734,11 @@ __metadata:
     "@react-navigation/native": "npm:^7.5.2"
     "@react-navigation/native-stack": "npm:^7.21.1"
     "@testing-library/react-native": "npm:^14.1.0"
-    "@the-dead-planet/nav-gauge-apparatus-common": "npm:*"
-    "@the-dead-planet/nav-gauge-apparatus-mobile": "npm:*"
-    "@the-dead-planet/nav-gauge-tinker-chest": "npm:*"
-    "@the-dead-planet/nav-gauge-ui-common": "npm:*"
-    "@the-dead-planet/nav-gauge-ui-mobile": "npm:*"
+    "@the-dead-planet/machine-ward-apparatus-common": "npm:*"
+    "@the-dead-planet/machine-ward-apparatus-mobile": "npm:*"
+    "@the-dead-planet/machine-ward-tinker-chest": "npm:*"
+    "@the-dead-planet/machine-ward-ui-common": "npm:*"
+    "@the-dead-planet/machine-ward-ui-mobile": "npm:*"
     "@types/jest": "npm:^30.0.0"
     "@types/serve-static": "npm:^2"
     babel-jest: "npm:^30.5.2"
@@ -6767,9 +6767,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@the-dead-planet/nav-gauge-app-web@workspace:app-web":
+"@the-dead-planet/machine-ward-app-web@workspace:app-web":
   version: 0.0.0-use.local
-  resolution: "@the-dead-planet/nav-gauge-app-web@workspace:app-web"
+  resolution: "@the-dead-planet/machine-ward-app-web@workspace:app-web"
   dependencies:
     "@babel/core": "npm:^8.1.2"
     "@babel/preset-env": "npm:^8.0.7"
@@ -6782,11 +6782,11 @@ __metadata:
     "@svgr/webpack": "npm:^8.1.0"
     "@testing-library/dom": "npm:^10.4.2"
     "@testing-library/react": "npm:^16.3.3"
-    "@the-dead-planet/nav-gauge-apparatus-common": "npm:*"
-    "@the-dead-planet/nav-gauge-apparatus-web": "npm:*"
-    "@the-dead-planet/nav-gauge-tinker-chest": "npm:*"
-    "@the-dead-planet/nav-gauge-ui-common": "npm:*"
-    "@the-dead-planet/nav-gauge-ui-web": "npm:*"
+    "@the-dead-planet/machine-ward-apparatus-common": "npm:*"
+    "@the-dead-planet/machine-ward-apparatus-web": "npm:*"
+    "@the-dead-planet/machine-ward-tinker-chest": "npm:*"
+    "@the-dead-planet/machine-ward-ui-common": "npm:*"
+    "@the-dead-planet/machine-ward-ui-web": "npm:*"
     "@types/react-dom": "npm:19.3.0"
     "@types/react-refresh": "npm:^0.14.7"
     "@types/webpack-bundle-analyzer": "npm:^4.7.0"
@@ -6812,13 +6812,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@the-dead-planet/nav-gauge-apparatus-common@npm:*, @the-dead-planet/nav-gauge-apparatus-common@workspace:apparatus/common":
+"@the-dead-planet/machine-ward-apparatus-common@npm:*, @the-dead-planet/machine-ward-apparatus-common@workspace:apparatus/common":
   version: 0.0.0-use.local
-  resolution: "@the-dead-planet/nav-gauge-apparatus-common@workspace:apparatus/common"
+  resolution: "@the-dead-planet/machine-ward-apparatus-common@workspace:apparatus/common"
   dependencies:
     "@maplibre/maplibre-gl-style-spec": "npm:^26.8.0"
-    "@the-dead-planet/nav-gauge-tinker-chest": "npm:*"
-    "@the-dead-planet/nav-gauge-ui-common": "npm:*"
+    "@the-dead-planet/machine-ward-tinker-chest": "npm:*"
+    "@the-dead-planet/machine-ward-ui-common": "npm:*"
     fast-xml-parser: "npm:^5.12.1"
     react: "npm:19.3.1"
   peerDependencies:
@@ -6827,9 +6827,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@the-dead-planet/nav-gauge-apparatus-mobile@npm:*, @the-dead-planet/nav-gauge-apparatus-mobile@workspace:apparatus/mobile":
+"@the-dead-planet/machine-ward-apparatus-mobile@npm:*, @the-dead-planet/machine-ward-apparatus-mobile@workspace:apparatus/mobile":
   version: 0.0.0-use.local
-  resolution: "@the-dead-planet/nav-gauge-apparatus-mobile@workspace:apparatus/mobile"
+  resolution: "@the-dead-planet/machine-ward-apparatus-mobile@workspace:apparatus/mobile"
   dependencies:
     "@babel/core": "npm:^8.1.2"
     "@maplibre/maplibre-gl-style-spec": "npm:^26.8.0"
@@ -6838,9 +6838,9 @@ __metadata:
     "@react-native/babel-preset": "npm:0.88.1"
     "@react-native/jest-preset": "npm:^0.88.1"
     "@testing-library/react-native": "npm:^14.1.0"
-    "@the-dead-planet/nav-gauge-apparatus-common": "npm:*"
-    "@the-dead-planet/nav-gauge-tinker-chest": "npm:*"
-    "@the-dead-planet/nav-gauge-ui-common": "npm:*"
+    "@the-dead-planet/machine-ward-apparatus-common": "npm:*"
+    "@the-dead-planet/machine-ward-tinker-chest": "npm:*"
+    "@the-dead-planet/machine-ward-ui-common": "npm:*"
     babel-jest: "npm:^30.5.2"
     jest: "npm:^30.5.2"
     react: "npm:19.3.1"
@@ -6856,14 +6856,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@the-dead-planet/nav-gauge-apparatus-web@npm:*, @the-dead-planet/nav-gauge-apparatus-web@workspace:apparatus/web":
+"@the-dead-planet/machine-ward-apparatus-web@npm:*, @the-dead-planet/machine-ward-apparatus-web@workspace:apparatus/web":
   version: 0.0.0-use.local
-  resolution: "@the-dead-planet/nav-gauge-apparatus-web@workspace:apparatus/web"
+  resolution: "@the-dead-planet/machine-ward-apparatus-web@workspace:apparatus/web"
   dependencies:
     "@maplibre/maplibre-gl-style-spec": "npm:^26.8.0"
-    "@the-dead-planet/nav-gauge-apparatus-common": "npm:*"
-    "@the-dead-planet/nav-gauge-tinker-chest": "npm:*"
-    "@the-dead-planet/nav-gauge-ui-common": "npm:*"
+    "@the-dead-planet/machine-ward-apparatus-common": "npm:*"
+    "@the-dead-planet/machine-ward-tinker-chest": "npm:*"
+    "@the-dead-planet/machine-ward-ui-common": "npm:*"
     maplibre-gl: "npm:6.18.0"
     react: "npm:19.3.1"
     react-dom: "npm:19.3.1"
@@ -6875,13 +6875,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@the-dead-planet/nav-gauge-gears-navigate-common@npm:*, @the-dead-planet/nav-gauge-gears-navigate-common@workspace:gears/navigate/common":
+"@the-dead-planet/machine-ward-gears-navigate-common@npm:*, @the-dead-planet/machine-ward-gears-navigate-common@workspace:gears/navigate/common":
   version: 0.0.0-use.local
-  resolution: "@the-dead-planet/nav-gauge-gears-navigate-common@workspace:gears/navigate/common"
+  resolution: "@the-dead-planet/machine-ward-gears-navigate-common@workspace:gears/navigate/common"
   dependencies:
-    "@the-dead-planet/nav-gauge-apparatus-common": "npm:*"
-    "@the-dead-planet/nav-gauge-tinker-chest": "npm:*"
-    "@the-dead-planet/nav-gauge-ui-common": "npm:*"
+    "@the-dead-planet/machine-ward-apparatus-common": "npm:*"
+    "@the-dead-planet/machine-ward-tinker-chest": "npm:*"
+    "@the-dead-planet/machine-ward-ui-common": "npm:*"
     react: "npm:19.3.1"
   peerDependencies:
     react: 19.3.1
@@ -6889,16 +6889,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@the-dead-planet/nav-gauge-gears-navigate-mobile@workspace:gears/navigate/mobile":
+"@the-dead-planet/machine-ward-gears-navigate-mobile@workspace:gears/navigate/mobile":
   version: 0.0.0-use.local
-  resolution: "@the-dead-planet/nav-gauge-gears-navigate-mobile@workspace:gears/navigate/mobile"
+  resolution: "@the-dead-planet/machine-ward-gears-navigate-mobile@workspace:gears/navigate/mobile"
   dependencies:
     "@maplibre/maplibre-react-native": "npm:11.5.1"
-    "@the-dead-planet/nav-gauge-apparatus-common": "npm:*"
-    "@the-dead-planet/nav-gauge-apparatus-mobile": "npm:*"
-    "@the-dead-planet/nav-gauge-gears-navigate-common": "npm:*"
-    "@the-dead-planet/nav-gauge-tinker-chest": "npm:*"
-    "@the-dead-planet/nav-gauge-ui-common": "npm:*"
+    "@the-dead-planet/machine-ward-apparatus-common": "npm:*"
+    "@the-dead-planet/machine-ward-apparatus-mobile": "npm:*"
+    "@the-dead-planet/machine-ward-gears-navigate-common": "npm:*"
+    "@the-dead-planet/machine-ward-tinker-chest": "npm:*"
+    "@the-dead-planet/machine-ward-ui-common": "npm:*"
     react: "npm:19.3.1"
     react-native: "npm:0.88.1"
   peerDependencies:
@@ -6909,15 +6909,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@the-dead-planet/nav-gauge-gears-navigate-web@workspace:gears/navigate/web":
+"@the-dead-planet/machine-ward-gears-navigate-web@workspace:gears/navigate/web":
   version: 0.0.0-use.local
-  resolution: "@the-dead-planet/nav-gauge-gears-navigate-web@workspace:gears/navigate/web"
+  resolution: "@the-dead-planet/machine-ward-gears-navigate-web@workspace:gears/navigate/web"
   dependencies:
-    "@the-dead-planet/nav-gauge-apparatus-common": "npm:*"
-    "@the-dead-planet/nav-gauge-apparatus-web": "npm:*"
-    "@the-dead-planet/nav-gauge-gears-navigate-common": "npm:*"
-    "@the-dead-planet/nav-gauge-tinker-chest": "npm:*"
-    "@the-dead-planet/nav-gauge-ui-common": "npm:*"
+    "@the-dead-planet/machine-ward-apparatus-common": "npm:*"
+    "@the-dead-planet/machine-ward-apparatus-web": "npm:*"
+    "@the-dead-planet/machine-ward-gears-navigate-common": "npm:*"
+    "@the-dead-planet/machine-ward-tinker-chest": "npm:*"
+    "@the-dead-planet/machine-ward-ui-common": "npm:*"
     maplibre-gl: "npm:6.18.0"
     react: "npm:19.3.1"
     react-dom: "npm:19.3.1"
@@ -6929,13 +6929,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@the-dead-planet/nav-gauge-gears-record-route-common@npm:*, @the-dead-planet/nav-gauge-gears-record-route-common@workspace:gears/record-route/common":
+"@the-dead-planet/machine-ward-gears-record-route-common@npm:*, @the-dead-planet/machine-ward-gears-record-route-common@workspace:gears/record-route/common":
   version: 0.0.0-use.local
-  resolution: "@the-dead-planet/nav-gauge-gears-record-route-common@workspace:gears/record-route/common"
+  resolution: "@the-dead-planet/machine-ward-gears-record-route-common@workspace:gears/record-route/common"
   dependencies:
-    "@the-dead-planet/nav-gauge-apparatus-common": "npm:*"
-    "@the-dead-planet/nav-gauge-tinker-chest": "npm:*"
-    "@the-dead-planet/nav-gauge-ui-common": "npm:*"
+    "@the-dead-planet/machine-ward-apparatus-common": "npm:*"
+    "@the-dead-planet/machine-ward-tinker-chest": "npm:*"
+    "@the-dead-planet/machine-ward-ui-common": "npm:*"
     react: "npm:19.3.1"
   peerDependencies:
     react: 19.3.1
@@ -6943,16 +6943,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@the-dead-planet/nav-gauge-gears-record-route-mobile@workspace:gears/record-route/mobile":
+"@the-dead-planet/machine-ward-gears-record-route-mobile@workspace:gears/record-route/mobile":
   version: 0.0.0-use.local
-  resolution: "@the-dead-planet/nav-gauge-gears-record-route-mobile@workspace:gears/record-route/mobile"
+  resolution: "@the-dead-planet/machine-ward-gears-record-route-mobile@workspace:gears/record-route/mobile"
   dependencies:
     "@maplibre/maplibre-react-native": "npm:11.5.1"
-    "@the-dead-planet/nav-gauge-apparatus-common": "npm:*"
-    "@the-dead-planet/nav-gauge-apparatus-mobile": "npm:*"
-    "@the-dead-planet/nav-gauge-gears-record-route-common": "npm:*"
-    "@the-dead-planet/nav-gauge-tinker-chest": "npm:*"
-    "@the-dead-planet/nav-gauge-ui-common": "npm:*"
+    "@the-dead-planet/machine-ward-apparatus-common": "npm:*"
+    "@the-dead-planet/machine-ward-apparatus-mobile": "npm:*"
+    "@the-dead-planet/machine-ward-gears-record-route-common": "npm:*"
+    "@the-dead-planet/machine-ward-tinker-chest": "npm:*"
+    "@the-dead-planet/machine-ward-ui-common": "npm:*"
     react: "npm:19.3.1"
     react-native: "npm:0.88.1"
   peerDependencies:
@@ -6963,15 +6963,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@the-dead-planet/nav-gauge-gears-record-route-web@workspace:gears/record-route/web":
+"@the-dead-planet/machine-ward-gears-record-route-web@workspace:gears/record-route/web":
   version: 0.0.0-use.local
-  resolution: "@the-dead-planet/nav-gauge-gears-record-route-web@workspace:gears/record-route/web"
+  resolution: "@the-dead-planet/machine-ward-gears-record-route-web@workspace:gears/record-route/web"
   dependencies:
-    "@the-dead-planet/nav-gauge-apparatus-common": "npm:*"
-    "@the-dead-planet/nav-gauge-apparatus-web": "npm:*"
-    "@the-dead-planet/nav-gauge-gears-record-route-common": "npm:*"
-    "@the-dead-planet/nav-gauge-tinker-chest": "npm:*"
-    "@the-dead-planet/nav-gauge-ui-common": "npm:*"
+    "@the-dead-planet/machine-ward-apparatus-common": "npm:*"
+    "@the-dead-planet/machine-ward-apparatus-web": "npm:*"
+    "@the-dead-planet/machine-ward-gears-record-route-common": "npm:*"
+    "@the-dead-planet/machine-ward-tinker-chest": "npm:*"
+    "@the-dead-planet/machine-ward-ui-common": "npm:*"
     maplibre-gl: "npm:6.18.0"
     react: "npm:19.3.1"
     react-dom: "npm:19.3.1"
@@ -6983,13 +6983,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@the-dead-planet/nav-gauge-gears-route-story-common@npm:*, @the-dead-planet/nav-gauge-gears-route-story-common@workspace:gears/route-story/common":
+"@the-dead-planet/machine-ward-gears-route-story-common@npm:*, @the-dead-planet/machine-ward-gears-route-story-common@workspace:gears/route-story/common":
   version: 0.0.0-use.local
-  resolution: "@the-dead-planet/nav-gauge-gears-route-story-common@workspace:gears/route-story/common"
+  resolution: "@the-dead-planet/machine-ward-gears-route-story-common@workspace:gears/route-story/common"
   dependencies:
-    "@the-dead-planet/nav-gauge-apparatus-common": "npm:*"
-    "@the-dead-planet/nav-gauge-tinker-chest": "npm:*"
-    "@the-dead-planet/nav-gauge-ui-common": "npm:*"
+    "@the-dead-planet/machine-ward-apparatus-common": "npm:*"
+    "@the-dead-planet/machine-ward-tinker-chest": "npm:*"
+    "@the-dead-planet/machine-ward-ui-common": "npm:*"
     react: "npm:19.3.1"
   peerDependencies:
     react: 19.3.1
@@ -6997,9 +6997,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@the-dead-planet/nav-gauge-gears-route-story-mobile@workspace:gears/route-story/mobile":
+"@the-dead-planet/machine-ward-gears-route-story-mobile@workspace:gears/route-story/mobile":
   version: 0.0.0-use.local
-  resolution: "@the-dead-planet/nav-gauge-gears-route-story-mobile@workspace:gears/route-story/mobile"
+  resolution: "@the-dead-planet/machine-ward-gears-route-story-mobile@workspace:gears/route-story/mobile"
   dependencies:
     "@babel/core": "npm:^8.1.2"
     "@bam.tech/react-native-image-resizer": "npm:^3.0.11"
@@ -7009,11 +7009,11 @@ __metadata:
     "@react-native/babel-preset": "npm:0.88.1"
     "@react-native/jest-preset": "npm:^0.88.1"
     "@testing-library/react-native": "npm:^14.1.0"
-    "@the-dead-planet/nav-gauge-apparatus-common": "npm:*"
-    "@the-dead-planet/nav-gauge-apparatus-mobile": "npm:*"
-    "@the-dead-planet/nav-gauge-gears-route-story-common": "npm:*"
-    "@the-dead-planet/nav-gauge-tinker-chest": "npm:*"
-    "@the-dead-planet/nav-gauge-ui-common": "npm:*"
+    "@the-dead-planet/machine-ward-apparatus-common": "npm:*"
+    "@the-dead-planet/machine-ward-apparatus-mobile": "npm:*"
+    "@the-dead-planet/machine-ward-gears-route-story-common": "npm:*"
+    "@the-dead-planet/machine-ward-tinker-chest": "npm:*"
+    "@the-dead-planet/machine-ward-ui-common": "npm:*"
     babel-jest: "npm:^30.5.2"
     jest: "npm:^30.5.2"
     react: "npm:19.3.1"
@@ -7032,15 +7032,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@the-dead-planet/nav-gauge-gears-route-story-web@workspace:gears/route-story/web":
+"@the-dead-planet/machine-ward-gears-route-story-web@workspace:gears/route-story/web":
   version: 0.0.0-use.local
-  resolution: "@the-dead-planet/nav-gauge-gears-route-story-web@workspace:gears/route-story/web"
+  resolution: "@the-dead-planet/machine-ward-gears-route-story-web@workspace:gears/route-story/web"
   dependencies:
-    "@the-dead-planet/nav-gauge-apparatus-common": "npm:*"
-    "@the-dead-planet/nav-gauge-apparatus-web": "npm:*"
-    "@the-dead-planet/nav-gauge-gears-route-story-common": "npm:*"
-    "@the-dead-planet/nav-gauge-tinker-chest": "npm:*"
-    "@the-dead-planet/nav-gauge-ui-common": "npm:*"
+    "@the-dead-planet/machine-ward-apparatus-common": "npm:*"
+    "@the-dead-planet/machine-ward-apparatus-web": "npm:*"
+    "@the-dead-planet/machine-ward-gears-route-story-common": "npm:*"
+    "@the-dead-planet/machine-ward-tinker-chest": "npm:*"
+    "@the-dead-planet/machine-ward-ui-common": "npm:*"
     "@types/exif-js": "npm:^2.3.1"
     cypress: "npm:^16.3.0"
     exif-js: "npm:^2.3.0"
@@ -7055,13 +7055,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@the-dead-planet/nav-gauge-gears-submit-data-common@npm:*, @the-dead-planet/nav-gauge-gears-submit-data-common@workspace:gears/submit-data/common":
+"@the-dead-planet/machine-ward-gears-submit-data-common@npm:*, @the-dead-planet/machine-ward-gears-submit-data-common@workspace:gears/submit-data/common":
   version: 0.0.0-use.local
-  resolution: "@the-dead-planet/nav-gauge-gears-submit-data-common@workspace:gears/submit-data/common"
+  resolution: "@the-dead-planet/machine-ward-gears-submit-data-common@workspace:gears/submit-data/common"
   dependencies:
-    "@the-dead-planet/nav-gauge-apparatus-common": "npm:*"
-    "@the-dead-planet/nav-gauge-tinker-chest": "npm:*"
-    "@the-dead-planet/nav-gauge-ui-common": "npm:*"
+    "@the-dead-planet/machine-ward-apparatus-common": "npm:*"
+    "@the-dead-planet/machine-ward-tinker-chest": "npm:*"
+    "@the-dead-planet/machine-ward-ui-common": "npm:*"
     react: "npm:19.3.1"
   peerDependencies:
     react: 19.3.1
@@ -7069,16 +7069,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@the-dead-planet/nav-gauge-gears-submit-data-mobile@workspace:gears/submit-data/mobile":
+"@the-dead-planet/machine-ward-gears-submit-data-mobile@workspace:gears/submit-data/mobile":
   version: 0.0.0-use.local
-  resolution: "@the-dead-planet/nav-gauge-gears-submit-data-mobile@workspace:gears/submit-data/mobile"
+  resolution: "@the-dead-planet/machine-ward-gears-submit-data-mobile@workspace:gears/submit-data/mobile"
   dependencies:
     "@maplibre/maplibre-react-native": "npm:11.5.1"
-    "@the-dead-planet/nav-gauge-apparatus-common": "npm:*"
-    "@the-dead-planet/nav-gauge-apparatus-mobile": "npm:*"
-    "@the-dead-planet/nav-gauge-gears-submit-data-common": "npm:*"
-    "@the-dead-planet/nav-gauge-tinker-chest": "npm:*"
-    "@the-dead-planet/nav-gauge-ui-common": "npm:*"
+    "@the-dead-planet/machine-ward-apparatus-common": "npm:*"
+    "@the-dead-planet/machine-ward-apparatus-mobile": "npm:*"
+    "@the-dead-planet/machine-ward-gears-submit-data-common": "npm:*"
+    "@the-dead-planet/machine-ward-tinker-chest": "npm:*"
+    "@the-dead-planet/machine-ward-ui-common": "npm:*"
     react: "npm:19.3.1"
     react-native: "npm:0.88.1"
   peerDependencies:
@@ -7089,15 +7089,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@the-dead-planet/nav-gauge-gears-submit-data-web@workspace:gears/submit-data/web":
+"@the-dead-planet/machine-ward-gears-submit-data-web@workspace:gears/submit-data/web":
   version: 0.0.0-use.local
-  resolution: "@the-dead-planet/nav-gauge-gears-submit-data-web@workspace:gears/submit-data/web"
+  resolution: "@the-dead-planet/machine-ward-gears-submit-data-web@workspace:gears/submit-data/web"
   dependencies:
-    "@the-dead-planet/nav-gauge-apparatus-common": "npm:*"
-    "@the-dead-planet/nav-gauge-apparatus-web": "npm:*"
-    "@the-dead-planet/nav-gauge-gears-submit-data-common": "npm:*"
-    "@the-dead-planet/nav-gauge-tinker-chest": "npm:*"
-    "@the-dead-planet/nav-gauge-ui-common": "npm:*"
+    "@the-dead-planet/machine-ward-apparatus-common": "npm:*"
+    "@the-dead-planet/machine-ward-apparatus-web": "npm:*"
+    "@the-dead-planet/machine-ward-gears-submit-data-common": "npm:*"
+    "@the-dead-planet/machine-ward-tinker-chest": "npm:*"
+    "@the-dead-planet/machine-ward-ui-common": "npm:*"
     maplibre-gl: "npm:6.18.0"
     react: "npm:19.3.1"
     react-dom: "npm:19.3.1"
@@ -7109,9 +7109,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@the-dead-planet/nav-gauge-tinker-chest@npm:*, @the-dead-planet/nav-gauge-tinker-chest@workspace:tinker-chest":
+"@the-dead-planet/machine-ward-tinker-chest@npm:*, @the-dead-planet/machine-ward-tinker-chest@workspace:tinker-chest":
   version: 0.0.0-use.local
-  resolution: "@the-dead-planet/nav-gauge-tinker-chest@workspace:tinker-chest"
+  resolution: "@the-dead-planet/machine-ward-tinker-chest@workspace:tinker-chest"
   dependencies:
     luxon: "npm:^3.7.2"
     react: "npm:19.3.1"
@@ -7121,12 +7121,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@the-dead-planet/nav-gauge-ui-common@npm:*, @the-dead-planet/nav-gauge-ui-common@workspace:ui/common":
+"@the-dead-planet/machine-ward-ui-common@npm:*, @the-dead-planet/machine-ward-ui-common@workspace:ui/common":
   version: 0.0.0-use.local
-  resolution: "@the-dead-planet/nav-gauge-ui-common@workspace:ui/common"
+  resolution: "@the-dead-planet/machine-ward-ui-common@workspace:ui/common"
   dependencies:
     "@resvg/resvg-js": "npm:2.6.2"
-    "@the-dead-planet/nav-gauge-tinker-chest": "npm:*"
+    "@the-dead-planet/machine-ward-tinker-chest": "npm:*"
     "@types/node": "npm:^26.6.6"
     react: "npm:19.3.1"
     svgson: "npm:^5.3.1"
@@ -7136,9 +7136,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@the-dead-planet/nav-gauge-ui-mobile@npm:*, @the-dead-planet/nav-gauge-ui-mobile@workspace:ui/mobile":
+"@the-dead-planet/machine-ward-ui-mobile@npm:*, @the-dead-planet/machine-ward-ui-mobile@workspace:ui/mobile":
   version: 0.0.0-use.local
-  resolution: "@the-dead-planet/nav-gauge-ui-mobile@workspace:ui/mobile"
+  resolution: "@the-dead-planet/machine-ward-ui-mobile@workspace:ui/mobile"
   dependencies:
     "@babel/core": "npm:^8.1.2"
     "@jest/globals": "npm:^30.5.2"
@@ -7147,8 +7147,8 @@ __metadata:
     "@react-native/babel-preset": "npm:0.88.1"
     "@react-native/jest-preset": "npm:^0.88.1"
     "@testing-library/react-native": "npm:^14.1.0"
-    "@the-dead-planet/nav-gauge-tinker-chest": "npm:*"
-    "@the-dead-planet/nav-gauge-ui-common": "npm:*"
+    "@the-dead-planet/machine-ward-tinker-chest": "npm:*"
+    "@the-dead-planet/machine-ward-ui-common": "npm:*"
     "@types/jest": "npm:^30.0.0"
     "@types/node": "npm:^26.6.6"
     babel-jest: "npm:^30.5.2"
@@ -7171,15 +7171,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@the-dead-planet/nav-gauge-ui-web@npm:*, @the-dead-planet/nav-gauge-ui-web@workspace:ui/web":
+"@the-dead-planet/machine-ward-ui-web@npm:*, @the-dead-planet/machine-ward-ui-web@workspace:ui/web":
   version: 0.0.0-use.local
-  resolution: "@the-dead-planet/nav-gauge-ui-web@workspace:ui/web"
+  resolution: "@the-dead-planet/machine-ward-ui-web@workspace:ui/web"
   dependencies:
     "@rsbuild/core": "npm:^2.3.2"
     "@rsbuild/plugin-react": "npm:^2.1.1"
     "@storybook/addon-docs": "npm:10.6.7"
-    "@the-dead-planet/nav-gauge-tinker-chest": "npm:*"
-    "@the-dead-planet/nav-gauge-ui-common": "npm:*"
+    "@the-dead-planet/machine-ward-tinker-chest": "npm:*"
+    "@the-dead-planet/machine-ward-ui-common": "npm:*"
     "@types/react-dom": "npm:19.3.0"
     classnames: "npm:^2.5.1"
     css-loader: "npm:^7.1.5"
@@ -7199,9 +7199,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@the-dead-planet/nav-gauge@workspace:.":
+"@the-dead-planet/machine-ward@workspace:.":
   version: 0.0.0-use.local
-  resolution: "@the-dead-planet/nav-gauge@workspace:."
+  resolution: "@the-dead-planet/machine-ward@workspace:."
   dependencies:
     "@eslint/eslintrc": "npm:^3.3.7"
     "@maplibre/maplibre-gl-style-spec": "npm:^26.8.0"

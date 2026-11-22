@@ -20,7 +20,7 @@ import {
     imageLayerIds,
     imageSourceIds,
     useAnimatedImageMarkerSource,
-} from "@the-dead-planet/nav-gauge-gears-route-story-common";
+} from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { MobileMap } from "@mobile-apparatus";
 import { useReducedMotion } from "@mobile-ui";
 import { useLoadedMobileImages } from "./useLoadedMobileImages";

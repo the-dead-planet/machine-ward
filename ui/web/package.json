@@ -1,5 +1,5 @@
 {
-    "name": "@the-dead-planet/nav-gauge-ui-web",
+    "name": "@the-dead-planet/machine-ward-ui-web",
     "version": "1.0.0",
     "private": true,
     "main": "src/index.ts",
@@ -14,8 +14,8 @@
         "test:e2e": "yarn typecheck:cypress && cypress run"
     },
     "dependencies": {
-        "@the-dead-planet/nav-gauge-tinker-chest": "*",
-        "@the-dead-planet/nav-gauge-ui-common": "*",
+        "@the-dead-planet/machine-ward-tinker-chest": "*",
+        "@the-dead-planet/machine-ward-ui-common": "*",
         "classnames": "^2.5.1",
         "react-svg": "^19.2.6"
     },

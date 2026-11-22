@@ -2,8 +2,8 @@ import { Image } from 'react-native';
 import RNFS from 'react-native-fs';
 import { DocumentPickerResponse } from '@react-native-documents/picker';
 import ImageResizer from '@bam.tech/react-native-image-resizer';
-import { FULL_SIZE_IMAGE_SIZE, MAP_THUMBNAIL_SIZE   } from '@the-dead-planet/nav-gauge-gears-route-story-common';
-import { getResizeDimensions } from '@the-dead-planet/nav-gauge-gears-route-story-common/src/file-parser';
+import { FULL_SIZE_IMAGE_SIZE, MAP_THUMBNAIL_SIZE   } from '@the-dead-planet/machine-ward-gears-route-story-common';
+import { getResizeDimensions } from '@the-dead-planet/machine-ward-gears-route-story-common/src/file-parser';
 import { glitchmitter } from '@apparatus';
 
 export interface MobileMarkerImageData {

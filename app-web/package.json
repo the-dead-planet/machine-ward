@@ -1,5 +1,5 @@
 {
-    "name": "@the-dead-planet/nav-gauge-app-web",
+    "name": "@the-dead-planet/machine-ward-app-web",
     "version": "1.0.0",
     "description": "Navigation gauge and route story generator for the web.",
     "homepage": "https://gauge.spookydoodle.com",
@@ -9,9 +9,9 @@
     "license": "AGPL-3.0",
     "author": "spookydoodle",
     "funding": "https://ko-fi.com/spookydoodle",
-    "repository": "https://github.com/the-dead-planet/nav-gauge",
+    "repository": "https://github.com/the-dead-planet/machine-ward",
     "bugs": {
-        "url": "https://github.com/the-dead-planet/nav-gauge/issues"
+        "url": "https://github.com/the-dead-planet/machine-ward/issues"
     },
     "scripts": {
         "analyze": "tsc --noEmit && ANALYZE=true rspack --mode production --config rspack.config.production.ts",
@@ -41,11 +41,11 @@
         ]
     },
     "dependencies": {
-        "@the-dead-planet/nav-gauge-apparatus-common": "*",
-        "@the-dead-planet/nav-gauge-apparatus-web": "*",
-        "@the-dead-planet/nav-gauge-tinker-chest": "*",
-        "@the-dead-planet/nav-gauge-ui-common": "*",
-        "@the-dead-planet/nav-gauge-ui-web": "*",
+        "@the-dead-planet/machine-ward-apparatus-common": "*",
+        "@the-dead-planet/machine-ward-apparatus-web": "*",
+        "@the-dead-planet/machine-ward-tinker-chest": "*",
+        "@the-dead-planet/machine-ward-ui-common": "*",
+        "@the-dead-planet/machine-ward-ui-web": "*",
         "classnames": "^2.5.1",
         "maplibre-gl": "6.18.0",
         "pmtiles": "^4.5.0",

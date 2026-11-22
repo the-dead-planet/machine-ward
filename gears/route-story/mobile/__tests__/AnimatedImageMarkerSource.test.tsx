@@ -1,7 +1,7 @@
 import { act, renderHook } from "@testing-library/react-native";
-import { ImageMarkerSource } from "@the-dead-planet/nav-gauge-gears-route-story-common/src/layer-specification/images/images-sources";
-import { useAnimatedImageMarkerSource } from "@the-dead-planet/nav-gauge-gears-route-story-common/src/layer-specification/images/useAnimatedImageMarkerSource";
-import { getGroupedImageSource, getImageMarkerConnections } from "@the-dead-planet/nav-gauge-gears-route-story-common/src/layer-specification/images/grouped-image-source";
+import { ImageMarkerSource } from "@the-dead-planet/machine-ward-gears-route-story-common/src/layer-specification/images/images-sources";
+import { useAnimatedImageMarkerSource } from "@the-dead-planet/machine-ward-gears-route-story-common/src/layer-specification/images/useAnimatedImageMarkerSource";
+import { getGroupedImageSource, getImageMarkerConnections } from "@the-dead-planet/machine-ward-gears-route-story-common/src/layer-specification/images/grouped-image-source";
 
 test("animates paging, reverses from the displayed frame, and skips paging motion when reduced", async () => {
     jest.useFakeTimers();

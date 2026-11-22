@@ -4,7 +4,7 @@ import { clamp, useSubjectState } from "@tinker-chest";
 import {
     Animatrix,
     useAnimationControls,
-} from "@the-dead-planet/nav-gauge-gears-route-story-common";
+} from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { MobileRouteStoryProps } from "../model";
 
 export const useMobileAnimationControls = (

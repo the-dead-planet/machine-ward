@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Svg, { SvgXml } from 'react-native-svg';
 import { Images } from '@maplibre/maplibre-react-native';
-import { getImageCountBadges, IMAGE_COUNT_BADGE_PIXEL_RATIO, IMAGE_COUNT_BADGE_SIZE } from '@the-dead-planet/nav-gauge-gears-route-story-common';
+import { getImageCountBadges, IMAGE_COUNT_BADGE_PIXEL_RATIO, IMAGE_COUNT_BADGE_SIZE } from '@the-dead-planet/machine-ward-gears-route-story-common';
 
 const styles = StyleSheet.create({
     rasterizer: {

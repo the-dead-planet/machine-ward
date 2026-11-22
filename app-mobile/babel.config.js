@@ -14,8 +14,8 @@ module.exports = {
                     '@tinker-chest': '../tinker-chest/src',
                     '@ui': '../ui/common/src',
                     '@mobile-ui': '../ui/mobile/src',
-                    '@the-dead-planet/nav-gauge-gears-(.+)$-common': '../gears/\\1/common/src',
-                    '@the-dead-planet/nav-gauge-gears-(.+)$-mobile': '../gears/\\1/mobile/src'
+                    '@the-dead-planet/machine-ward-gears-(.+)$-common': '../gears/\\1/common/src',
+                    '@the-dead-planet/machine-ward-gears-(.+)$-mobile': '../gears/\\1/mobile/src'
                 },
             },
         ]

@@ -10,7 +10,7 @@ import {
 } from "@apparatus";
 import { useWebMachineWard } from "@web-apparatus";
 import { useSubjectState } from "@tinker-chest";
-import RouteStoryGear, { Animatrix, Preset } from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import RouteStoryGear, { Animatrix, Preset } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { Label } from "@web-ui";
 import styles from './controls.module.css';
 
