@@ -136,6 +136,7 @@ test("slider diamond taps never enter drag state; movement commits on release bu
             animatrix={new Animatrix()}
             fitBoundsHandler={() => {}}
             progressMs$={new BehaviorSubject(0)}
+            viewportRanges$={new BehaviorSubject([])}
             state$={new BehaviorSubject<RouteStoryState>({ markerPlayerVisibility: true } as RouteStoryState)}
             playerOperator={{} as MobilePlayerOperator}
         />,
