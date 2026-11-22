@@ -2,9 +2,11 @@ import { FC } from "react";
 import { StyleSheet, View } from "react-native";
 import Svg, { Polygon } from "react-native-svg";
 import {
+    DEFAULT_COLOR,
     getSliderRanges,
     SLIDER_RANGE_EXTRA_THICKNESS,
     SliderProps,
+    sliderRangeShades,
     useTheme,
 } from "@ui";
 
@@ -15,21 +17,21 @@ const styles = StyleSheet.create({
     },
 });
 
-type Props = Pick<SliderProps, "ranges" | "rangeColor" | "min" | "max"> & {
+type Props = Pick<SliderProps, "ranges" | "color" | "min" | "max"> & {
     width: number;
     trackThickness: number;
 };
 
 export const SliderRangeTrack: FC<Props> = ({
     ranges = [],
-    rangeColor,
+    color = DEFAULT_COLOR,
     min = 0,
     max = 100,
     width,
     trackThickness,
 }) => {
     const theme = useTheme();
-    const color = theme.resolveAppearance("ghost", rangeColor).glyphs;
+    const paint = theme.color(color, sliderRangeShades[theme.mode]);
     const thickness = trackThickness + SLIDER_RANGE_EXTRA_THICKNESS;
 
     if (width <= 0) {
@@ -52,7 +54,7 @@ export const SliderRangeTrack: FC<Props> = ({
                     <Polygon
                         testID="slider-range-track"
                         points={`0,${thickness / 2} ${cap},0 ${rangeWidth - cap},0 ${rangeWidth},${thickness / 2} ${rangeWidth - cap},${thickness} ${cap},${thickness}`}
-                        fill={color}
+                        fill={paint}
                     />
                 </Svg>
             </View>

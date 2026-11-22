@@ -36,7 +36,7 @@ test("slider forwards ranges into capped underlays without changing adjustable v
                     value={50}
                     size="md"
                     ranges={[{ start: 10, end: 30 }, { start: 60, end: 85 }]}
-                    rangeColor="tertiary"
+                    color="tertiary"
                 />
             </ThemeContext.Provider>,
         );
@@ -50,7 +50,7 @@ test("slider forwards ranges into capped underlays without changing adjustable v
         const coordinates: number[] = polygons[0].props.d.slice(1, -1).split(/[ ,]/).map(Number);
         const expected = [0, cap, cap, 0, 20 - cap, 0, 20, cap, 20 - cap, thickness, cap, thickness];
         coordinates.forEach((coordinate, index) => expect(coordinate).toBeCloseTo(expected[index]));
-        const color = theme.resolveAppearance("ghost", "tertiary").glyphs;
+        const color = theme.color("tertiary", 600);
         const paint = { type: 0, payload: processColor(color) };
         expect(polygons.map((polygon) => polygon.props.fill)).toEqual([paint, paint]);
         await fireEvent(control, "focus");

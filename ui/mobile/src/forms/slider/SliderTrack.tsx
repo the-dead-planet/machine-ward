@@ -53,13 +53,11 @@ type Props = Pick<
     | "disabled"
     | "ariaLabel"
     | "ranges"
-    | "rangeColor"
 >;
 
 export const SliderTrack: FC<Props> = ({
     value,
     ranges,
-    rangeColor,
     onChange,
     min = 0,
     max = 100,
@@ -162,7 +160,7 @@ export const SliderTrack: FC<Props> = ({
                 >
                     <SliderRangeTrack
                         ranges={ranges}
-                        rangeColor={rangeColor}
+                        color={color}
                         min={min}
                         max={max}
                         width={width}

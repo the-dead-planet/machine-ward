@@ -2,6 +2,21 @@ describe("Slider appearance", () => {
     it("renders two capped underlays and updates their bounds from story controls", () => {
         cy.visit("/iframe.html?id=forms-slider--gallery&viewMode=story");
         cy.get('input[type="range"]').should("have.length", 24);
+        cy.get('[data-appearance-color="tertiary"][data-appearance-variant="fill-inverse"] [class*="range-tracks"] > div').first().should(($range) => {
+            const range = $range[0];
+            const slider = range.closest('[data-appearance-variant]')!;
+            const window = range.ownerDocument.defaultView!;
+            const shade = slider.getAttribute('data-appearance-mode') === 'light' ? 600 : 400;
+            const reference = range.ownerDocument.createElement('span');
+            reference.style.backgroundColor = `var(--appearance-color-${shade})`;
+            slider.append(reference);
+            try {
+                expect(window.getComputedStyle(reference).getPropertyValue(`--appearance-color-${shade}`).trim()).not.to.equal('');
+                expect(window.getComputedStyle(range).backgroundColor).to.equal(window.getComputedStyle(reference).backgroundColor);
+            } finally {
+                reference.remove();
+            }
+        });
         cy.get('input[type="range"]').first().closest('[data-appearance-variant]').as('slider');
         cy.get('@slider').find('[class*="range-tracks"] > div').should('have.length', 2).first().then(($range) => {
             const range = $range[0];
@@ -18,7 +33,7 @@ describe("Slider appearance", () => {
         });
         cy.window().its('__STORYBOOK_PREVIEW__.channel').invoke('emit', 'updateStoryArgs', {
             storyId: 'forms-slider--gallery',
-            updatedArgs: { ranges: [{ start: 25, end: 75 }], rangeColor: 'tertiary' },
+            updatedArgs: { ranges: [{ start: 25, end: 75 }] },
         });
         cy.get('@slider').find('[class*="range-tracks"] > div').should('have.length', 1).should(($range) => {
             const bounds = $range[0].getBoundingClientRect();

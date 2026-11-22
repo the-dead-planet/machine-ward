@@ -15,7 +15,6 @@ const story: MobileStoryDefinition<ComponentProps<typeof Slider>> = {
     galleryEditableControls: [
         "value",
         "ranges",
-        "rangeColor",
         "min",
         "max",
         "step",

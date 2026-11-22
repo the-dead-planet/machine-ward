@@ -8,6 +8,8 @@ import {
     DEFAULT_SIZE,
     fillVariantOptions,
     sizeOptions,
+    ColorShade,
+    ThemeMode,
 } from "../../design-system";
 import { StoryControls } from "../../storybook";
 import { stepControlsPropsStoryControl } from "../step-controls";
@@ -20,6 +22,11 @@ export const getSliderRatio = (
     max > min ? Math.max(0, Math.min(1, (value - min) / (max - min))) : 0;
 
 export const SLIDER_RANGE_EXTRA_THICKNESS = 4;
+
+export const sliderRangeShades: Record<ThemeMode, ColorShade> = {
+    light: 600,
+    dark: 400,
+};
 
 export const getSliderRanges = (
     ranges: readonly SliderRange[],
@@ -77,7 +84,6 @@ export const sliderStoryArgs: SliderProps = {
             end: 85,
         },
     ],
-    rangeColor: DEFAULT_COLOR,
     min: 0,
     max: 100,
     step: 1,
@@ -96,10 +102,6 @@ export const sliderStoryArgs: SliderProps = {
 export const sliderStoryControls: StoryControls<SliderProps> = {
     ranges: {
         control: "object",
-    },
-    rangeColor: {
-        control: "select",
-        options: appearanceColorOptions,
     },
     color: {
         control: "select",

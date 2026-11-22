@@ -1,12 +1,12 @@
 import { ComponentProps, CSSProperties, FC } from "react";
 import classNames from "classnames";
-import { getSliderRatio, SLIDER_RANGE_EXTRA_THICKNESS, SliderProps } from "@ui";
+import { DEFAULT_COLOR, getSliderRatio, SLIDER_RANGE_EXTRA_THICKNESS, SliderProps } from "@ui";
 import styles from "./slider.module.css";
 import { SliderRangeTrack } from "./SliderRangeTrack";
 
 type Props = Pick<
     SliderProps,
-    "value" | "onChange" | "min" | "max" | "step" | "ariaLabel" | "ranges" | "rangeColor"
+    "value" | "onChange" | "min" | "max" | "step" | "ariaLabel" | "ranges" | "color"
 > &
     Omit<ComponentProps<"input">, "onChange" | "size">;
 
@@ -18,7 +18,7 @@ export const SliderTrack: FC<Props> = ({
     step = 1,
     ariaLabel,
     ranges,
-    rangeColor,
+    color = DEFAULT_COLOR,
     className,
     ...props
 }) => (
@@ -36,7 +36,7 @@ export const SliderTrack: FC<Props> = ({
             <div className={styles.thumb} />
         </div>
         <div className={styles["range-tracks"]}>
-            <SliderRangeTrack ranges={ranges} rangeColor={rangeColor} min={min} max={max} />
+            <SliderRangeTrack ranges={ranges} color={color} min={min} max={max} />
         </div>
         <input
             {...props}
