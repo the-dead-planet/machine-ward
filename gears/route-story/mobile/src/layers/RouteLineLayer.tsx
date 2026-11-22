@@ -6,7 +6,7 @@ import {
     getRoutePointsLayers,
     RouteStoryState,
     routeSourceIds,
-} from "@the-dead-planet/nav-gauge-gears-route-story-common";
+} from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { renderLayerSpec } from "./render-layer-spec";
 
 interface Props {

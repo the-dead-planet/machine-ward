@@ -4,7 +4,7 @@ import {
     imageLayerIds,
     MAP_IMAGE_ANCHOR_SIDE,
     THUMBNAIL_IMAGE_SIZE,
-} from "@the-dead-planet/nav-gauge-gears-route-story-common";
+} from "@the-dead-planet/machine-ward-gears-route-story-common";
 
 interface ImageHitFeature {
     properties: {

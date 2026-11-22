@@ -11,7 +11,7 @@ import {
     formatImageMarkerCount,
     RouteStoryTranslationKey,
     sliderMarkerSpecification,
-} from "@the-dead-planet/nav-gauge-gears-route-story-common";
+} from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { useTheme } from "@ui";
 import { Text } from "@mobile-ui";
 import { MARKER_TOUCH_PADDING, styles as sharedStyles } from "./slider-markers.styles";

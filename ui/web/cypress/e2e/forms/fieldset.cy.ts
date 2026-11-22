@@ -1,4 +1,4 @@
-import type { FieldsetProps } from "@the-dead-planet/nav-gauge-ui-common/src/forms/fieldset/model";
+import type { FieldsetProps } from "@the-dead-planet/machine-ward-ui-common/src/forms/fieldset/model";
 
 const visitFieldset = (
     variant: string,

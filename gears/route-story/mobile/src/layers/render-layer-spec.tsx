@@ -1,5 +1,5 @@
 import { Layer } from "@maplibre/maplibre-react-native";
-import { RouteCircleLayerSpec, RouteLineLayerSpec, RouteSymbolLayerSpec } from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { RouteCircleLayerSpec, RouteLineLayerSpec, RouteSymbolLayerSpec } from "@the-dead-planet/machine-ward-gears-route-story-common";
 
 export const renderLayerSpec = (spec: RouteLineLayerSpec | RouteCircleLayerSpec | RouteSymbolLayerSpec) => {
     if (spec.type === 'line') {

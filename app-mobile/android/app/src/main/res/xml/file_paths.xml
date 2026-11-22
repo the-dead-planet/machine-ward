@@ -4,5 +4,5 @@
     <external-cache-path name="external_cache" path="." />
     <cache-path name="cache" path="." />
     <files-path name="files" path="." />
-    <external-path name="nav_gauge_downloads" path="Download/NavGauge/" />
+    <external-path name="the_dead_planet_downloads" path="Download/TheDeadPlanet/" />
 </paths>

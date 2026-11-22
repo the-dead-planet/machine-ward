@@ -15,7 +15,7 @@ import {
     toggleImageMarkerGroup,
     updateImageDistanceFraction,
     getRoutePlacementAtPercent,
-} from "@the-dead-planet/nav-gauge-gears-route-story-common";
+} from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { MobileMarkerImageData } from "../../../images/image-parser";
 
 export interface SliderMarkerGestureHandlers {

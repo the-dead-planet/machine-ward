@@ -13,7 +13,7 @@ jest.mock("../src/images/image-parser", () => ({
 jest.mock("react-native-fs", () => ({ readFile: jest.fn() }));
 
 jest.mock("@apparatus", () => ({ glitchmitter: { transmit: jest.fn() } }));
-jest.mock("@the-dead-planet/nav-gauge-gears-route-story-common", () => ({
+jest.mock("@the-dead-planet/machine-ward-gears-route-story-common", () => ({
     MAP_THUMBNAIL_SIZE: 128,
     MAP_THUMBNAIL_BORDER_SIZE: 6,
     OUTLINED_MAP_THUMBNAIL_SIZE: 140,

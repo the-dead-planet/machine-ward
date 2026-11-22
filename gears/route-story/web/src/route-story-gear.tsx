@@ -1,6 +1,6 @@
 import { combineLatest, Subscription } from 'rxjs';
 import * as maplibregl from "maplibre-gl";
-import { getRoutePlacement, RouteStoryGear } from '@the-dead-planet/nav-gauge-gears-route-story-common';
+import { getRoutePlacement, RouteStoryGear } from '@the-dead-planet/machine-ward-gears-route-story-common';
 import { RouteLayer } from './layers/RouteLayer';
 import { ImagesLayer } from './images/ImagesLayer';
 import { Player } from './player/Player';

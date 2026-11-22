@@ -3,7 +3,7 @@ import { Animated, StyleSheet, View } from "react-native";
 import { BehaviorSubject } from "rxjs";
 import { useMultipleTranslations } from "@apparatus";
 import { ParsingResultWithError, useSubjectState } from "@tinker-chest";
-import { Animatrix, draggingImage$, RouteGeometryData, RouteStoryTranslationKey, RouteTimes, sliderMarkerSpecification, useSliderMarkerReadout } from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { Animatrix, draggingImage$, RouteGeometryData, RouteStoryTranslationKey, RouteTimes, sliderMarkerSpecification, useSliderMarkerReadout } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { FontType, Icons, useTheme } from "@ui";
 import { Button, Caption } from "@mobile-ui";
 import { styles as sharedStyles } from "./slider-markers.styles";

@@ -17,7 +17,7 @@ import {
     selectedImageId$,
     toggleImageMarkerGroup,
     updateImageDistanceFraction,
-} from "@the-dead-planet/nav-gauge-gears-route-story-common";
+} from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { SliderWithMarkers } from "../src/player/player-slider/SliderWithMarkers";
 import { SliderMarkerGroup } from "../src/player/player-slider/slider-markers/SliderMarkerGroup";
 import { SliderMarkerGroups } from "../src/player/player-slider/slider-markers/SliderMarkerGroups";
@@ -82,7 +82,7 @@ jest.mock("../../common/src/layer-specification/images/images-layers", () => {
     const { BehaviorSubject } = jest.requireActual<typeof import("rxjs")>("rxjs");
     return { selectedImageId$: new BehaviorSubject(null), draggingPlacement$: new BehaviorSubject(null) };
 });
-jest.mock("@the-dead-planet/nav-gauge-gears-route-story-common", () => {
+jest.mock("@the-dead-planet/machine-ward-gears-route-story-common", () => {
     const { BehaviorSubject } = jest.requireActual<typeof import("rxjs")>("rxjs");
     return {
         ...jest.requireActual("../../common/src/tinkers/images"),

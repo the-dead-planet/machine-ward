@@ -24,7 +24,7 @@ jest.mock('../src/top-bar/RecChip', () => ({}));
 jest.mock('../src/layer-styling/LayerStylingPopup', () => ({}));
 jest.mock('@bam.tech/react-native-image-resizer', () => ({ createResizedImage: jest.fn() }));
 jest.mock('@apparatus', () => ({ glitchmitter: { transmit: jest.fn() } }));
-jest.mock('@the-dead-planet/nav-gauge-gears-route-story-common', () => {
+jest.mock('@the-dead-planet/machine-ward-gears-route-story-common', () => {
     const { BehaviorSubject } = jest.requireActual<typeof import('rxjs')>('rxjs');
     return {
         FULL_SIZE_IMAGE_SIZE: 1024,
@@ -37,7 +37,7 @@ jest.mock('@the-dead-planet/nav-gauge-gears-route-story-common', () => {
         },
     };
 });
-jest.mock('@the-dead-planet/nav-gauge-gears-route-story-common/src/file-parser', () => ({
+jest.mock('@the-dead-planet/machine-ward-gears-route-story-common/src/file-parser', () => ({
     getResizeDimensions: () => ({ targetWidth: 128, targetHeight: 128 }),
 }));
 

@@ -3,7 +3,7 @@ import { it } from "mocha";
 import { act, createElement } from "react";
 import { createRoot } from "test-renderer";
 import type { Map as MapLibreMap } from "maplibre-gl";
-import { expandedImageGroupId$, imageGroupOffset$, ImageMarkerSource, selectedImageId$ } from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { expandedImageGroupId$, imageGroupOffset$, ImageMarkerSource, selectedImageId$ } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { useImageMarkerSource } from "../src/images/useImageMarkerSource";
 
 it("caches projections and group membership across selection and scrolling, not camera or source changes", async () => {

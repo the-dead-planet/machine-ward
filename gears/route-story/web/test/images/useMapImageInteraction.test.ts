@@ -14,7 +14,7 @@ import {
     imageLayerIds,
     imageSourceIds,
     selectedImageId$,
-} from "@the-dead-planet/nav-gauge-gears-route-story-common";
+} from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { useMapImageInteraction } from "../../src/images/useMapImageInteraction";
 import { WebRouteStoryProps } from "../../src/model";
 

@@ -12,7 +12,7 @@ import {
     RouteGeometryData,
     getRouteDistanceFraction,
     getRouteTimelinePositionForDistanceFraction,
-} from "@the-dead-planet/nav-gauge-gears-route-story-common";
+} from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { updateRouteLayer } from "../../tinkers";
 import { Slider } from "@web-ui";
 import { SliderRange } from "@ui";

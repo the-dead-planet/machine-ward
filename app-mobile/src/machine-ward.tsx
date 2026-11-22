@@ -10,7 +10,7 @@ import { MobileChronoLens } from "@mobile-apparatus";
 import { navigationRef, RootStackParamList } from "./navigation";
 import { Media, MediaSubscriptionDefinition, Orientation } from "@ui";
 
-const AsyncStorage = createAsyncStorage('nav-gauge');
+const AsyncStorage = createAsyncStorage('machine-ward');
 
 export class MobileMachineWard extends MachineWard<MobileMap, MobileChronoLens, keyof RootStackParamList> {
     public constructor(gears: MachineGear<MobileMap, MobileChronoLens>[]) {

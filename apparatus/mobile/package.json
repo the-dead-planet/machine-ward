@@ -1,5 +1,5 @@
 {
-    "name": "@the-dead-planet/nav-gauge-apparatus-mobile",
+    "name": "@the-dead-planet/machine-ward-apparatus-mobile",
     "version": "1.0.0",
     "private": true,
     "main": "src/index.ts",
@@ -12,9 +12,9 @@
     },
     "dependencies": {
         "@react-native-documents/viewer": "^4.0.2",
-        "@the-dead-planet/nav-gauge-apparatus-common": "*",
-        "@the-dead-planet/nav-gauge-tinker-chest": "*",
-        "@the-dead-planet/nav-gauge-ui-common": "*",
+        "@the-dead-planet/machine-ward-apparatus-common": "*",
+        "@the-dead-planet/machine-ward-tinker-chest": "*",
+        "@the-dead-planet/machine-ward-ui-common": "*",
         "react-native-fs": "^2.20.0",
         "react-native-view-recorder": "patch:react-native-view-recorder@npm%3A0.4.1#~/.yarn/patches/react-native-view-recorder-npm-0.4.1-f65f857d14.patch"
     },

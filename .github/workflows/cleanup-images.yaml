@@ -16,15 +16,15 @@ jobs:
       fail-fast: false
       matrix:
         package:
-          - nav-gauge
-          - nav-gauge-storybook
+          - machine-ward
+          - machine-ward-storybook
 
     steps:
       - name: Delete old versions
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OWNER: the-dead-planet
-          REPO: nav-gauge
+          REPO: machine-ward
           PACKAGE: ${{ matrix.package }}
         shell: bash
         run: |

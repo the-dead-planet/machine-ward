@@ -16,7 +16,7 @@ import {
     getImageMarkerAnchorId,
     getImageMarkerFeatureId,
     useAnimatedImageMarkerSource,
-} from "@the-dead-planet/nav-gauge-gears-route-story-common";
+} from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { useLoadedWebImages } from "../hooks/useLoadedWebImages";
 import { WebRouteStoryProps } from "../model";
 import { useImageInDisplay } from "./useImageInDisplay";

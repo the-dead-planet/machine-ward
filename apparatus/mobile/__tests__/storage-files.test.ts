@@ -27,7 +27,7 @@ test("covers internal storage, external files/cache and recordings, with an imag
             "/data/user/0/com.app/cache/images",
             "/storage/emulated/0/Android/data/com.app/files",
             "/storage/emulated/0/Android/data/com.app/cache",
-            "/storage/emulated/0/Download/NavGauge",
+            "/storage/emulated/0/Download/TheDeadPlanet/RouteStory",
         ]);
     } finally {
         Platform.OS = originalPlatform;

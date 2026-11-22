@@ -1,9 +1,9 @@
 import { act, renderHook } from "@testing-library/react-native";
 import { BehaviorSubject } from "rxjs";
-import { useBottomToolPanelHeader } from "@the-dead-planet/nav-gauge-apparatus-common/src/machine-ward/machine-layout/hooks/useBottomToolPanelHeader";
+import { useBottomToolPanelHeader } from "@the-dead-planet/machine-ward-apparatus-common/src/machine-ward/machine-layout/hooks/useBottomToolPanelHeader";
 
 jest.mock(
-    "@the-dead-planet/nav-gauge-apparatus-common/src/machine-ward/useMachineWard",
+    "@the-dead-planet/machine-ward-apparatus-common/src/machine-ward/useMachineWard",
     () => ({
         useMachineWard: () => ({
             toolsStation: mockToolsStation,
@@ -14,7 +14,7 @@ jest.mock(
 );
 
 jest.mock(
-    "@the-dead-planet/nav-gauge-apparatus-common/src/machine-ward/translatron",
+    "@the-dead-planet/machine-ward-apparatus-common/src/machine-ward/translatron",
     () => ({
         useTranslate:
             () =>

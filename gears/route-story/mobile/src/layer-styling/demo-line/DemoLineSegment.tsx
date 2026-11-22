@@ -1,6 +1,6 @@
 import { FC } from "react";
 import { StyleSheet, View } from "react-native";
-import { RouteStoryLineStyle } from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { RouteStoryLineStyle } from "@the-dead-planet/machine-ward-gears-route-story-common";
 
 const styles = StyleSheet.create({
     segment: {

@@ -4,7 +4,7 @@ import { BehaviorSubject } from "rxjs";
 import { useMultipleTranslations } from "@apparatus";
 import { MobileMap } from "@mobile-apparatus";
 import { ParsingResultWithError } from "@tinker-chest";
-import { Animatrix } from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { Animatrix } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { Icons, useTheme } from "@ui";
 import { Button, Tooltip } from "@mobile-ui";
 import { styles as sharedStyles } from "./slider-markers.styles";

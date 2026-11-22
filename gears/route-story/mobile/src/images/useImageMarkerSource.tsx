@@ -9,7 +9,7 @@ import {
     getImageSourceWithAnchors,
     selectedImageId$,
     imageGroupOffset$,
-} from "@the-dead-planet/nav-gauge-gears-route-story-common";
+} from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { MapImageHitTarget } from "./model";
 
 interface ImageProjectionCache {

@@ -2,7 +2,7 @@ import { act, renderHook } from "@testing-library/react-native";
 import { BehaviorSubject } from "rxjs";
 import { CameraRef } from "@maplibre/maplibre-react-native";
 import { MarkerImage } from "@apparatus";
-import { Animatrix } from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { Animatrix } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { useMobileAnimationControls } from "../src/animation-controls/useMobileAnimationControls";
 import { MobileMarkerImageData } from "../src/images/image-parser";
 
@@ -21,12 +21,12 @@ jest.mock("@mobile-apparatus", () => ({
     }),
 }));
 
-jest.mock("@the-dead-planet/nav-gauge-gears-route-story-common", () => ({
+jest.mock("@the-dead-planet/machine-ward-gears-route-story-common", () => ({
     ...jest.requireActual(
-        "@the-dead-planet/nav-gauge-gears-route-story-common/src/animatrix/animatrix",
+        "@the-dead-planet/machine-ward-gears-route-story-common/src/animatrix/animatrix",
     ),
     ...jest.requireActual(
-        "@the-dead-planet/nav-gauge-gears-route-story-common/src/animatrix/useAnimationControls",
+        "@the-dead-planet/machine-ward-gears-route-story-common/src/animatrix/useAnimationControls",
     ),
 }));
 

@@ -1,5 +1,5 @@
 {
-    "name": "@the-dead-planet/nav-gauge-gears-route-story-web",
+    "name": "@the-dead-planet/machine-ward-gears-route-story-web",
     "version": "1.0.0",
     "private": true,
     "main": "src/index.ts",
@@ -11,11 +11,11 @@
         "test:e2e": "yarn typecheck:cypress && cypress run"
     },
     "dependencies": {
-        "@the-dead-planet/nav-gauge-apparatus-common": "*",
-        "@the-dead-planet/nav-gauge-apparatus-web": "*",
-        "@the-dead-planet/nav-gauge-gears-route-story-common": "*",
-        "@the-dead-planet/nav-gauge-tinker-chest": "*",
-        "@the-dead-planet/nav-gauge-ui-common": "*",
+        "@the-dead-planet/machine-ward-apparatus-common": "*",
+        "@the-dead-planet/machine-ward-apparatus-web": "*",
+        "@the-dead-planet/machine-ward-gears-route-story-common": "*",
+        "@the-dead-planet/machine-ward-tinker-chest": "*",
+        "@the-dead-planet/machine-ward-ui-common": "*",
         "exif-js": "^2.3.0"
     },
     "devDependencies": {

@@ -1,6 +1,6 @@
 ---
 name: translate
-description: Add a UI label translation across all supported languages in nav-gauge. Use when asked to translate a label, add a translation key, or localize UI text.
+description: Add a UI label translation across all supported languages in machine-ward. Use when asked to translate a label, add a translation key, or localize UI text.
 compatibility: opencode
 metadata:
   audience: developers

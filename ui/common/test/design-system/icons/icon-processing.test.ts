@@ -14,7 +14,7 @@ describe('Icon processing', function () {
     let directory: string;
 
     beforeEach(() => {
-        directory = fs.mkdtempSync(path.join(os.tmpdir(), 'nav-gauge-icons-'));
+        directory = fs.mkdtempSync(path.join(os.tmpdir(), 'machine-ward-icons-'));
         fs.mkdirSync(path.join(directory, 'raw'));
     });
 

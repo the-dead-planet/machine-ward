@@ -1,12 +1,12 @@
 import { render } from "@testing-library/react-native";
-import { getImageCountBadges } from "@the-dead-planet/nav-gauge-gears-route-story-common/src/layer-specification/images/image-count-badges";
+import { getImageCountBadges } from "@the-dead-planet/machine-ward-gears-route-story-common/src/layer-specification/images/image-count-badges";
 import { ImageCountBadges } from "../src/images/ImageCountBadges";
 
 const mockRemovedImages: string[] = [];
 const mockRasterize = jest.fn((callback: (base64: string) => void) => callback("badge-png"));
 
-jest.mock("@the-dead-planet/nav-gauge-gears-route-story-common", () =>
-    jest.requireActual("@the-dead-planet/nav-gauge-gears-route-story-common/src/layer-specification/images/image-count-badges"),
+jest.mock("@the-dead-planet/machine-ward-gears-route-story-common", () =>
+    jest.requireActual("@the-dead-planet/machine-ward-gears-route-story-common/src/layer-specification/images/image-count-badges"),
 );
 jest.mock("react-native-svg", () => {
     const React = jest.requireActual<typeof import("react")>("react");

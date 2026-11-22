@@ -2,7 +2,7 @@ import { act, renderHook } from "@testing-library/react-native";
 import { BackHandler } from "react-native";
 import { useIsFocused } from "@react-navigation/native";
 import { topBarBackAction$ } from "@mobile-ui";
-import { useStoryNavigation } from "@the-dead-planet/nav-gauge-ui-mobile/src/storybook/useStoryNavigation";
+import { useStoryNavigation } from "@the-dead-planet/machine-ward-ui-mobile/src/storybook/useStoryNavigation";
 import { useFilesBackNavigation } from "../src/machine/debug/files/useFilesBackNavigation";
 
 jest.mock("@react-navigation/native", () => ({ useIsFocused: jest.fn() }));

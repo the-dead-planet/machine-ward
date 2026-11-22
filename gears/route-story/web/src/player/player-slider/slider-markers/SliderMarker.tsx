@@ -10,7 +10,7 @@ import {
     toggleImageMarkerGroup,
     formatImageMarkerCount,
     RouteStoryTranslationKey,
-} from "@the-dead-planet/nav-gauge-gears-route-story-common";
+} from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { Span } from "@web-ui";
 import { useSliderMarkerDrag } from "./useSliderMarkerDrag";
 import styles from "./slider-markers.module.css";

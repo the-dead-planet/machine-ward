@@ -12,7 +12,7 @@ import {
     getRouteLngLatAtDistanceFraction,
     RouteGeometryData,
     RouteStoryTranslationKey,
-} from "@the-dead-planet/nav-gauge-gears-route-story-common";
+} from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { Icons } from "@ui";
 import { Button, Tooltip } from "@mobile-ui";
 import { MobileMarkerImageData } from "../../../images/image-parser";

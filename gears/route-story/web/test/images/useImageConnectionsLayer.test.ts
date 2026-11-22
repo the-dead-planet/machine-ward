@@ -3,7 +3,7 @@ import { it } from "mocha";
 import { act, createElement } from "react";
 import { createRoot } from "test-renderer";
 import type { Map as MapLibreMap } from "maplibre-gl";
-import { imageLayerIds, ImagesLayers, selectedImageId$ } from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { imageLayerIds, ImagesLayers, selectedImageId$ } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { useImageConnectionsLayer } from "../../src/images/useImageConnectionsLayer";
 
 it("retains the connection source and geometry when selection or theme changes its paint", async () => {

@@ -1,5 +1,5 @@
 {
-    "name": "@the-dead-planet/nav-gauge-gears-navigate-common",
+    "name": "@the-dead-planet/machine-ward-gears-navigate-common",
     "version": "1.0.0",
     "private": true,
     "main": "src/index.ts",
@@ -10,9 +10,9 @@
         "test": "mocha"
     },
     "dependencies": {
-        "@the-dead-planet/nav-gauge-apparatus-common": "*",
-        "@the-dead-planet/nav-gauge-tinker-chest": "*",
-        "@the-dead-planet/nav-gauge-ui-common": "*"
+        "@the-dead-planet/machine-ward-apparatus-common": "*",
+        "@the-dead-planet/machine-ward-tinker-chest": "*",
+        "@the-dead-planet/machine-ward-ui-common": "*"
     },
     "devDependencies": {
         "react": "19.3.1"

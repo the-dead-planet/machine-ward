@@ -3,7 +3,7 @@ import { CSSProperties, FC, useRef } from "react";
 import { BehaviorSubject } from "rxjs";
 import { MarkerImage } from "@apparatus";
 import { ParsingResultWithError, useSubjectState } from "@tinker-chest";
-import { RouteStoryTranslationKey, RouteTimes, Animatrix, RouteGeometryData, sliderMarkerSpecification } from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { RouteStoryTranslationKey, RouteTimes, Animatrix, RouteGeometryData, sliderMarkerSpecification } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { useTheme } from "@ui";
 import { WebMarkerImageData } from "../../../images/image-parser";
 import { useMarkerContainerWidth } from "./useMarkerContainerWidth";

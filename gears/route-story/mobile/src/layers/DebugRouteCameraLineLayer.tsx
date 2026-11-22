@@ -1,6 +1,6 @@
 import { FC, useMemo } from "react";
 import { GeoJSONSource } from "@maplibre/maplibre-react-native";
-import { getCameraLineLayers, routeSourceIds, RouteGeometryData } from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { getCameraLineLayers, routeSourceIds, RouteGeometryData } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { renderLayerSpec } from "./render-layer-spec";
 
 interface Props {

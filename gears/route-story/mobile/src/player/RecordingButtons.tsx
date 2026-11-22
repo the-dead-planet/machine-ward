@@ -2,7 +2,7 @@ import { FC } from "react";
 import { Animated, StyleSheet } from "react-native";
 import { SurveillanceState, useMultipleTranslations } from "@apparatus";
 import { useSubjectState } from "@tinker-chest";
-import { RouteStoryTranslationKey } from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { RouteStoryTranslationKey } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { Button, useBlinkingPulse } from "@mobile-ui";
 import { MobileMap, useMobileMachineWard } from "@mobile-apparatus";
 import { Icons } from "@ui";

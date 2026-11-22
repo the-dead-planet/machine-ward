@@ -2,7 +2,7 @@
 
 ## Project
 
-nav-gauge is an offline-first and no-account-first map and route toolkit for content creators.
+The Dead Planet's Machine Ward is an offline-first and no-account-first map and route toolkit for content creators.
 
 The workspace root is `/`; `package.json` and Yarn commands live there.
 
@@ -33,7 +33,7 @@ The workspace root is `/`; `package.json` and Yarn commands live there.
 Yarn workspace monorepo. See `.opencode/rules/architecture.mdc` for package responsibilities and import direction.
 
 ### Gears (features)
-Each feature is a pluggable Gear with `common/`, `web/`, and/or `mobile/` packages. Gears implement `Gear` from `@the-dead-planet/nav-gauge-apparatus-common`.
+Each feature is a pluggable Gear with `common/`, `web/`, and/or `mobile/` packages. Gears implement `Gear` from `@the-dead-planet/machine-ward-apparatus-common`.
 
 Generate with `yarn generate:gear <name>` from `/`.
 

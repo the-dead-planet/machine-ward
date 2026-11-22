@@ -1,5 +1,5 @@
 {
-    "name": "@the-dead-planet/nav-gauge-gears-navigate-mobile",
+    "name": "@the-dead-planet/machine-ward-gears-navigate-mobile",
     "version": "1.0.0",
     "private": true,
     "main": "src/index.ts",
@@ -9,11 +9,11 @@
         "test": "mocha"
     },
     "dependencies": {
-        "@the-dead-planet/nav-gauge-apparatus-common": "*",
-        "@the-dead-planet/nav-gauge-apparatus-mobile": "*",
-        "@the-dead-planet/nav-gauge-gears-navigate-common": "*",
-        "@the-dead-planet/nav-gauge-tinker-chest": "*",
-        "@the-dead-planet/nav-gauge-ui-common": "*"
+        "@the-dead-planet/machine-ward-apparatus-common": "*",
+        "@the-dead-planet/machine-ward-apparatus-mobile": "*",
+        "@the-dead-planet/machine-ward-gears-navigate-common": "*",
+        "@the-dead-planet/machine-ward-tinker-chest": "*",
+        "@the-dead-planet/machine-ward-ui-common": "*"
     },
     "devDependencies": {
         "@maplibre/maplibre-react-native": "11.5.1",

@@ -1,5 +1,5 @@
 import { LayerSpecification } from "maplibre-gl";
-import { imageLayerIds, ImagesLayers, imageSourceIds } from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { imageLayerIds, ImagesLayers, imageSourceIds } from "@the-dead-planet/machine-ward-gears-route-story-common";
 
 export const getImagesLayers = (
     displayImageId: number | null,

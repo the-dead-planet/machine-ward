@@ -52,8 +52,8 @@ test("counts nested files, image bytes, and AsyncStorage databases including com
         "/app/databases/async-storage": {
             exists: true,
             entries: [
-                entry("/app/databases/async-storage/nav-gauge.sqlite", 4096),
-                entry("/app/databases/async-storage/nav-gauge.sqlite-wal", 1024),
+                entry("/app/databases/async-storage/machine-ward.sqlite", 4096),
+                entry("/app/databases/async-storage/machine-ward.sqlite-wal", 1024),
             ],
         },
     };

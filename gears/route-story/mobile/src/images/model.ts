@@ -1,4 +1,4 @@
-import { ImageFeature } from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { ImageFeature } from "@the-dead-planet/machine-ward-gears-route-story-common";
 
 export interface MapImageHitTarget {
     feature: ImageFeature;

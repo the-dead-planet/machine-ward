@@ -3,7 +3,7 @@ import { StyleSheet, View, ViewStyle } from "react-native";
 import { BehaviorSubject, Observable } from "rxjs";
 import { MarkerImage } from "@apparatus";
 import { ParsingResultWithError, useObservableState, useSubjectState } from "@tinker-chest";
-import { RouteStoryState, RouteStoryTranslationKey, RouteTimes, Animatrix, RouteGeometryData, getRouteDistanceFraction, getRouteTimelinePositionForDistanceFraction } from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { RouteStoryState, RouteStoryTranslationKey, RouteTimes, Animatrix, RouteGeometryData, getRouteDistanceFraction, getRouteTimelinePositionForDistanceFraction } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { SliderRange } from "@ui";
 import { Slider } from "@mobile-ui";
 import { currentPointRef$, linesRef$ } from "../../layers/RouteLayer";

@@ -2,7 +2,7 @@ import { FC } from "react";
 import { BehaviorSubject } from 'rxjs';
 import { useMultipleTranslations } from "@apparatus";
 import { useSubjectState } from "@tinker-chest";
-import { RouteStoryState, RouteStoryTranslationKey } from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { RouteStoryState, RouteStoryTranslationKey } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { Button } from "@web-ui";
 import { Icons } from "@ui";
 

@@ -1,5 +1,5 @@
 import { MobileChronoLens, MobileMap } from "@mobile-apparatus";
-import SubmitDataGear from "@the-dead-planet/nav-gauge-gears-submit-data-common";
+import SubmitDataGear from "@the-dead-planet/machine-ward-gears-submit-data-common";
 
 export class MobileSubmitDataGear extends SubmitDataGear<MobileMap, MobileChronoLens> {
     // To be implemented

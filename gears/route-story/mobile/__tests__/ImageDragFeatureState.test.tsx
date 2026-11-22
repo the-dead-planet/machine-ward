@@ -2,7 +2,7 @@ import { useImperativeHandle } from "react";
 import { act, renderHook } from "@testing-library/react-native";
 import type { GeoJSONSourceRef } from "@maplibre/maplibre-react-native";
 import { glitchmitter } from "@apparatus";
-import { draggingImage$ } from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { draggingImage$ } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { useImageDragFeatureState } from "../src/images/useImageDragFeatureState";
 
 jest.mock("@apparatus", () => ({
@@ -11,7 +11,7 @@ jest.mock("@apparatus", () => ({
     ),
     glitchmitter: { transmit: jest.fn() },
 }));
-jest.mock("@the-dead-planet/nav-gauge-gears-route-story-common", () => ({
+jest.mock("@the-dead-planet/machine-ward-gears-route-story-common", () => ({
     ...jest.requireActual(
         "../../common/src/layer-specification/images/images-sources",
     ),

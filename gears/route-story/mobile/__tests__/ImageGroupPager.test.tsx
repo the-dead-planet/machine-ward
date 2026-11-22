@@ -1,14 +1,14 @@
 import { fireEvent, render } from "@testing-library/react-native";
 import { PropsWithChildren } from "react";
 import { PressableProps } from "react-native";
-import { shiftImageGroup, ImageGroupPagination } from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { shiftImageGroup, ImageGroupPagination } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { ImageGroupPager } from "../src/images/ImageGroupPager";
 import { ImageGroupPagerDimensions } from "../src/images/model";
 
 jest.mock("@apparatus", () => ({
     useMultipleTranslations: () => ["Previous images", "Next images"],
 }));
-jest.mock("@the-dead-planet/nav-gauge-gears-route-story-common", () => ({
+jest.mock("@the-dead-planet/machine-ward-gears-route-story-common", () => ({
     shiftImageGroup: jest.fn(),
     RouteStoryTranslationKey: {},
 }));

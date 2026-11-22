@@ -84,6 +84,6 @@ export class MobileChronoLens extends ChronoLens {
     };
 
     private getAppFolderPath = (): string => {
-        return `${RNFS.DownloadDirectoryPath}/NavGauge`;
+        return `${RNFS.DownloadDirectoryPath}/TheDeadPlanet/RouteStory`;
     };
 }

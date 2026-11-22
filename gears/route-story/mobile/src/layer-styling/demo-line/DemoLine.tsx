@@ -1,6 +1,6 @@
 import { FC, RefObject } from "react";
 import { HostInstance, Pressable, StyleSheet, View } from "react-native";
-import { RouteStoryState } from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { RouteStoryState } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { Icons, parseColor, toCssColor } from "@ui";
 import { Icon } from "@mobile-ui";
 import { DemoLineSegment } from "./DemoLineSegment";

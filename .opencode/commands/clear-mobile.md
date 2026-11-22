@@ -1,11 +1,11 @@
 ---
-description: Clear emulator storage and uninstall nav-gauge app to fix install failures
+description: Clear emulator storage and uninstall machine-ward app to fix install failures
 agent: build
 ---
 
 Clear storage on the connected Android emulator to free up space for installing the mobile app. Run these commands in order:
 
-1. Uninstall the nav-gauge app
+1. Uninstall the machine-ward app
 2. Clear cache from large preinstalled apps (YouTube, Chrome, Maps, Photos, Gmail, etc.)
 3. Check remaining storage
 

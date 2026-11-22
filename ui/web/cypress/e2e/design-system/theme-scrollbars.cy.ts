@@ -1,8 +1,8 @@
 import {
     sizeOptions,
     surfaceVariantOptions,
-} from "@the-dead-planet/nav-gauge-ui-common/src/design-system/tinkers";
-import { themeSizes } from "@the-dead-planet/nav-gauge-ui-common/src/design-system/theme/tinkers";
+} from "@the-dead-planet/machine-ward-ui-common/src/design-system/tinkers";
+import { themeSizes } from "@the-dead-planet/machine-ward-ui-common/src/design-system/theme/tinkers";
 
 describe("Themed scrollbars", () => {
     beforeEach(() => {

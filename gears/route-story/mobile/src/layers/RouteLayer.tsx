@@ -2,7 +2,7 @@ import { FC, useEffect } from "react";
 import { BehaviorSubject } from "rxjs";
 import { OverlayComponentProps } from "@apparatus";
 import { useMobileMachineWard } from "@mobile-apparatus";
-import { getRouteSourceData } from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { getRouteSourceData } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { MobileMap } from "@mobile-apparatus";
 import { emptyCollection, useSubjectState } from "@tinker-chest";
 import { useLoadedMobileImages } from "../images/useLoadedMobileImages";

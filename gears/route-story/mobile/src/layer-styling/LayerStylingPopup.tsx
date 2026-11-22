@@ -2,7 +2,7 @@ import { FC, useEffect, useRef, useState } from "react";
 import { BackHandler, HostInstance, ScrollView, StyleSheet, View } from "react-native";
 import { ToolPopupProps, useMultipleTranslations } from "@apparatus";
 import { useTheme } from "@ui";
-import { getDefaultRouteStoryState, CurrentPointStyle, RouteStoryLayerStylingPopupProps, RouteStoryLineStyle, RouteStoryState } from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { getDefaultRouteStoryState, CurrentPointStyle, RouteStoryLayerStylingPopupProps, RouteStoryLineStyle, RouteStoryState } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { useSubjectState } from "@tinker-chest";
 import { MobileMap } from "@mobile-apparatus";
 import { MobileRouteStoryProps } from "../model";

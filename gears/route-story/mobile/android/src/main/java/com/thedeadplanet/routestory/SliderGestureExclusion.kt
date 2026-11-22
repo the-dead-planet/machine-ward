@@ -1,4 +1,4 @@
-package com.navgauge.routestory
+package com.thedeadplanet.routestory
 
 import android.graphics.Point
 import android.graphics.Rect

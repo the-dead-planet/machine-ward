@@ -49,8 +49,8 @@ Resolves the long workspace name for you:
 
 ```bash
 yarn add:gear route-story web maplibre-gl
-# equivalent to: yarn workspace @the-dead-planet/nav-gauge-gears-route-story-web add maplibre-gl
+# equivalent to: yarn workspace @the-dead-planet/machine-ward-gears-route-story-web add maplibre-gl
 
 yarn add:gear navigate common -D @types/foo
-# equivalent to: yarn workspace @the-dead-planet/nav-gauge-gears-navigate-common add -D @types/foo
+# equivalent to: yarn workspace @the-dead-planet/machine-ward-gears-navigate-common add -D @types/foo
 ```

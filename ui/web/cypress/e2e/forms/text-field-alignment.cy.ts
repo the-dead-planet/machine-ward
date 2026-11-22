@@ -1,7 +1,7 @@
 import {
     themeSizes,
     themeSpacing,
-} from "@the-dead-planet/nav-gauge-ui-common/src/design-system/theme/tinkers";
+} from "@the-dead-planet/machine-ward-ui-common/src/design-system/theme/tinkers";
 
 describe("Text field alignment", () => {
     it("aligns the first textarea row with a text input at every size, including multiline content", () => {

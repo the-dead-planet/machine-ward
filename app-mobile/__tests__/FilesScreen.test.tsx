@@ -105,7 +105,7 @@ test("shows the storage breakdown and opens locations", async () => {
         mockRoot,
         {
             label: "Recordings",
-            path: "/downloads/NavGauge",
+            path: "/downloads/TheDeadPlanet/RouteStory",
             isDownload: true,
         },
     ];

@@ -2,7 +2,7 @@ import { FC } from "react";
 import { BehaviorSubject } from "rxjs";
 import { useWebMachineWard } from "@web-apparatus";
 import { formatDistance, formatTimeMsAsStandard, ParsingResultWithError, useSubjectState } from "@tinker-chest";
-import { Animatrix, getProgressPercentage, getRouteDistanceFraction, RouteTimes, RouteGeometryData } from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { Animatrix, getProgressPercentage, getRouteDistanceFraction, RouteTimes, RouteGeometryData } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { Caption } from "@web-ui";
 import { FontType, useTheme } from "@ui";
 import styles from './player-slider-labels.module.css';

@@ -5,7 +5,7 @@ import {
     getImageMarkerAnchorId,
     getImageMarkerFeatureId,
     useImageDragState,
-} from "@the-dead-planet/nav-gauge-gears-route-story-common";
+} from "@the-dead-planet/machine-ward-gears-route-story-common";
 
 export const useImageDragFeatureState = () => {
     const sourceRef = useRef<GeoJSONSourceRef>(null);

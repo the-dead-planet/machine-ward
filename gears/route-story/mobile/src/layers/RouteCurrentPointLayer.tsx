@@ -2,7 +2,7 @@ import { ComponentType, FC, RefAttributes, useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { GeoJSONSource, Images } from "@maplibre/maplibre-react-native";
 import Svg, { SvgProps } from "react-native-svg";
-import { CurrentPointIconName, getCurrentPointImageName, getCurrentPointLayers, RouteStoryState, routeSourceIds } from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { CurrentPointIconName, getCurrentPointImageName, getCurrentPointLayers, RouteStoryState, routeSourceIds } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { Icons } from "@ui";
 import { renderLayerSpec } from "./render-layer-spec";
 

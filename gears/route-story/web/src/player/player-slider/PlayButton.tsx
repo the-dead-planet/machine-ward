@@ -2,7 +2,7 @@ import { FC } from "react";
 import { useMultipleTranslations } from "@apparatus";
 import { useWebMachineWard } from "@web-apparatus";
 import { useSubjectState } from "@tinker-chest";
-import { RouteStoryTranslationKey } from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { RouteStoryTranslationKey } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { Button } from "@web-ui";
 import { Icons } from "@ui";
 import { WebPlayerOperator } from "../../model";
