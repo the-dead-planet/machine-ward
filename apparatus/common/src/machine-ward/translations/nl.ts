@@ -25,6 +25,7 @@ const nl: TranslationTable<MachineTranslationKey>['nl'] = {
     'drag-to-resize': 'Sleep om het formaat te wijzigen',
     attributions: 'Naamsvermeldingen',
     'under-construction': 'In aanbouw',
+    'powering-up-machine-ward': 'De machineafdeling wordt ingeschakeld…',
 };
 
 export default nl;

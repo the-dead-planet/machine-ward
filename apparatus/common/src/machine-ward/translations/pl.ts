@@ -25,6 +25,7 @@ const pl: TranslationTable<MachineTranslationKey>['pl'] = {
     'drag-to-resize': 'Przeciągnij, aby zmienić rozmiar',
     attributions: 'Atrybucje',
     'under-construction': 'W budowie',
+    'powering-up-machine-ward': 'Włączanie zasilania oddziału maszyn…',
 };
 
 export default pl;

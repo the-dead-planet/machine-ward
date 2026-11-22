@@ -9,6 +9,7 @@ export interface MachineWardLayoutProps {
 
 export interface MachineWardTopBarProps<TNavigationPath extends string = string> {
     title: string;
+    description: string;
     onNavigate: (path: TNavigationPath) => void;
     onNavigateBack: () => void;
 }
@@ -57,4 +58,5 @@ export enum MachineTranslationKey {
     DragToResize = 'drag-to-resize',
     Attributions = 'attributions',
     UnderConstruction = 'under-construction',
+    PoweringUpMachineWard = 'powering-up-machine-ward',
 }

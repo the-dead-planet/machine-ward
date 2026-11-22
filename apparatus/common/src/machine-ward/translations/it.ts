@@ -25,6 +25,7 @@ const it: TranslationTable<MachineTranslationKey>['it'] = {
     'drag-to-resize': 'Trascina per ridimensionare',
     attributions: 'Attribuzioni',
     'under-construction': 'In costruzione',
+    'powering-up-machine-ward': 'Accensione del reparto macchine…',
 };
 
 export default it;

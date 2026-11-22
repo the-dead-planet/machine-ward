@@ -12,7 +12,7 @@ const container = document.getElementById('app');
 const root = createRoot(container!);
 
 async function initializeApp() {
-    root.render(<LoadingPage stage="nav gauge gears" />);
+    root.render(<LoadingPage stage="machine ward gears" />);
 
     try {
         const modules = await Promise.allSettled(__GEAR_REGISTRY__.map((gearName) => import(`../../gears/${gearName}/web/src`)));

@@ -25,6 +25,7 @@ const en: TranslationTable<MachineTranslationKey>['en'] = {
     'drag-to-resize': 'Drag to resize',
     attributions: 'Attributions',
     'under-construction': 'Under construction',
+    'powering-up-machine-ward': 'Powering up the machine ward…',
 };
 
 export default en;

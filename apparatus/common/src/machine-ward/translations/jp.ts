@@ -25,6 +25,7 @@ const jp: TranslationTable<MachineTranslationKey>['jp'] = {
     'drag-to-resize': 'ドラッグしてサイズを変更',
     attributions: '帰属表示',
     'under-construction': '建設中',
+    'powering-up-machine-ward': '機械病棟の電源を投入中…',
 };
 
 export default jp;

@@ -25,6 +25,7 @@ const de: TranslationTable<MachineTranslationKey>['de'] = {
     'drag-to-resize': 'Zum Ändern der Größe ziehen',
     attributions: 'Quellenangaben',
     'under-construction': 'Im Aufbau',
+    'powering-up-machine-ward': 'Die Stromversorgung der Maschinenstation wird eingeschaltet…',
 };
 
 export default de;

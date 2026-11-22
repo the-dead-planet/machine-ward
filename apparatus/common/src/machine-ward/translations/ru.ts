@@ -25,6 +25,7 @@ const ru: TranslationTable<MachineTranslationKey>['ru'] = {
     'drag-to-resize': 'Перетащите, чтобы изменить размер',
     attributions: 'Атрибуция',
     'under-construction': 'В разработке',
+    'powering-up-machine-ward': 'Включение питания отделения машин…',
 };
 
 export default ru;
