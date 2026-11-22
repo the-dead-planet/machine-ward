@@ -2,6 +2,8 @@ import { TranslationTable } from "../translatron";
 import { MachineTranslationKey } from "../model";
 
 const fr: TranslationTable<MachineTranslationKey>['fr'] = {
+    'machine-ward': 'Pavillon des machines',
+    'powering-up-machine-ward': 'Mise sous tension du pavillon des machines…',
     'component-library': 'Bibliothèque de composants',
     'icon-creators': 'Créateurs des icônes',
     stories: 'Exemples',
@@ -25,7 +27,6 @@ const fr: TranslationTable<MachineTranslationKey>['fr'] = {
     'drag-to-resize': 'Faites glisser pour redimensionner',
     attributions: 'Attributions',
     'under-construction': 'En construction',
-    'powering-up-machine-ward': 'Mise sous tension du pavillon des machines…',
 };
 
 export default fr;
