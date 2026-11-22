@@ -1,7 +1,7 @@
-import { BehaviorSubject } from "rxjs";
+import { BehaviorSubject, Observable } from "rxjs";
 import { ChronoLens, GaugeControlsType, MapLayout, MarkerImage, ToolIcon } from "@apparatus";
 import { ParsingResultWithError } from "@tinker-chest";
-import { Icons } from "@ui";
+import { Icons, SliderRange } from "@ui";
 import { FileOperator } from "./file-operator";
 import { PlayerOperator } from "./player-operator";
 import { Animatrix } from "./animatrix";
@@ -16,7 +16,20 @@ export interface RouteTimes {
 }
 
 export interface RouteStoryState {
+    /**
+     * When enabled will show light underlay below the slider to mark which part of the route is currently visible in viewport.
+     * Defaults to `true`.
+     */
+    viewportRangePlayerVisibility: boolean;
+    /**
+     * When enabled, will show the draggable image markers on the slider.
+     * Defaults to `true`.
+     */
     markerPlayerVisibility: boolean;
+    /**
+     * When enabled, will show the image markers layer on the map.
+     * Defaults to `true`.
+     */
     markerLayerVisibility: boolean;
     /**
      * Applied to the route line part after current point.
@@ -104,6 +117,7 @@ export interface RouteStoryProps<TMap, TChronoLens extends ChronoLens, TFile ext
     routeTimes$: BehaviorSubject<RouteTimes | null>;
     images$: BehaviorSubject<MarkerImage<TImageData>[]>;
     progressMs$: BehaviorSubject<number>;
+    viewportRanges$: Observable<SliderRange[]>;
     fileOperator: FileOperator<TMap, TChronoLens, TFile, TImageData>;
     playerOperator: PlayerOperator<TMap, TChronoLens, TFile, TImageData>;
     fitBoundsHandler: (map: TMap, boundingBox?: GeoJSON.BBox) => void;

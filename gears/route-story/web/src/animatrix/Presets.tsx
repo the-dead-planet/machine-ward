@@ -39,7 +39,7 @@ export const Presets: FC<Props> = ({ animatrix, preset$, isPresetActive$ }) => {
 
         const link = document.createElement('a');
         link.href = url;
-        link.download = 'Nav gauge preset';
+        link.download = 'route story preset';
 
         document.body.appendChild(link);
         link.click();

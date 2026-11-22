@@ -1,5 +1,5 @@
 import { ComponentType, FC } from "react";
-import { BehaviorSubject, combineLatest, distinctUntilChanged, map, Subscription } from "rxjs";
+import { BehaviorSubject, combineLatest, distinctUntilChanged, map, Observable, of, shareReplay, Subscription, switchMap } from "rxjs";
 import {
     ToolPanelProps,
     MarkerImage,
@@ -21,11 +21,12 @@ import { RouteStoryProps, RouteTimes, RouteStoryFile, RouteStoryTranslationKey, 
 import { FileOperator } from "./file-operator";
 import { PlayerOperator } from "./player-operator";
 import { getRouteGeometryData, RouteGeometryData } from "./tinkers";
-import { Icons } from "@ui";
+import { Icons, SliderRange } from "@ui";
 import * as Translations from "./translations";
 import { AnimationControlsType, Animatrix } from "./animatrix";
 import { defaultRouteStoryState } from "./layer-specification";
 import { cleanUpRouteStoryState } from "./route-story-state";
+import { getVisibleRouteRanges } from "./player/player-slider/route-ranges";
 
 export abstract class RouteStoryGear<TMap, TChronoLens extends ChronoLens, TFile extends RouteStoryFile, TImageData> extends Gear<TMap, TChronoLens> {
     public readonly id = 'route-story';
@@ -47,6 +48,24 @@ export abstract class RouteStoryGear<TMap, TChronoLens extends ChronoLens, TFile
     public readonly routeTimes$ = new BehaviorSubject<RouteTimes | null>(null);
     public readonly images$ = new BehaviorSubject<MarkerImage<TImageData>[]>([]);
     public readonly progressMs$ = new BehaviorSubject(0);
+    public readonly viewportRanges$: Observable<SliderRange[]> = combineLatest([
+        this.state$.pipe(map((state) => state.viewportRangePlayerVisibility), distinctUntilChanged()),
+        this.apparatus.toolsStation.activeBottomPanelToolId$.pipe(map((id) => id === this.playerToolId), distinctUntilChanged()),
+    ]).pipe(
+        switchMap(([visible, active]) => visible && active
+            ? combineLatest([
+                this.apparatus.cartomancer.bounds$,
+                this.data$,
+                this.routeGeometryData$,
+                this.routeTimes$,
+                this.animatrix.controls$.pipe(map((controls) => controls.playbackPacing), distinctUntilChanged()),
+            ]).pipe(map(([bounds, { geojson }, geometry, times, pacing]) => getVisibleRouteRanges(geojson, geometry, times, bounds, pacing)))
+            : of<SliderRange[]>([])),
+        shareReplay({
+            bufferSize: 1,
+            refCount: true,
+        }),
+    );
 
     /**
      * Update of a preset will trigger control state update to predefined values which user can later further configure.
@@ -146,6 +165,7 @@ export abstract class RouteStoryGear<TMap, TChronoLens extends ChronoLens, TFile
         routeTimes$: this.routeTimes$,
         images$: this.images$,
         progressMs$: this.progressMs$,
+        viewportRanges$: this.viewportRanges$,
         fileOperator: this.fileOperator,
         playerOperator: this.playerOperator,
         fitBoundsHandler: this.fitBoundsHandler,

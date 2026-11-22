@@ -1,12 +1,21 @@
 import type * as maplibregl from "maplibre-gl";
 import { FC } from "react";
-import { BehaviorSubject } from "rxjs";
+import { BehaviorSubject, Observable } from "rxjs";
 import classNames from "classnames";
 import { MarkerImage, useMultipleTranslations } from "@apparatus";
-import { ParsingResultWithError, useSubjectState } from "@tinker-chest";
-import { RouteStoryState, RouteStoryTranslationKey, RouteTimes, Animatrix, RouteGeometryData, getRouteDistanceFraction, getRouteTimelinePositionForDistanceFraction } from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { ParsingResultWithError, useObservableState, useSubjectState } from "@tinker-chest";
+import {
+    RouteStoryState,
+    RouteStoryTranslationKey,
+    RouteTimes,
+    Animatrix,
+    RouteGeometryData,
+    getRouteDistanceFraction,
+    getRouteTimelinePositionForDistanceFraction,
+} from "@the-dead-planet/nav-gauge-gears-route-story-common";
 import { updateRouteLayer } from "../../tinkers";
 import { Slider } from "@web-ui";
+import { SliderRange } from "@ui";
 import { WebMarkerImageData } from "../../images/image-parser";
 import { SliderMarkers } from "./slider-markers/SliderMarkers";
 import { PlayerSliderLabels } from "./PlayerSliderLabels";
@@ -22,6 +31,7 @@ interface Props {
     routeTimes$: BehaviorSubject<RouteTimes | null>;
     images$: BehaviorSubject<MarkerImage<WebMarkerImageData>[]>;
     progressMs$: BehaviorSubject<number>;
+    viewportRanges$: Observable<SliderRange[]>;
     playerOperator: WebPlayerOperator;
     state$: BehaviorSubject<RouteStoryState>;
     fitBoundsHandler: (map: maplibregl.Map, boundingBox?: GeoJSON.BBox) => void;
@@ -38,6 +48,7 @@ export const SliderWithMarkers: FC<Props> = ({
     routeTimes$,
     images$,
     progressMs$,
+    viewportRanges$,
     playerOperator,
     state$,
     fitBoundsHandler,
@@ -52,6 +63,7 @@ export const SliderWithMarkers: FC<Props> = ({
     const [{ markerPlayerVisibility: showImageMarkers }] = useSubjectState(
         state$,
     );
+    const viewportRanges = useObservableState(viewportRanges$, []);
     const [
         sliderLabel,
     ] = useMultipleTranslations([
@@ -87,6 +99,7 @@ export const SliderWithMarkers: FC<Props> = ({
                     />
                 ) : null}
                 <Slider
+                    ranges={viewportRanges}
                     aria-label={sliderLabel}
                     value={animationControls.playbackPacing === 'distance'
                         ? getRouteDistanceFraction(progressMs, geojson, routeTimes, routeGeometryData) * (routeGeometryData?.totalDistanceMeters ?? 1)

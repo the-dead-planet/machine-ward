@@ -1,9 +1,10 @@
 import { FC } from "react";
 import { StyleSheet, View, ViewStyle } from "react-native";
-import { BehaviorSubject } from "rxjs";
+import { BehaviorSubject, Observable } from "rxjs";
 import { MarkerImage } from "@apparatus";
-import { ParsingResultWithError, useSubjectState } from "@tinker-chest";
+import { ParsingResultWithError, useObservableState, useSubjectState } from "@tinker-chest";
 import { RouteStoryState, RouteStoryTranslationKey, RouteTimes, Animatrix, RouteGeometryData, getRouteDistanceFraction, getRouteTimelinePositionForDistanceFraction } from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { SliderRange } from "@ui";
 import { Slider } from "@mobile-ui";
 import { currentPointRef$, linesRef$ } from "../../layers/RouteLayer";
 import { SliderMarkers } from "./slider-markers/SliderMarkers";
@@ -22,6 +23,7 @@ interface Props {
     routeTimes$: BehaviorSubject<RouteTimes | null>;
     images$: BehaviorSubject<MarkerImage<MobileMarkerImageData>[]>;
     progressMs$: BehaviorSubject<number>;
+    viewportRanges$: Observable<SliderRange[]>;
     playerOperator: MobilePlayerOperator;
     state$: BehaviorSubject<RouteStoryState>;
     animatrix: Animatrix;
@@ -50,6 +52,7 @@ export const SliderWithMarkers: FC<Props> = ({
     routeTimes$,
     images$,
     progressMs$,
+    viewportRanges$,
     playerOperator,
     state$,
     animatrix,
@@ -62,6 +65,7 @@ export const SliderWithMarkers: FC<Props> = ({
     const [routeGeometryData] = useSubjectState(routeGeometryData$);
     const [animationControls] = useSubjectState(animatrix.controls$);
     const [{ markerPlayerVisibility: showImageMarkers }] = useSubjectState(state$);
+    const viewportRanges = useObservableState(viewportRanges$, []);
     const markerDrag = useSliderMarkerDrag({ data$, routeGeometryData$, routeTimes$, images$, animatrix });
 
     const handleProgressChange = (value: number) => {
@@ -96,6 +100,7 @@ export const SliderWithMarkers: FC<Props> = ({
                 />
             ) : null}
             <Slider
+                ranges={viewportRanges}
                 value={animationControls.playbackPacing === 'distance'
                     ? getRouteDistanceFraction(progressMs, geojson, routeTimes, routeGeometryData) * (routeGeometryData?.totalDistanceMeters ?? 1)
                     : progressMs}

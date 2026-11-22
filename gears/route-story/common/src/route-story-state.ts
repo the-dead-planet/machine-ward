@@ -17,6 +17,7 @@ export const cleanUpRouteStoryState = (value: unknown): RouteStoryState => {
     const currentPoint = mergeKnownFields(defaultRouteStoryState.currentPoint, stored.currentPoint);
 
     return {
+        viewportRangePlayerVisibility: typeof stored.viewportRangePlayerVisibility === 'boolean' ? stored.viewportRangePlayerVisibility : defaultRouteStoryState.viewportRangePlayerVisibility,
         markerPlayerVisibility: typeof stored.markerPlayerVisibility === 'boolean' ? stored.markerPlayerVisibility : defaultRouteStoryState.markerPlayerVisibility,
         markerLayerVisibility: typeof stored.markerLayerVisibility === 'boolean' ? stored.markerLayerVisibility : defaultRouteStoryState.markerLayerVisibility,
         routeStyleActive: mergeKnownFields(defaultRouteStoryState.routeStyleActive, stored.routeStyleActive),

@@ -9,7 +9,10 @@ import { UnderConstructionChip } from "./UnderConstructionChip";
 import { useSubjectState } from "@tinker-chest";
 import styles from './top-bar.module.css';
 
-export const TopBar: FC<MachineWardTopBarProps> = ({ title }) => {
+export const TopBar: FC<MachineWardTopBarProps> = ({
+    title,
+    description,
+}) => {
     const { namespace, translationKey, individuator, toolsStation } = useWebMachineWard();
     const [topBarTools] = useSubjectState(toolsStation.topBarTools$);
     const [lightModeTooltip, darkModeTooltip] = useMultipleTranslations([
@@ -28,8 +31,8 @@ export const TopBar: FC<MachineWardTopBarProps> = ({ title }) => {
             <div className={classNames(styles["section"], styles["left"])}>
                 <UnderConstructionChip />
             </div>
-            <H1 color="primary" shade={500} fontType={FontType.NeonHeader} className={styles['header']}>
-                {title}
+            <H1 color="primary" shade={500} fontType={FontType.NeonHeader} title={description} className={styles['header']}>
+                {title.toLowerCase()}
             </H1>
             <div className={classNames(styles["section"], styles["right"])}>
                 {Array.from(topBarTools).map(([id, Component]) => <Component key={id} />)}

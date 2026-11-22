@@ -63,7 +63,7 @@ Keep documentation concise and scannable: one authoritative home per rule, links
 
 - Run checks after the focused edits; repeat only failed checks or checks affected by subsequent changes. Log verbose output outside the repo and inspect it on failure.
 - Use subagents only for high-risk or explicitly requested reviews. Report discoveries, blockers, and major phase changes; stop when the task and checks are complete.
-- Direct Prettier invocations require `--tab-width 4`; avoid reformatting untouched lines.
+- Follow the VS Code formatting guidance in [.opencode/rules/code-style.mdc](.opencode/rules/code-style.mdc); avoid reformatting untouched lines.
 
 ## Other
 

@@ -25,6 +25,7 @@ export const Slider: FC<
     max = 100,
     step = 1,
     value,
+    ranges,
     onChange,
     highlighted = false,
     disabled = false,
@@ -99,6 +100,8 @@ export const Slider: FC<
                     {...props}
                     id={inputId}
                     value={value}
+                    ranges={ranges}
+                    color={color}
                     onChange={onChange}
                     min={min}
                     max={max}

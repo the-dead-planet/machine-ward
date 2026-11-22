@@ -12,6 +12,7 @@ interface MachineWardProps<TMap, TChronoLens extends ChronoLens, TNavigationPath
     isDev: boolean;
     namespace: string;
     title: string;
+    description: string;
     media: MediaSubscriptionDefinition;
     supportsBackdropBlur: boolean;
     individuator: Individuator;
@@ -34,6 +35,7 @@ export function MachineWardApp<TMap, TChronoLens extends ChronoLens, TNavigation
     isDev,
     namespace,
     title,
+    description,
     media,
     supportsBackdropBlur,
     individuator,
@@ -93,7 +95,7 @@ export function MachineWardApp<TMap, TChronoLens extends ChronoLens, TNavigation
                         engine: engine as unknown as Engine<unknown, ChronoLens>,
                     }}>
                         <components.layoutComponent>
-                            <components.topBarComponent title={title} onNavigate={onNavigate} onNavigateBack={onNavigateBack} />
+                            <components.topBarComponent title={title} description={description} onNavigate={onNavigate} onNavigateBack={onNavigateBack} />
                             <components.machineComponent onNavigate={onNavigate} onNavigateBack={onNavigateBack} />
                             <MachineWardNotices noticesComponent={components.noticesComponent} />
                         </components.layoutComponent>

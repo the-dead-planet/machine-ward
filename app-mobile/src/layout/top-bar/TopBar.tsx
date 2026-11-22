@@ -77,7 +77,7 @@ export const TopBar: FC<MachineWardTopBarProps<keyof RootStackParamList>> = ({
                 nowrap
                 style={styles.header}
             >
-                {title}
+                {title.toLowerCase()}
             </Text>
             <View style={styles.rightSection}>
                 {Array.from(topBarTools).map(([id, Component]) => <Component key={id} />)}

@@ -63,6 +63,7 @@ export const Player: FC<OverlayComponentProps<MobileMap> & MobileRouteStoryProps
     images$,
     routeTimes$,
     progressMs$,
+    viewportRanges$,
     playerOperator,
     animatrix,
     fitBoundsHandler,
@@ -90,6 +91,7 @@ export const Player: FC<OverlayComponentProps<MobileMap> & MobileRouteStoryProps
             routeTimes$={routeTimes$}
             images$={images$}
             progressMs$={progressMs$}
+            viewportRanges$={viewportRanges$}
             playerOperator={playerOperator}
             animatrix={animatrix}
             fitBoundsHandler={fitBoundsHandler}

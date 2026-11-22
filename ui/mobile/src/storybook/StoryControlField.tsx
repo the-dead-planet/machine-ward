@@ -6,6 +6,7 @@ import { Dropdown } from '../forms/dropdown';
 import { NumberInput } from '../forms/number-input';
 import { TextInput } from '../forms/text-input';
 import { ToggleSwitch } from '../forms/toggle-switch';
+import { StoryObjectControl } from './StoryObjectControl';
 
 const styles = StyleSheet.create({
     row: {
@@ -30,7 +31,7 @@ interface Props {
 
 export const StoryControlField: FC<Props> = ({ name, control, value, onChange }) => (
     <View style={styles.row}>
-        <Text style={styles.label}>{control.name ?? name}</Text>
+        {control.control !== 'object' ? <Text style={styles.label}>{control.name ?? name}</Text> : null}
         <View style={styles.input}>
             {control.control === 'boolean' ? (
                 <ToggleSwitch checked={Boolean(value)} onChange={onChange} />
@@ -43,6 +44,8 @@ export const StoryControlField: FC<Props> = ({ name, control, value, onChange })
                     onChange={onChange}
                     ariaLabel={control.name ?? name}
                 />
+            ) : control.control === 'object' ? (
+                <StoryObjectControl label={control.name ?? name} value={value} onChange={onChange} />
             ) : control.control === 'select' ? (
                 <Dropdown
                     value={value}

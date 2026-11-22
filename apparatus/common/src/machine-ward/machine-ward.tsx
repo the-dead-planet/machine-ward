@@ -18,7 +18,8 @@ import * as Translations from "./translations";
  * Describes the expected content of the applications and renders complete app.
  */
 export abstract class MachineWard<TMap = unknown, TChronoLens extends ChronoLens = ChronoLens, TNavigationPath extends string = string> {
-    public title = 'nav gauge';
+    public title = "Machine Ward";
+    public description = "The Dead Planet's Machine Ward"
 
     private readonly isDev: boolean;
     public readonly namespace = 'machine-ward';
@@ -138,6 +139,7 @@ export abstract class MachineWard<TMap = unknown, TChronoLens extends ChronoLens
                 isDev={this.isDev}
                 namespace={this.namespace}
                 title={this.title}
+                description={this.description}
                 media={this.media}
                 supportsBackdropBlur={this.supportsBackdropBlur}
                 individuator={this.individuator}

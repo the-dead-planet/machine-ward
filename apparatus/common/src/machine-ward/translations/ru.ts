@@ -2,6 +2,8 @@ import { TranslationTable } from "../translatron";
 import { MachineTranslationKey } from "../model";
 
 const ru: TranslationTable<MachineTranslationKey>['ru'] = {
+    'machine-ward': 'Отделение машин',
+    'powering-up-machine-ward': 'Включение питания отделения машин…',
     'component-library': 'Библиотека компонентов',
     'icon-creators': 'Авторы иконок',
     stories: 'Примеры',

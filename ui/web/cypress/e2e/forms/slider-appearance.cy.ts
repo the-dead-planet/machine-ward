@@ -1,4 +1,48 @@
 describe("Slider appearance", () => {
+    it("renders two capped underlays and updates their bounds from story controls", () => {
+        cy.visit("/iframe.html?id=forms-slider--gallery&viewMode=story");
+        cy.get('input[type="range"]').should("have.length", 24);
+        cy.get('[data-appearance-color="tertiary"][data-appearance-variant="fill-inverse"] [class*="range-tracks"] > div').first().should(($range) => {
+            const range = $range[0];
+            const slider = range.closest('[data-appearance-variant]')!;
+            const window = range.ownerDocument.defaultView!;
+            const shade = 500;
+            const reference = range.ownerDocument.createElement('span');
+            reference.style.backgroundColor = `var(--appearance-color-${shade})`;
+            slider.append(reference);
+            try {
+                expect(window.getComputedStyle(reference).getPropertyValue(`--appearance-color-${shade}`).trim()).not.to.equal('');
+                expect(window.getComputedStyle(range).backgroundColor).to.equal(window.getComputedStyle(reference).backgroundColor);
+            } finally {
+                reference.remove();
+            }
+        });
+        cy.get('input[type="range"]').first().closest('[data-appearance-variant]').as('slider');
+        cy.get('@slider').find('[class*="range-tracks"] > div').should('have.length', 2).first().then(($range) => {
+            const range = $range[0];
+            const window = range.ownerDocument.defaultView!;
+            const track = range.parentElement!.previousElementSibling!;
+            const bounds = range.getBoundingClientRect();
+            const trackBounds = track.getBoundingClientRect();
+            expect(bounds.left - trackBounds.left).to.be.closeTo(trackBounds.width * 0.1, 0.1);
+            expect(bounds.width).to.be.closeTo(trackBounds.width * 0.2, 0.1);
+            expect(bounds.top).to.be.closeTo(trackBounds.top - 1, 0.1);
+            expect(bounds.bottom).to.be.closeTo(trackBounds.bottom + 1, 0.1);
+            expect(window.getComputedStyle(range).clipPath).to.contain('polygon(');
+            expect(window.getComputedStyle(range.parentElement!).pointerEvents).to.equal('none');
+        });
+        cy.window().its('__STORYBOOK_PREVIEW__.channel').invoke('emit', 'updateStoryArgs', {
+            storyId: 'forms-slider--gallery',
+            updatedArgs: { ranges: [{ start: 25, end: 75 }] },
+        });
+        cy.get('@slider').find('[class*="range-tracks"] > div').should('have.length', 1).should(($range) => {
+            const bounds = $range[0].getBoundingClientRect();
+            const trackBounds = $range[0].parentElement!.getBoundingClientRect();
+            expect(bounds.left - trackBounds.left).to.be.closeTo(trackBounds.width * 0.25, 0.1);
+            expect(bounds.width).to.be.closeTo(trackBounds.width * 0.5, 0.1);
+        });
+    });
+
     it("uses opaque track shades and thumb interaction paints across variants and modes", () => {
         cy.visit("/iframe.html?id=forms-slider--gallery&viewMode=story");
         cy.get("#theme-appearance-variables").should("exist");
@@ -193,8 +237,11 @@ describe("Slider appearance", () => {
         cy.get("@slider")
             .find('input[type="range"]')
             .should("have.value", "76");
-        cy.get("@slider")
-            .find('input[type="number"]')
-            .should("have.value", "76");
+        cy.window().its("__STORYBOOK_PREVIEW__.channel").invoke("emit", "updateStoryArgs", {
+            storyId: "forms-slider--gallery",
+            updatedArgs: { value: 25 },
+        });
+        cy.get("@slider").find('input[type="number"]').should("have.value", "25");
+        cy.get("@slider").find('input[type="range"]').should("have.value", "25");
     });
 });

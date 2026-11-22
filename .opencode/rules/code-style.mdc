@@ -8,7 +8,7 @@ alwaysApply: true
 - Prefer an explicit variable type such as `const value: Foo = { ... }` over `as const` or `satisfies` when the annotation provides sufficient type checking. Use assertions only when an annotation cannot express the required inference.
 - Keep `model.ts` files limited to types, interfaces, and enums. Put runtime constants and objects in a sibling implementation or `tinkers.ts` file.
 - Use four spaces and braces for all control-flow bodies.
-- Format changed files with the configured formatter. Put nested JSX and JSX with more than five props on multiple lines.
+- Match VS Code's Format Document (`Alt+Shift+F`) using the selected workspace/user formatter; TypeScript and JavaScript currently use VS Code's built-in formatter. Do not invoke Prettier. If that formatter is unavailable, format changed code manually to match the surrounding style. Put nested JSX and JSX with more than five props on multiple lines.
 - Do not enforce a fixed line length, including an 80-character limit. Break lines for readability and logical grouping; avoid formatter runs that introduce width-only wrapping.
 - Keep configuration objects multiline, with one property per line, including nested controls and styles.
 - Write self-explanatory code. Do not add `// ponytail:` markers, AI annotations, or comments narrating shortcuts. Comments describe behavior; record genuine trade-offs in the commit message.

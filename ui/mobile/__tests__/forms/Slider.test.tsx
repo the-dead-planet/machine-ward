@@ -1,5 +1,5 @@
 import { act, fireEvent, render, waitFor } from "@testing-library/react-native";
-import { AccessibilityInfo, Animated, GestureResponderEvent, PanResponder, StyleSheet } from "react-native";
+import { AccessibilityInfo, Animated, GestureResponderEvent, PanResponder, processColor, StyleSheet } from "react-native";
 import {
     Orientation,
     Theme,
@@ -26,6 +26,41 @@ const media = {
     }),
     subscribe: () => ({ unsubscribe: () => undefined }),
 };
+
+test("slider forwards ranges into capped underlays without changing adjustable values", async () => {
+    const theme = new Theme(themeSpecifications[ThemeName.Default].light, media, false);
+    try {
+        const screen = await render(
+            <ThemeContext.Provider value={theme}>
+                <Slider
+                    value={50}
+                    size="md"
+                    ranges={[{ start: 10, end: 30 }, { start: 60, end: 85 }]}
+                    color="tertiary"
+                />
+            </ThemeContext.Provider>,
+        );
+        const control = screen.getByRole("adjustable");
+        const radius = theme.sizes.control.md.thumbSize / Math.SQRT2;
+        await fireEvent(control, "layout", { nativeEvent: { layout: { width: 100 + 2 * radius } } });
+        const polygons = screen.getAllByTestId("slider-range-track", { includeHiddenElements: true });
+        expect(polygons).toHaveLength(2);
+        const thickness = theme.sizes.control.md.trackThickness + 2;
+        const cap = thickness / 2;
+        const coordinates: number[] = polygons[0].props.d.slice(1, -1).split(/[ ,]/).map(Number);
+        const expected = [0, cap, cap, 0, 20 - cap, 0, 20, cap, 20 - cap, thickness, cap, thickness];
+        coordinates.forEach((coordinate, index) => expect(coordinate).toBeCloseTo(expected[index]));
+        const color = theme.color("tertiary", 500);
+        const paint = { type: 0, payload: processColor(color) };
+        expect(polygons.map((polygon) => polygon.props.fill)).toEqual([paint, paint]);
+        await fireEvent(control, "focus");
+        expect(screen.getAllByTestId("slider-range-track", { includeHiddenElements: true }).map((polygon) => polygon.props.fill)).toEqual([paint, paint]);
+        expect(control.props.accessibilityValue).toEqual({ min: 0, max: 100, now: 50 });
+        await screen.unmount();
+    } finally {
+        theme.destroy();
+    }
+});
 
 test("the full endpoint diamonds stay inside the touch area and can start drags at every size", async () => {
     const theme = new Theme(themeSpecifications[ThemeName.Default].light, media, false);

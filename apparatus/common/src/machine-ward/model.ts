@@ -9,6 +9,7 @@ export interface MachineWardLayoutProps {
 
 export interface MachineWardTopBarProps<TNavigationPath extends string = string> {
     title: string;
+    description: string;
     onNavigate: (path: TNavigationPath) => void;
     onNavigateBack: () => void;
 }
@@ -34,6 +35,7 @@ export interface MachineWardComponents<TNavigationPath extends string = string> 
 export type MachineGear<TMap, MobileChronoLens extends ChronoLens> = new (apparatus: GearApparatus<TMap, MobileChronoLens>) => Gear<TMap, MobileChronoLens>;
 
 export enum MachineTranslationKey {
+    MachineWard = 'machine-ward',
     ComponentLibrary = 'component-library',
     IconCreators = 'icon-creators',
     Stories = 'stories',
@@ -57,4 +59,5 @@ export enum MachineTranslationKey {
     DragToResize = 'drag-to-resize',
     Attributions = 'attributions',
     UnderConstruction = 'under-construction',
+    PoweringUpMachineWard = 'powering-up-machine-ward',
 }
