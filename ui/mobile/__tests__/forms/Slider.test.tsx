@@ -45,12 +45,12 @@ test("slider forwards ranges into capped underlays without changing adjustable v
         await fireEvent(control, "layout", { nativeEvent: { layout: { width: 100 + 2 * radius } } });
         const polygons = screen.getAllByTestId("slider-range-track", { includeHiddenElements: true });
         expect(polygons).toHaveLength(2);
-        const thickness = theme.sizes.control.md.trackThickness + 4;
+        const thickness = theme.sizes.control.md.trackThickness + 2;
         const cap = thickness / 2;
         const coordinates: number[] = polygons[0].props.d.slice(1, -1).split(/[ ,]/).map(Number);
         const expected = [0, cap, cap, 0, 20 - cap, 0, 20, cap, 20 - cap, thickness, cap, thickness];
         coordinates.forEach((coordinate, index) => expect(coordinate).toBeCloseTo(expected[index]));
-        const color = theme.color("tertiary", 600);
+        const color = theme.color("tertiary", 500);
         const paint = { type: 0, payload: processColor(color) };
         expect(polygons.map((polygon) => polygon.props.fill)).toEqual([paint, paint]);
         await fireEvent(control, "focus");

@@ -1,5 +1,5 @@
 import { CSSProperties, FC } from "react";
-import { DEFAULT_COLOR, getSliderRanges, sliderRangeShades, SliderProps, useTheme } from "@ui";
+import { DEFAULT_COLOR, getSliderRanges, SLIDER_RANGE_SHADE, SliderProps, useTheme } from "@ui";
 import styles from "./slider.module.css";
 
 type Props = Pick<SliderProps, "ranges" | "color" | "min" | "max">;
@@ -11,7 +11,7 @@ export const SliderRangeTrack: FC<Props> = ({
     max = 100,
 }) => {
     const theme = useTheme();
-    const paint = theme.color(color, sliderRangeShades[theme.mode]);
+    const paint = theme.color(color, SLIDER_RANGE_SHADE);
 
     return getSliderRanges(ranges, min, max).map(({ start, end }) => (
         <div

@@ -10,6 +10,7 @@ import {
     RouteStoryState,
     RouteStoryTranslationKey,
     RouteTimes,
+    useVisibleRouteRanges,
 } from "@the-dead-planet/nav-gauge-gears-route-story-common";
 import { SliderWithMarkers } from "../src/player/player-slider/SliderWithMarkers";
 import { MobileMarkerImageData } from "../src/images/image-parser";
@@ -21,10 +22,11 @@ jest.mock("@the-dead-planet/nav-gauge-gears-route-story-common", () => ({
     ...jest.requireActual("@the-dead-planet/nav-gauge-gears-route-story-common/src/animatrix/animatrix"),
     RouteStoryTranslationKey: {},
     getRouteDistanceFraction: () => 0,
+    useVisibleRouteRanges: jest.fn(() => [{ start: 10, end: 30 }]),
 }));
 jest.mock("@mobile-ui", () => {
-    const { View } = jest.requireActual<typeof import("react-native")>("react-native");
-    return { Slider: ({ style }: { style?: ViewStyle }) => <View testID="player-slider-track" style={style} /> };
+    const { Text, View } = jest.requireActual<typeof import("react-native")>("react-native");
+    return { Slider: ({ style, ranges }: { style?: ViewStyle; ranges?: unknown }) => <View testID="player-slider-track" style={style}><Text testID="player-viewport-ranges">{JSON.stringify(ranges ?? [])}</Text></View> };
 });
 jest.mock("../src/layers/RouteLayer", () => ({
     currentPointRef$: {},
@@ -42,6 +44,7 @@ jest.mock("../src/player/player-slider/PlayerSliderLabels", () => {
 test("keeps a native exclusion target around the player controls even when image markers are hidden", async () => {
     const state$ = new BehaviorSubject({
         markerPlayerVisibility: true,
+        viewportRangePlayerVisibility: true,
     } as RouteStoryState);
     const screen = await render(
         <SliderWithMarkers
@@ -68,8 +71,13 @@ test("keeps a native exclusion target around the player controls even when image
     expect(container?.props.collapsable).toBe(false);
     expect(StyleSheet.flatten(screen.getByTestId("player-slider-track").props.style).zIndex).toBe(1);
     expect(screen.getByTestId("player-image-markers").parent).toBe(container);
+    expect(screen.getByTestId("player-viewport-ranges").props.children).toBe('[{"start":10,"end":30}]');
     await act(() => state$.next({ ...state$.value, markerPlayerVisibility: false }));
     expect(screen.queryByTestId("player-image-markers")).toBeNull();
+    expect(screen.getByTestId("player-viewport-ranges").props.children).toBe('[{"start":10,"end":30}]');
+    await act(() => state$.next({ ...state$.value, viewportRangePlayerVisibility: false }));
+    expect(screen.getByTestId("player-viewport-ranges").props.children).toBe('[]');
+    expect(jest.mocked(useVisibleRouteRanges).mock.lastCall?.[0].enabled).toBe(false);
     expect(screen.getByTestId("player-slider-track").parent).toBe(container);
     await screen.unmount();
 });

@@ -6,7 +6,7 @@ import {
     getSliderRanges,
     SLIDER_RANGE_EXTRA_THICKNESS,
     SliderProps,
-    sliderRangeShades,
+    SLIDER_RANGE_SHADE,
     useTheme,
 } from "@ui";
 
@@ -31,7 +31,7 @@ export const SliderRangeTrack: FC<Props> = ({
     trackThickness,
 }) => {
     const theme = useTheme();
-    const paint = theme.color(color, sliderRangeShades[theme.mode]);
+    const paint = theme.color(color, SLIDER_RANGE_SHADE);
     const thickness = trackThickness + SLIDER_RANGE_EXTRA_THICKNESS;
 
     if (width <= 0) {

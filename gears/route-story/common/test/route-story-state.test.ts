@@ -22,7 +22,7 @@ describe("Route story saved state", () => {
             "route-story:state",
             cleanUpRouteStoryState,
         );
-        state.next({ ...state.value, markerPlayerVisibility: false, markerLayerVisibility: false });
+        state.next({ ...state.value, markerPlayerVisibility: false, markerLayerVisibility: false, viewportRangePlayerVisibility: false });
         subscription.unsubscribe();
         const restored = new BehaviorSubject({ ...defaultRouteStoryState });
         const restoredSubscription = await keeper.synchronizeSubjectWithStorage(
@@ -32,15 +32,17 @@ describe("Route story saved state", () => {
         );
         expect(restored.value.markerPlayerVisibility).to.equal(false);
         expect(restored.value.markerLayerVisibility).to.equal(false);
+        expect(restored.value.viewportRangePlayerVisibility).to.equal(false);
         expect(restored.value.routeStyleActive).to.deep.equal(defaultRouteStoryState.routeStyleActive);
         restoredSubscription.unsubscribe();
     });
 
     it("defaults missing or invalid visibility values in old saved route states", () => {
-        for (const saved of [{}, { markerPlayerVisibility: "false", markerLayerVisibility: null }]) {
+        for (const saved of [{}, { markerPlayerVisibility: "false", markerLayerVisibility: null, viewportRangePlayerVisibility: "false" }]) {
             const state = cleanUpRouteStoryState(saved);
             expect(state.markerPlayerVisibility).to.equal(true);
             expect(state.markerLayerVisibility).to.equal(true);
+            expect(state.viewportRangePlayerVisibility).to.equal(true);
         }
     });
 

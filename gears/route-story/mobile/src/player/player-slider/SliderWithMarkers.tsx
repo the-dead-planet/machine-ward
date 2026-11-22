@@ -3,7 +3,7 @@ import { StyleSheet, View, ViewStyle } from "react-native";
 import { BehaviorSubject } from "rxjs";
 import { MarkerImage } from "@apparatus";
 import { ParsingResultWithError, useSubjectState } from "@tinker-chest";
-import { RouteStoryState, RouteStoryTranslationKey, RouteTimes, Animatrix, RouteGeometryData, getRouteDistanceFraction, getRouteTimelinePositionForDistanceFraction } from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import { RouteStoryState, RouteStoryTranslationKey, RouteTimes, Animatrix, RouteGeometryData, getRouteDistanceFraction, getRouteTimelinePositionForDistanceFraction, useVisibleRouteRanges } from "@the-dead-planet/nav-gauge-gears-route-story-common";
 import { Slider } from "@mobile-ui";
 import { currentPointRef$, linesRef$ } from "../../layers/RouteLayer";
 import { SliderMarkers } from "./slider-markers/SliderMarkers";
@@ -61,7 +61,14 @@ export const SliderWithMarkers: FC<Props> = ({
     const [{ geojson }] = useSubjectState(data$);
     const [routeGeometryData] = useSubjectState(routeGeometryData$);
     const [animationControls] = useSubjectState(animatrix.controls$);
-    const [{ markerPlayerVisibility: showImageMarkers }] = useSubjectState(state$);
+    const [{ markerPlayerVisibility: showImageMarkers, viewportRangePlayerVisibility: showViewportRanges }] = useSubjectState(state$);
+    const viewportRanges = useVisibleRouteRanges({
+        data$,
+        routeGeometryData$,
+        routeTimes$,
+        animatrix,
+        enabled: showViewportRanges,
+    });
     const markerDrag = useSliderMarkerDrag({ data$, routeGeometryData$, routeTimes$, images$, animatrix });
 
     const handleProgressChange = (value: number) => {
@@ -96,6 +103,7 @@ export const SliderWithMarkers: FC<Props> = ({
                 />
             ) : null}
             <Slider
+                ranges={showViewportRanges ? viewportRanges : undefined}
                 value={animationControls.playbackPacing === 'distance'
                     ? getRouteDistanceFraction(progressMs, geojson, routeTimes, routeGeometryData) * (routeGeometryData?.totalDistanceMeters ?? 1)
                     : progressMs}

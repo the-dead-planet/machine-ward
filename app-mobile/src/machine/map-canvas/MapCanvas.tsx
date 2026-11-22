@@ -55,6 +55,10 @@ export const MapCanvas: FC<Props> = ({
     const panResponder = useMapPanResponder(map);
 
     useEffect(() => {
+        return () => cartomancer.bounds$.next(null);
+    }, [cartomancer]);
+
+    useEffect(() => {
         const notificationId = 'maplibre-map';
 
         LogManager.onLog((event) => {
@@ -100,6 +104,7 @@ export const MapCanvas: FC<Props> = ({
                     }}
                     onRegionWillChange={() => map.cameraMoving$.next(true)}
                     onRegionDidChange={(event) => {
+                        cartomancer.bounds$.next(event.nativeEvent.bounds);
                         const bearing = event.nativeEvent.bearing;
                         const pitch = event.nativeEvent.pitch;
                         cartomancer.zoom$.next(parseFloat(event.nativeEvent.zoom.toFixed(1)));

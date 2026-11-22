@@ -4,7 +4,16 @@ import { BehaviorSubject } from "rxjs";
 import classNames from "classnames";
 import { MarkerImage, useMultipleTranslations } from "@apparatus";
 import { ParsingResultWithError, useSubjectState } from "@tinker-chest";
-import { RouteStoryState, RouteStoryTranslationKey, RouteTimes, Animatrix, RouteGeometryData, getRouteDistanceFraction, getRouteTimelinePositionForDistanceFraction } from "@the-dead-planet/nav-gauge-gears-route-story-common";
+import {
+    RouteStoryState,
+    RouteStoryTranslationKey,
+    RouteTimes,
+    Animatrix,
+    RouteGeometryData,
+    getRouteDistanceFraction,
+    getRouteTimelinePositionForDistanceFraction,
+    useVisibleRouteRanges,
+} from "@the-dead-planet/nav-gauge-gears-route-story-common";
 import { updateRouteLayer } from "../../tinkers";
 import { Slider } from "@web-ui";
 import { WebMarkerImageData } from "../../images/image-parser";
@@ -49,9 +58,16 @@ export const SliderWithMarkers: FC<Props> = ({
     const [{ geojson }] = useSubjectState(data$);
     const [routeGeometryData] = useSubjectState(routeGeometryData$);
     const [animationControls] = useSubjectState(animatrix.controls$);
-    const [{ markerPlayerVisibility: showImageMarkers }] = useSubjectState(
+    const [{ markerPlayerVisibility: showImageMarkers, viewportRangePlayerVisibility: showViewportRanges }] = useSubjectState(
         state$,
     );
+    const viewportRanges = useVisibleRouteRanges({
+        data$,
+        routeGeometryData$,
+        routeTimes$,
+        animatrix,
+        enabled: showViewportRanges,
+    });
     const [
         sliderLabel,
     ] = useMultipleTranslations([
@@ -87,6 +103,7 @@ export const SliderWithMarkers: FC<Props> = ({
                     />
                 ) : null}
                 <Slider
+                    ranges={showViewportRanges ? viewportRanges : undefined}
                     aria-label={sliderLabel}
                     value={animationControls.playbackPacing === 'distance'
                         ? getRouteDistanceFraction(progressMs, geojson, routeTimes, routeGeometryData) * (routeGeometryData?.totalDistanceMeters ?? 1)

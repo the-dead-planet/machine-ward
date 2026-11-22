@@ -6,7 +6,7 @@ describe("Slider appearance", () => {
             const range = $range[0];
             const slider = range.closest('[data-appearance-variant]')!;
             const window = range.ownerDocument.defaultView!;
-            const shade = slider.getAttribute('data-appearance-mode') === 'light' ? 600 : 400;
+            const shade = 500;
             const reference = range.ownerDocument.createElement('span');
             reference.style.backgroundColor = `var(--appearance-color-${shade})`;
             slider.append(reference);
@@ -26,8 +26,8 @@ describe("Slider appearance", () => {
             const trackBounds = track.getBoundingClientRect();
             expect(bounds.left - trackBounds.left).to.be.closeTo(trackBounds.width * 0.1, 0.1);
             expect(bounds.width).to.be.closeTo(trackBounds.width * 0.2, 0.1);
-            expect(bounds.top).to.be.closeTo(trackBounds.top - 2, 0.1);
-            expect(bounds.bottom).to.be.closeTo(trackBounds.bottom + 2, 0.1);
+            expect(bounds.top).to.be.closeTo(trackBounds.top - 1, 0.1);
+            expect(bounds.bottom).to.be.closeTo(trackBounds.bottom + 1, 0.1);
             expect(window.getComputedStyle(range).clipPath).to.contain('polygon(');
             expect(window.getComputedStyle(range.parentElement!).pointerEvents).to.equal('none');
         });

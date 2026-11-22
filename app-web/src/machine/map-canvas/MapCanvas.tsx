@@ -131,11 +131,20 @@ export const MapCanvas: FC<Props> = ({ map, children }) => {
         };
         map.on("rotate", rotateHandler);
 
+        const boundsHandler = () => {
+            const bounds = map.getBounds();
+            cartomancer.bounds$.next([bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()]);
+        };
+        map.on("moveend", boundsHandler);
+        boundsHandler();
+
         return () => {
             map.off("zoomend", zoomHandler);
             map.off("rotate", rotateHandler);
+            map.off("moveend", boundsHandler);
+            cartomancer.bounds$.next(null);
         };
-    }, []);
+    }, [map, cartomancer]);
 
     useEffect(() => {
         if (!isStyleLoaded) {

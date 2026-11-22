@@ -111,6 +111,7 @@ export class Cartomancer<TMap> {
     };
 
     public cleanUp = () => {
+        this.bounds$.next(null);
         this.selectedStyleStorageSubscription?.unsubscribe();
         this.gaugeControlsStorageSubscription?.unsubscribe();
         this.mapLayoutStorageSubscription?.unsubscribe();
@@ -118,6 +119,7 @@ export class Cartomancer<TMap> {
 
     public bearing$ = new BehaviorSubject(0);
     public zoom$ = new BehaviorSubject(0);
+    public bounds$ = new BehaviorSubject<GeoJSON.BBox | null>(null);
     public overlays$ = new BehaviorSubject<Map<string, ComponentType<OverlayComponentProps<TMap>>>>(new Map());
 
     private cleanUpSelectedStyle = (state: unknown): Partial<SelectedStyle> => {

@@ -16,7 +16,20 @@ export interface RouteTimes {
 }
 
 export interface RouteStoryState {
+    /**
+     * When enabled will show light underlay below the slider to mark which part of the route is currently visible in viewport.
+     * Defaults to `true`.
+     */
+    viewportRangePlayerVisibility: boolean;
+    /**
+     * When enabled, will show the draggable image markers on the slider.
+     * Defaults to `true`.
+     */
     markerPlayerVisibility: boolean;
+    /**
+     * When enabled, will show the image markers layer on the map.
+     * Defaults to `true`.
+     */
     markerLayerVisibility: boolean;
     /**
      * Applied to the route line part after current point.
