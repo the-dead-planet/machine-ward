@@ -102,7 +102,10 @@ export const MapCanvas: FC<Props> = ({
                             text: 'Something went wrong'
                         })
                     }}
-                    onRegionWillChange={() => map.cameraMoving$.next(true)}
+                    onRegionWillChange={() => {
+                        cartomancer.bounds$.next(null);
+                        map.cameraMoving$.next(true);
+                    }}
                     onRegionDidChange={(event) => {
                         cartomancer.bounds$.next(event.nativeEvent.bounds);
                         const bearing = event.nativeEvent.bearing;

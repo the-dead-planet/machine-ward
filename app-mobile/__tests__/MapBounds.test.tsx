@@ -42,7 +42,7 @@ jest.mock("../src/machine/map-canvas/useMapTools", () => ({ useMapTools: () => {
 jest.mock("../src/machine/map-canvas/useMapPanResponder", () => ({ useMapPanResponder: () => ({ panHandlers: {} }) }));
 jest.mock("../src/machine/map-canvas/MapCanvasContainer", () => ({ MapCanvasContainer: ({ children }: { children: React.ReactNode }) => children }));
 
-test("publishes native bounds only at region end and clears them when the map unmounts", async () => {
+test("clears native bounds during movement, publishes them at region end, and clears them on unmount", async () => {
     const map = {
         map$: new BehaviorSubject(null),
         dragPan$: new BehaviorSubject(true),
@@ -62,6 +62,7 @@ test("publishes native bounds only at region end and clears them when the map un
             userInteraction: true,
         },
     } as Parameters<NonNullable<typeof mockMapProps.onRegionDidChange>>[0];
+    await act(() => mockCartomancer.bounds$.next([-10, -5, 10, 5]));
     await act(() => mockMapProps.onRegionWillChange?.(event));
     expect(mockCartomancer.bounds$.value).toBeNull();
     expect(mockMapProps.onRegionIsChanging).toBeUndefined();
