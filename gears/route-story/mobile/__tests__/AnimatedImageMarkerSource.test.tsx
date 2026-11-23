@@ -126,7 +126,7 @@ test("finishes interrupted group motion at the latest target and respects reduce
     }
 });
 
-test("commits moved route anchors and thumbnails together without a transient connector", async () => {
+test("commits a drag release immediately when placement animation is disabled, without a transient connector", async () => {
     jest.useFakeTimers();
     const initial: ImageMarkerSource = {
         type: "FeatureCollection",
@@ -156,17 +156,23 @@ test("commits moved route anchors and thumbnails together without a transient co
         })),
     };
     const connectorCounts: number[] = [];
-    const hook = await renderHook(({ source }: { source: ImageMarkerSource }) => {
-        const rendered = useAnimatedImageMarkerSource(source, false);
+    const hook = await renderHook(({ source, animatePlacement }: { source: ImageMarkerSource; animatePlacement: boolean }) => {
+        const rendered = useAnimatedImageMarkerSource(source, false, animatePlacement);
         connectorCounts.push(getImageMarkerConnections(source, rendered).features.length);
         return rendered;
-    }, { initialProps: { source: initial } });
+    }, { initialProps: { source: initial, animatePlacement: true } });
     try {
-        await hook.rerender({ source: moved });
+        await hook.rerender({ source: moved, animatePlacement: false });
         expect(hook.result.current.features[0].geometry.coordinates).toEqual([10, 10]);
         await act(() => jest.advanceTimersByTimeAsync(300));
         expect(connectorCounts.every((count) => count === 0)).toBe(true);
         expect(hook.result.current).toBe(moved);
+        await hook.rerender({ source: initial, animatePlacement: true });
+        await act(() => jest.advanceTimersByTimeAsync(64));
+        expect(hook.result.current.features[0].geometry.coordinates[0]).toBeGreaterThan(0);
+        expect(hook.result.current.features[0].geometry.coordinates[0]).toBeLessThan(10);
+        await act(() => jest.advanceTimersByTimeAsync(300));
+        expect(hook.result.current).toBe(initial);
     } finally {
         await hook.unmount();
         jest.useRealTimers();

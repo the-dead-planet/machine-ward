@@ -10,6 +10,7 @@ import {
     imageSourceIds,
     layerOrder,
     highlightIdsBySourceId$,
+    selectedImageId$,
     useImageMarkerConnections,
     getImageSourceWithMarkerVisibility,
     getImageSourceWithAnchors,
@@ -54,6 +55,7 @@ export const ImagesLayer: FC<OverlayComponentProps<MapLibreMap> & WebRouteStoryP
     const [{ markerLayerVisibility }] = useSubjectState(state$);
     const loadedImages = useLoadedWebImages(images);
     const [highlightIdsBySourceId] = useSubjectState(highlightIdsBySourceId$);
+    const [selectedImageId] = useSubjectState(selectedImageId$);
 
     useImageLayerAssets(
         map,
@@ -62,7 +64,7 @@ export const ImagesLayer: FC<OverlayComponentProps<MapLibreMap> & WebRouteStoryP
         imageHoverColor,
         badgeTextColor,
     );
-    useImageMarkerKeyboard({ map, data$, routeTimes$, routeGeometryData$, images$, animatrix });
+    useImageMarkerKeyboard({ gearId, data$, routeTimes$, routeGeometryData$, images$, animatrix });
 
     const sourceDataGeojson = useMemo(
         () => getImageSource(loadedImages, geojson, routeGeometryData),
@@ -70,7 +72,8 @@ export const ImagesLayer: FC<OverlayComponentProps<MapLibreMap> & WebRouteStoryP
     );
     const targetSource = useImageMarkerSource(map, sourceDataGeojson, displayImageId !== null);
     const reducedMotion = useReducedMotion();
-    const groupedSource = useAnimatedImageMarkerSource(targetSource, reducedMotion, true);
+    // Drag release clears selection; keyboard moves keep it.
+    const groupedSource = useAnimatedImageMarkerSource(targetSource, reducedMotion, selectedImageId !== null);
     const visibleSource = useMemo(
         () => getImageSourceWithMarkerVisibility(groupedSource, markerLayerVisibility),
         [groupedSource, markerLayerVisibility],

@@ -3,7 +3,7 @@ import { StyleSheet, View, ViewStyle } from "react-native";
 import { BehaviorSubject, Observable } from "rxjs";
 import { MarkerImage } from "@apparatus";
 import { ParsingResultWithError, useObservableState, useSubjectState } from "@tinker-chest";
-import { RouteStoryState, RouteStoryTranslationKey, RouteTimes, Animatrix, RouteGeometryData, getRouteDistanceFraction, getRouteTimelinePositionForDistanceFraction } from "@the-dead-planet/machine-ward-gears-route-story-common";
+import { RouteStoryState, RouteStoryTranslationKey, RouteTimes, Animatrix, RouteGeometryData, getRouteDistanceFraction, getRouteTimelinePositionForDistanceFraction, getPlayerSliderStep } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { SliderRange } from "@ui";
 import { Slider } from "@mobile-ui";
 import { currentPointRef$, linesRef$ } from "../../layers/RouteLayer";
@@ -106,7 +106,7 @@ export const SliderWithMarkers: FC<Props> = ({
                     : progressMs}
                 min={0}
                 max={animationControls.playbackPacing === 'distance' ? Math.max(routeGeometryData?.totalDistanceMeters ?? 0, 1) : routeTimes?.duration ?? 1}
-                step={animationControls.playbackPacing === 'distance' ? 1 : 1000}
+                step={getPlayerSliderStep(animationControls.playbackPacing)}
                 onChange={handleProgressChange}
                 color="tertiary"
                 activeGlow="glow"

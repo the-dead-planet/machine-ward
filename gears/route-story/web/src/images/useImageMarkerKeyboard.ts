@@ -1,66 +1,99 @@
 import { useEffect } from "react";
-import type { Map as MapLibreMap } from "maplibre-gl";
+import { KeyBinding } from "@apparatus";
+import { useWebMachineWard } from "@web-apparatus";
 import {
     draggingImage$,
     selectedImageId$,
     updateImageDistanceFraction,
+    RouteStoryTranslationKey,
 } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { WebRouteStoryProps } from "../model";
 import { getSliderStepDistanceFraction } from "../player/player-slider/slider-markers/tinkers";
 
-type Props = Pick<WebRouteStoryProps, "data$" | "routeTimes$" | "routeGeometryData$" | "images$" | "animatrix"> & {
-    map: MapLibreMap;
-};
+type Props = Pick<WebRouteStoryProps, "gearId" | "data$" | "routeTimes$" | "routeGeometryData$" | "images$" | "animatrix">;
 
-export const useImageMarkerKeyboard = ({ map, data$, routeTimes$, routeGeometryData$, images$, animatrix }: Props) => {
+export const useImageMarkerKeyboard = ({ gearId, data$, routeTimes$, routeGeometryData$, images$, animatrix }: Props) => {
+    const { keysmith } = useWebMachineWard();
+
     useEffect(() => {
-        const handleKeyDown = (event: KeyboardEvent) => {
-            const imageId = selectedImageId$.value;
-            if (imageId === null || draggingImage$.value !== null || event.defaultPrevented || event.isComposing || event.altKey || event.metaKey || event.shiftKey) {
-                return;
-            }
-            const target = event.target;
-            if (target instanceof HTMLElement && (target.isContentEditable || target.closest('input, textarea, select, button, dialog, [role="dialog"], [role="alertdialog"], [role="slider"], [role="spinbutton"], [role="separator"], [role="combobox"], [role="listbox"], [role="menu"], [role="tablist"], [role="tree"], [role="grid"]'))) {
-                return;
-            }
-            const direction = event.key === "ArrowLeft" ? -1 : event.key === "ArrowRight" ? 1 : 0;
-            if (direction === 0) {
-                return;
-            }
-            const distanceFraction = images$.value.find((image) => image.id === imageId)?.distanceFraction;
-            if (distanceFraction === undefined) {
-                return;
-            }
-            const nextDistanceFraction = getSliderStepDistanceFraction(
-                distanceFraction,
-                direction,
-                data$.value.geojson,
-                routeTimes$.value,
-                routeGeometryData$.value,
-                animatrix.controls$.value.playbackPacing,
-                event.ctrlKey ? "percent" : "slider",
-            );
-            if (nextDistanceFraction !== null) {
-                event.preventDefault();
-                if (nextDistanceFraction !== distanceFraction) {
-                    updateImageDistanceFraction(images$, imageId, nextDistanceFraction);
+        const shortcuts: {
+            description: RouteStoryTranslationKey;
+            binding: KeyBinding;
+            direction: -1 | 1;
+            step: "slider" | "percent";
+        }[] = [
+                {
+                    description: RouteStoryTranslationKey.MoveImageBackward,
+                    binding: {
+                        key: "ArrowLeft",
+                    },
+                    direction: -1,
+                    step: "slider",
+                },
+                {
+                    description: RouteStoryTranslationKey.MoveImageForward,
+                    binding: {
+                        key: "ArrowRight",
+                    },
+                    direction: 1,
+                    step: "slider",
+                },
+                {
+                    description: RouteStoryTranslationKey.MoveImageBackwardLargeStep,
+                    binding: {
+                        key: "ArrowLeft",
+                        control: true,
+                    },
+                    direction: -1,
+                    step: "percent",
+                },
+                {
+                    description: RouteStoryTranslationKey.MoveImageForwardLargeStep,
+                    binding: {
+                        key: "ArrowRight",
+                        control: true,
+                    },
+                    direction: 1,
+                    step: "percent",
+                },
+            ];
+
+        const unregister = shortcuts.map(({ description, binding, direction, step }) => keysmith.register({
+            id: `${gearId}.${description}`,
+            description: {
+                n: gearId,
+                t: description,
+            },
+            binding,
+            allowRepeat: true,
+            isAvailable: () =>
+                draggingImage$.value === null &&
+                !!data$.value.geojson?.features.length &&
+                routeTimes$.value !== null &&
+                routeGeometryData$.value !== null &&
+                images$.value.some((image) => image.id === selectedImageId$.value && image.distanceFraction !== undefined),
+            execute: () => {
+                const image = images$.value.find((image) => image.id === selectedImageId$.value);
+
+                if (image?.distanceFraction === undefined) {
+                    return;
                 }
-            }
-        };
-        const handleMapKeyDown = (event: KeyboardEvent) => {
-            if (event.target === map.getCanvas()) {
-                handleKeyDown(event);
-                if (event.defaultPrevented) {
-                    event.stopPropagation();
+
+                const nextDistanceFraction = getSliderStepDistanceFraction(
+                    image.distanceFraction,
+                    direction,
+                    data$.value.geojson,
+                    routeTimes$.value,
+                    routeGeometryData$.value,
+                    animatrix.controls$.value.playbackPacing,
+                    step,
+                );
+
+                if (nextDistanceFraction !== null && nextDistanceFraction !== image.distanceFraction) {
+                    updateImageDistanceFraction(images$, image.id, nextDistanceFraction);
                 }
-            }
-        };
-        window.addEventListener("keydown", handleKeyDown);
-        window.addEventListener("keydown", handleMapKeyDown, true);
-        
-        return () => {
-            window.removeEventListener("keydown", handleKeyDown);
-            window.removeEventListener("keydown", handleMapKeyDown, true);
-        };
-    }, [map, data$, routeTimes$, routeGeometryData$, images$, animatrix]);
+            },
+        }));
+        return () => unregister.forEach((dispose) => dispose());
+    }, [keysmith, gearId, data$, routeTimes$, routeGeometryData$, images$, animatrix]);
 };

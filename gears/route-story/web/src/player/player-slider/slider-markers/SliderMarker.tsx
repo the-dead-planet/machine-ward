@@ -43,6 +43,7 @@ export const SliderMarker: FC<Props> = (props) => {
             <span
                 role="button"
                 tabIndex={0}
+                data-keysmith-target
                 draggable={false}
                 aria-label={imageIds.length > 1 ? `${imageIds.length} × ${imageLabel}: ${imageIds.join(", ")}` : `${imageLabel} ${imageId}`}
                 aria-pressed={selected}

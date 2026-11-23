@@ -10,6 +10,7 @@ import { StorageKeeper } from "./storage-keeper";
 import { MachineGear, MachineTranslationKey, MachineWardComponents } from "./model";
 import { TranslationTable } from "./translatron";
 import { MediaSubscriptionDefinition } from "@ui";
+import { Keysmith } from "./keysmith";
 import * as Translations from "./translations";
 
 /**
@@ -35,6 +36,7 @@ export abstract class MachineWard<TMap = unknown, TChronoLens extends ChronoLens
     public readonly cartomancer: Cartomancer<TMap>;
     public readonly chronoLens: TChronoLens;
     public readonly toolsStation = new ToolsStation<TMap>();
+    public readonly keysmith = new Keysmith();
 
     private attributionVaultSubscription: Subscription | null = null;
     private readonly supportsBackdropBlur: boolean;
@@ -67,6 +69,7 @@ export abstract class MachineWard<TMap = unknown, TChronoLens extends ChronoLens
                         chronoLens: this.chronoLens,
                         cartomancer: this.cartomancer,
                         toolsStation: this.toolsStation,
+                        keysmith: this.keysmith,
                         translatron: this.translatron,
                     }));
                 }
@@ -100,6 +103,7 @@ export abstract class MachineWard<TMap = unknown, TChronoLens extends ChronoLens
         this.attributionVaultSubscription?.unsubscribe();
         this.individuator.cleanUp();
         this.toolsStation.cleanUp();
+        this.keysmith.cleanUp();
     };
 
     private subscribeAttributionVault = (): Subscription => {
@@ -149,6 +153,7 @@ export abstract class MachineWard<TMap = unknown, TChronoLens extends ChronoLens
                 cartomancer={this.cartomancer}
                 chronoLens={this.chronoLens}
                 toolsStation={this.toolsStation}
+                keysmith={this.keysmith}
                 translatron={this.translatron}
                 engine={this.engine}
                 components={this.components}

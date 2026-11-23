@@ -21,6 +21,7 @@ jest.mock("@the-dead-planet/machine-ward-gears-route-story-common", () => ({
     ...jest.requireActual("@the-dead-planet/machine-ward-gears-route-story-common/src/animatrix/animatrix"),
     RouteStoryTranslationKey: {},
     getRouteDistanceFraction: () => 0,
+    getPlayerSliderStep: jest.requireActual<typeof import("@the-dead-planet/machine-ward-gears-route-story-common/src/tinkers/player")>("@the-dead-planet/machine-ward-gears-route-story-common/src/tinkers/player").getPlayerSliderStep,
 }));
 jest.mock("@mobile-ui", () => {
     const { Text, View } = jest.requireActual<typeof import("react-native")>("react-native");

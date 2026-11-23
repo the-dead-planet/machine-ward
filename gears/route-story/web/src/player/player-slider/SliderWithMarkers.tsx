@@ -12,6 +12,7 @@ import {
     RouteGeometryData,
     getRouteDistanceFraction,
     getRouteTimelinePositionForDistanceFraction,
+    getPlayerSliderStep,
 } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { updateRouteLayer } from "../../tinkers";
 import { Slider } from "@web-ui";
@@ -106,7 +107,7 @@ export const SliderWithMarkers: FC<Props> = ({
                         : progressMs}
                     min={0}
                     max={animationControls.playbackPacing === 'distance' ? Math.max(routeGeometryData?.totalDistanceMeters ?? 0, 1) : routeTimes?.duration ?? 1}
-                    step={animationControls.playbackPacing === 'distance' ? 1 : 1000}
+                    step={getPlayerSliderStep(animationControls.playbackPacing)}
                     onChange={handleProgressChange}
                     color="tertiary"
                     activeGlow="glow"

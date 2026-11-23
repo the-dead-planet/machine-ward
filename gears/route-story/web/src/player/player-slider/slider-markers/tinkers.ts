@@ -2,6 +2,7 @@ import { GeoJson } from "@tinker-chest";
 import {
     getDistanceFractionPercent,
     getRoutePlacementAtPercent,
+    getPlayerSliderStep,
     PlaybackPacing,
     RouteGeometryData,
     RouteTimes,
@@ -26,7 +27,7 @@ export const getSliderStepDistanceFraction = (
     }
     
     const percent = getDistanceFractionPercent(distanceFraction, geojson, routeGeometryData, routeTimes.startTimeEpoch, routeTimes.duration, playbackPacing);
-    const stepSize = playbackPacing === "distance" ? 1 : 1000;
+    const stepSize = getPlayerSliderStep(playbackPacing);
     const delta = step === "percent" ? 1 : stepSize * 100 / sliderMax;
     const nextPercent = Math.min(Math.max(percent + direction * delta, 0), 100);
 

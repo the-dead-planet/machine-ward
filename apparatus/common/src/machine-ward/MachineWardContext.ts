@@ -1,6 +1,7 @@
 import { createContext, } from "react";
 import { StorageKeeper } from "./storage-keeper";
 import { Individuator } from "./individuator";
+import { Keysmith } from "./keysmith";
 import { AttributionVault, Cartomancer, ChronoLens, Engine, MachineTranslationKey, SignaliumBureau, ToolsStation, Translatron } from "..";
 
 export interface MachineWardContextValue<TMap = unknown, TChronoLens extends ChronoLens = ChronoLens> {
@@ -13,6 +14,7 @@ export interface MachineWardContextValue<TMap = unknown, TChronoLens extends Chr
     cartomancer: Cartomancer<TMap>;
     chronoLens: TChronoLens;
     toolsStation: ToolsStation<TMap>;
+    keysmith: Keysmith;
     signaliumBureau: SignaliumBureau;
     translatron: Translatron;
     engine: Engine<TMap, TChronoLens>
