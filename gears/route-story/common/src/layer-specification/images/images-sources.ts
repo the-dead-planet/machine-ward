@@ -116,7 +116,9 @@ export function getImageSourceWithAnchors(original: ImageMarkerSource, grouped: 
             }, {
                 ...feature,
                 id: getImageMarkerAnchorId(feature.properties.imageId),
-                geometry: coordinates.get(feature.properties.imageId) ?? feature.geometry,
+                geometry: feature.properties.markerGroupSize === 1
+                    ? feature.geometry
+                    : coordinates.get(feature.properties.imageId) ?? feature.geometry,
                 properties: {
                     ...properties,
                     markerAnchor: true,

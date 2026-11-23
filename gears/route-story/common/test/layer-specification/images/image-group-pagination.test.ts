@@ -39,6 +39,56 @@ const visibleIds = (source: ImageMarkerSource) =>
         .map(({ properties }) => properties.imageId);
 
 describe("Expanded map image groups", () => {
+    it("keeps a moving standalone thumbnail and hexagon together without a connector across repeated moves", async () => {
+        const previous = await getGroupedImageSource(sourceFor(1), identity, identity, 0, null);
+        const moveTo = (coordinate: number): ImageMarkerSource => ({
+            ...previous,
+            features: previous.features.map((feature) => ({
+                ...feature,
+                geometry: { type: "Point", coordinates: [coordinate, coordinate] },
+                properties: {
+                    ...feature.properties,
+                    distanceFromStartMeters: coordinate * 10,
+                },
+            })),
+        });
+        let frame = previous;
+        for (const coordinate of [10, 20, 30]) {
+            const target = moveTo(coordinate);
+            frame = getImageMarkerTransition(frame, target, 90);
+            const rendered = getImageSourceWithAnchors(target, frame);
+            expect(rendered.features[0].geometry).to.deep.equal(rendered.features[1].geometry);
+            expect(getImageMarkerConnections(target, frame).features).to.have.length(0);
+            expect(frame.features[0].properties.markerVisible).to.equal(true);
+            expect(frame.features[0].properties.markerScale).to.equal(previous.features[0].properties.markerScale);
+            expect(frame.features[0].properties.markerOpacity).to.equal(1);
+            expect(frame.features[0].geometry.coordinates[0]).to.be.lessThan(coordinate);
+        }
+    });
+
+    it("moves a placed photo without scaling or fading it or changing stationary photos", async () => {
+        const previous = await getGroupedImageSource(sourceFor(2), identity, identity, 0, 0);
+        const target: ImageMarkerSource = {
+            ...previous,
+            features: previous.features.map((feature, index) => index === 0 ? {
+                ...feature,
+                geometry: { type: "Point", coordinates: [10, 10] },
+                properties: {
+                    ...feature.properties,
+                    distanceFromStartMeters: 100,
+                },
+            } : feature),
+        };
+        const frame = getImageMarkerTransition(previous, target, 90);
+        expect(frame.features[0].geometry.coordinates[0]).to.be.greaterThan(previous.features[0].geometry.coordinates[0]);
+        expect(frame.features[0].geometry.coordinates[0]).to.be.lessThan(10);
+        expect(frame.features[0].properties.markerScale).to.equal(previous.features[0].properties.markerScale);
+        expect(frame.features[0].properties.markerOpacity).to.equal(previous.features[0].properties.markerOpacity);
+        expect(frame.features[0].properties.markerRevealScale).to.equal(previous.features[0].properties.markerRevealScale);
+        expect(frame.features[1]).to.equal(previous.features[1]);
+        expect(getImageMarkerTransition(previous, target, 300)).to.equal(target);
+    });
+
     it("keeps collapsed photos 35 screen pixels above their anchors during zoom and rotation", async () => {
         for (const count of [1, 3]) {
             const source = sourceFor(count);

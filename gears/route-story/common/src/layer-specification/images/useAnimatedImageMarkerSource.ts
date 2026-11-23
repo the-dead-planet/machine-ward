@@ -5,6 +5,7 @@ import { getImageMarkerTransition, isImageGroupPaging } from "./image-marker-tra
 export const useAnimatedImageMarkerSource = (
     source: ImageMarkerSource,
     reducedMotion: boolean,
+    animatePlacement = false,
 ): ImageMarkerSource => {
     const [renderedSource, setRenderedSource] = useState(source);
     const currentSource = useRef(source);
@@ -13,12 +14,17 @@ export const useAnimatedImageMarkerSource = (
         const previousDistance = previousDistances.get(feature.properties.imageId);
         return previousDistance !== undefined && previousDistance !== feature.properties.distanceFromStartMeters;
     });
+    const immediatePlacementChange = placementChanged && !animatePlacement;
 
     useEffect(() => {
         const previous = currentSource.current;
         const previousGroup = previous.features.find(({ properties }) => properties.markerExpanded)?.properties.markerGroupId;
         const nextGroup = source.features.find(({ properties }) => properties.markerExpanded)?.properties.markerGroupId;
         const previousFeatures = new Map(previous.features.map((feature) => [feature.properties.imageId, feature]));
+        const moving = animatePlacement && source.features.some((feature) => {
+            const original = previousFeatures.get(feature.properties.imageId);
+            return original !== undefined && original.properties.distanceFromStartMeters !== feature.properties.distanceFromStartMeters;
+        });
         const scaleChanged = source.features.some((feature) => {
             const original = previousFeatures.get(feature.properties.imageId);
 
@@ -30,7 +36,7 @@ export const useAnimatedImageMarkerSource = (
             );
         });
 
-        if (placementChanged || reducedMotion || (previousGroup === nextGroup && !scaleChanged && !isImageGroupPaging(previous, source))) {
+        if (immediatePlacementChange || reducedMotion || (previousGroup === nextGroup && !scaleChanged && !moving && !isImageGroupPaging(previous, source))) {
             currentSource.current = source;
             setRenderedSource(source);
 
@@ -54,7 +60,7 @@ export const useAnimatedImageMarkerSource = (
         frame = requestAnimationFrame(update);
 
         return () => cancelAnimationFrame(frame);
-    }, [source, reducedMotion, placementChanged]);
+    }, [source, reducedMotion, immediatePlacementChange, animatePlacement]);
 
-    return placementChanged ? source : renderedSource;
+    return immediatePlacementChange ? source : renderedSource;
 };

@@ -106,7 +106,7 @@ export const SliderWithMarkers: FC<Props> = ({
                     : progressMs}
                 min={0}
                 max={animationControls.playbackPacing === 'distance' ? Math.max(routeGeometryData?.totalDistanceMeters ?? 0, 1) : routeTimes?.duration ?? 1}
-                step={1}
+                step={animationControls.playbackPacing === 'distance' ? 1 : 1000}
                 onChange={handleProgressChange}
                 color="tertiary"
                 activeGlow="glow"

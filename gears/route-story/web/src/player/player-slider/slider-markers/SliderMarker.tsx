@@ -32,21 +32,23 @@ export const SliderMarker: FC<Props> = (props) => {
     const [selectedImageId] = useSubjectState(selectedImageId$);
     const [draggingImage] = useSubjectState(draggingImage$);
     const [highlightIdsBySourceId] = useSubjectState(highlightIdsBySourceId$);
-    const { beginDrag, didDrag } = drag;
+    const { beginDrag, didDrag, endDrag } = drag;
+    const selected = imageIds.includes(selectedImageId ?? -1);
     const highlighted =
-        hovered || focused || imageIds.includes(selectedImageId ?? -1) || (draggingImage?.id !== imageId && imageIds.some((id) => highlightIdsBySourceId.get(imageSourceIds.thumbnails)?.has(String(id))));
+        hovered || focused || selected || (draggingImage?.id !== imageId && imageIds.some((id) => highlightIdsBySourceId.get(imageSourceIds.thumbnails)?.has(String(id))));
 
     return (
         <>
-            {(hovered || focused) && draggingImage === null ? readout : null}
+            {(selected || hovered || focused) && draggingImage === null ? readout : null}
             <span
                 role="button"
                 tabIndex={0}
                 draggable={false}
                 aria-label={imageIds.length > 1 ? `${imageIds.length} × ${imageLabel}: ${imageIds.join(", ")}` : `${imageLabel} ${imageId}`}
-                aria-pressed={imageIds.includes(selectedImageId ?? -1)}
+                aria-pressed={selected}
                 onClick={() => {
                     if (!didDrag.current) {
+                        endDrag();
                         toggleImageMarkerGroup(imageIds);
                     }
                 }}
@@ -68,6 +70,7 @@ export const SliderMarker: FC<Props> = (props) => {
                 onBlur={() => setFocused(false)}
                 onPointerDown={(event) => {
                     event.preventDefault();
+                    event.currentTarget.focus();
                     event.currentTarget.setPointerCapture(event.pointerId);
                     beginDrag(imageId, event.clientX);
                 }}
