@@ -73,6 +73,26 @@ describe("Route player alignment", () => {
         cy.get('span[role="button"][aria-label*="Image"]').first().siblings('span').should("not.exist");
     });
 
+    it("releases focus on pointer deselection but keeps it on keyboard deselection", () => {
+        cy.get('span[role="button"][aria-label*="Image"]', { timeout: 20000 }).first().then(($marker) => {
+            cy.stub($marker[0], "setPointerCapture");
+        });
+        cy.get('span[role="button"][aria-label*="Image"]').first().click("bottom")
+            .should("have.attr", "aria-pressed", "true")
+            .and("be.focused");
+        cy.get('span[role="button"][aria-label*="Image"]').first().click("bottom")
+            .should("have.attr", "aria-pressed", "false")
+            .and("not.be.focused");
+        cy.get('span[role="button"][aria-label*="Image"]').first().trigger("mouseout")
+            .siblings('span').should("not.exist");
+        cy.get('span[role="button"][aria-label*="Image"]').first().focus()
+            .trigger("keydown", { key: "Enter", force: true })
+            .should("have.attr", "aria-pressed", "true")
+            .trigger("keydown", { key: " ", force: true })
+            .should("have.attr", "aria-pressed", "false")
+            .and("be.focused");
+    });
+
     it("moves the selected marker with arrows without using the focused element or the slider", () => {
         cy.get('span[role="button"][aria-label*="Image"]', { timeout: 20000 })
             .filter((_index, marker) => parseFloat(marker.parentElement!.style.left) < 90)

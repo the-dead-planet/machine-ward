@@ -46,10 +46,13 @@ export const SliderMarker: FC<Props> = (props) => {
                 draggable={false}
                 aria-label={imageIds.length > 1 ? `${imageIds.length} × ${imageLabel}: ${imageIds.join(", ")}` : `${imageLabel} ${imageId}`}
                 aria-pressed={selected}
-                onClick={() => {
+                onClick={(event) => {
                     if (!didDrag.current) {
                         endDrag();
                         toggleImageMarkerGroup(imageIds);
+                        if (selected && event.detail > 0) {
+                            event.currentTarget.blur();
+                        }
                     }
                 }}
                 onKeyDown={(event) => {
