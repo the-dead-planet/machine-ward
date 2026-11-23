@@ -27,6 +27,7 @@ import { ImageGroupPager } from "./ImageGroupPager";
 import { useImageLayerAssets } from "./useImageLayerAssets";
 import { useImageConnectionsLayer } from "./useImageConnectionsLayer";
 import { useMapImageInteraction } from "./useMapImageInteraction";
+import { useImageMarkerKeyboard } from "./useImageMarkerKeyboard";
 
 export const ImagesLayer: FC<OverlayComponentProps<MapLibreMap> & WebRouteStoryProps> = ({
     map,
@@ -35,6 +36,7 @@ export const ImagesLayer: FC<OverlayComponentProps<MapLibreMap> & WebRouteStoryP
     data$,
     state$,
     routeGeometryData$,
+    routeTimes$,
     images$,
     playerOperator,
 }) => {
@@ -60,13 +62,15 @@ export const ImagesLayer: FC<OverlayComponentProps<MapLibreMap> & WebRouteStoryP
         imageHoverColor,
         badgeTextColor,
     );
+    useImageMarkerKeyboard({ map, data$, routeTimes$, routeGeometryData$, images$, animatrix });
+
     const sourceDataGeojson = useMemo(
         () => getImageSource(loadedImages, geojson, routeGeometryData),
         [loadedImages, geojson, routeGeometryData],
     );
     const targetSource = useImageMarkerSource(map, sourceDataGeojson, displayImageId !== null);
     const reducedMotion = useReducedMotion();
-    const groupedSource = useAnimatedImageMarkerSource(targetSource, reducedMotion);
+    const groupedSource = useAnimatedImageMarkerSource(targetSource, reducedMotion, true);
     const visibleSource = useMemo(
         () => getImageSourceWithMarkerVisibility(groupedSource, markerLayerVisibility),
         [groupedSource, markerLayerVisibility],
@@ -94,7 +98,10 @@ export const ImagesLayer: FC<OverlayComponentProps<MapLibreMap> & WebRouteStoryP
             sourceId: imageSourceIds.thumbnails,
             source: {
                 type: "geojson",
-                data: getImageSourceWithAnchors(sourceDataGeojson, sourceDataGeojson),
+                data: {
+                    type: "FeatureCollection",
+                    features: [],
+                },
             },
             layers: getImagesLayers(
                 displayImageId,
@@ -106,7 +113,6 @@ export const ImagesLayer: FC<OverlayComponentProps<MapLibreMap> & WebRouteStoryP
             handlers,
         }),
         [
-            sourceDataGeojson,
             imageColor,
             imageHoverColor,
             imageActiveColor,
@@ -132,7 +138,7 @@ export const ImagesLayer: FC<OverlayComponentProps<MapLibreMap> & WebRouteStoryP
         }
         return highlights;
     }, [highlightIdsBySourceId]);
-    
+
     const updatedData = useMemo(() => {
         const highlighted = highlightIdsBySourceId.get(imageSourceIds.thumbnails);
         return {

@@ -81,5 +81,10 @@ export const useSliderMarkerDrag = ({ containerRef, data$, routeGeometryData$, r
         draggingImage$.next({ id: imageId, interaction: "player" });
     };
 
-    return { beginDrag, didDrag };
+    const endDrag = () => {
+        draggingPlacement$.next(null);
+        draggingImage$.next(null);
+    };
+
+    return { beginDrag, didDrag, endDrag };
 };

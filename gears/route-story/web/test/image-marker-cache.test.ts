@@ -54,8 +54,10 @@ it("caches projections and group membership across selection and scrolling, not 
         off: (event: string, handler: () => void) => handlers.get(event)?.delete(handler),
     } as unknown as MapLibreMap;
     let rendered: ImageMarkerSource = source;
+    const renderedSources: ImageMarkerSource[] = [];
     const Probe = ({ images }: { images: ImageMarkerSource }) => {
         rendered = useImageMarkerSource(map, images, false);
+        renderedSources.push(rendered);
         return null;
     };
     const emit = (event: string) => handlers.get(event)?.forEach((handler) => handler());
@@ -101,7 +103,9 @@ it("caches projections and group membership across selection and scrolling, not 
                     : feature,
             ),
         };
+        renderedSources.length = 0;
         await act(async () => root.render(createElement(Probe, { images: moved })));
+        expect(renderedSources.every((frame) => frame.features.every((feature) => feature.properties.markerVisible !== undefined))).to.equal(true);
         expect(projections).to.equal(28);
         expect(rendered.features.filter(({ properties }) => properties.markerVisible)).to.have.length(2);
         await act(async () => {

@@ -70,7 +70,23 @@ export const useImageMarkerSource = (
                 offset,
             );
             if (active && revision === currentRevision) {
-                setGrouping({ source, groupedSource: grouped });
+                setGrouping((previous) => {
+                    const previousFeatures = new Map(previous.groupedSource.features.map((feature) => [feature.properties.imageId, feature]));
+                    const features = grouped.features.map((feature) => {
+                        const original = previousFeatures.get(feature.properties.imageId);
+                        if (original && feature.properties.imageId === selectedImageId && original.properties.distanceFromStartMeters !== feature.properties.distanceFromStartMeters) {
+                            return {
+                                ...feature,
+                                properties: {
+                                    ...feature.properties,
+                                    markerScale: original.properties.markerScale,
+                                },
+                            };
+                        }
+                        return feature;
+                    });
+                    return { source, groupedSource: { ...grouped, features } };
+                });
             }
         };
         const invalidate = () => {
@@ -96,5 +112,5 @@ export const useImageMarkerSource = (
         isDisplayingImage,
     ]);
 
-    return grouping.source === source ? grouping.groupedSource : source;
+    return grouping.groupedSource;
 };

@@ -112,6 +112,15 @@ it("keeps handlers stable, distinguishes taps from drags, preserves grab offsets
         const originalHandlers = handlers;
         await act(async () => root.render(createElement(Probe)));
         expect(handlers).to.equal(originalHandlers);
+        options.sourceDataGeojson = {
+            ...options.sourceDataGeojson,
+            features: options.sourceDataGeojson.features.map((feature) => ({
+                ...feature,
+                geometry: { type: "Point", coordinates: [105, 10] },
+            })),
+        };
+        await act(async () => root.render(createElement(Probe)));
+        expect(handlers).to.equal(originalHandlers);
         handlers.onClick?.(hit, event(110));
         expect(selectedImageId$.value).to.equal(1);
         handlers.onMouseMove?.(hit, event(110));
@@ -135,7 +144,7 @@ it("keeps handlers stable, distinguishes taps from drags, preserves grab offsets
                 .get("mousemove")
                 ?.forEach((handler) => handler(event(120))),
         );
-        expect(projected).to.deep.equal([110, 10]);
+        expect(projected).to.deep.equal([115, 10]);
         handlers.onClick?.(hit, event(120));
         expect(selectedImageId$.value).to.equal(1);
         await act(async () => root.unmount());

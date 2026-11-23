@@ -41,6 +41,11 @@ export const useMapImageInteraction = ({
     const dragStartPoint = useRef<{ x: number; y: number } | null>(null);
     const dragAnchorOffset = useRef({ x: 0, y: 0 });
     const didDrag = useRef(false);
+    const sourceRef = useRef(sourceDataGeojson);
+
+    useEffect(() => {
+        sourceRef.current = sourceDataGeojson;
+    }, [sourceDataGeojson]);
 
     const handlers = useMemo<MapDataHandlers>(
         () => ({
@@ -62,7 +67,7 @@ export const useMapImageInteraction = ({
                     return;
                 }
                 dragStartPoint.current = event.point;
-                const original = sourceDataGeojson.features.find(({ properties }) => properties.imageId === feature.properties.imageId);
+                const original = sourceRef.current.features.find(({ properties }) => properties.imageId === feature.properties.imageId);
                 if (original) {
                     const point = map.project([
                         original.geometry.coordinates[0],
@@ -132,7 +137,7 @@ export const useMapImageInteraction = ({
                 );
             },
         }),
-        [map, sourceDataGeojson, state$],
+        [map, state$],
     );
 
     useImageDragFeatureState(map);

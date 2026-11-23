@@ -180,6 +180,7 @@ export function getImageMarkerConnections(
                 const coordinates = feature.geometry.coordinates;
                 if (
                     !feature.properties.markerVisible ||
+                    feature.properties.markerGroupSize === 1 ||
                     !anchor ||
                     (anchor[0] === coordinates[0] &&
                         anchor[1] === coordinates[1])
