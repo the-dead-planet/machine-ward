@@ -83,7 +83,7 @@ describe("Route player alignment", () => {
         cy.get('span[role="button"][aria-label*="Image"]').first().click("bottom")
             .should("have.attr", "aria-pressed", "false")
             .and("not.be.focused");
-        cy.get('span[role="button"][aria-label*="Image"]').first().trigger("mouseout")
+        cy.get('span[role="button"][aria-label*="Image"]').first().trigger("mouseout", "bottom", { force: true })
             .siblings('span').should("not.exist");
         cy.get('span[role="button"][aria-label*="Image"]').first().focus()
             .trigger("keydown", { key: "Enter", force: true })
