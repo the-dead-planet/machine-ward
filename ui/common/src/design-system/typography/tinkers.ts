@@ -20,7 +20,7 @@ export const fontTypeToFamily: { [key in FontType]: FontFamilyName } = {
     [FontType.NeonText]: 'Bitcount Single',
 }
 
-export const typographyUsages: TextUsage[] = ['header', 'body', 'caption'];
+export const typographyUsages: TextUsage[] = ['header', 'body', 'label', 'caption'];
 
 export const typographyFontWeights: NumericFontWeight[] = [100, 200, 300, 400, 500, 600, 700, 800, 900];
 
@@ -132,6 +132,11 @@ export const typographyUsageSpecifications: Record<TextUsage, {
         fontSize: 16,
         fontWeight: '400',
         lineHeight: 24,
+    },
+    label: {
+        fontSize: 12,
+        fontWeight: '400',
+        lineHeight: 16,
     },
     caption: {
         fontSize: 10,
