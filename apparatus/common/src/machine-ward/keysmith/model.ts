@@ -1,4 +1,5 @@
 import { TranslationId } from "../translatron";
+import type { Observable } from "rxjs";
 
 export interface KeyBinding {
     key: string;
@@ -10,12 +11,23 @@ export interface KeyBinding {
 
 export interface ShortcutDefinition {
     id: string;
+    owner?: TranslationId;
+    label: TranslationId;
     description: TranslationId;
+    hint: TranslationId;
+    requirements?: TranslationId;
+    makeUnavailableHint?: TranslationId;
     binding: KeyBinding;
     allowRepeat?: boolean;
 }
 
 export interface ShortcutRegistration extends ShortcutDefinition {
-    isAvailable: () => boolean;
+    presence$?: Observable<boolean>;
+    availability$: Observable<boolean>;
     execute: () => void;
+}
+
+export interface ShortcutStatus extends ShortcutDefinition {
+    present: boolean;
+    active: boolean;
 }

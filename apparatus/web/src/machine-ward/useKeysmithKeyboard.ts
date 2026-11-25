@@ -2,11 +2,11 @@ import { useEffect } from "react";
 import { useWebMachineWard } from "./useWebMachineWard";
 
 export const useKeysmithKeyboard = () => {
-    const { keysmith, cartomancer } = useWebMachineWard();
+    const { keysmith, cartomancer, individuator } = useWebMachineWard();
 
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
-            if (event.defaultPrevented || event.isComposing) {
+            if (!individuator.settings$.value.enableKeyboardShortcuts || event.defaultPrevented || event.isComposing) {
                 return;
             }
             const target = event.target;
@@ -42,5 +42,5 @@ export const useKeysmithKeyboard = () => {
             window.removeEventListener("keydown", handleKeyDown);
             window.removeEventListener("keydown", handleMapKeyDown, true);
         };
-    }, [keysmith, cartomancer]);
+    }, [keysmith, cartomancer, individuator]);
 };
