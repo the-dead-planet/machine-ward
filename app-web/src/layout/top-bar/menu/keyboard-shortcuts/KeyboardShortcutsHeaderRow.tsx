@@ -2,7 +2,6 @@ import { FC } from "react";
 import { useTranslate } from "@apparatus";
 import { useWebMachineWard } from "@web-apparatus";
 import { Text } from "@web-ui";
-;
 
 export const KeyboardShortcutsHeaderRow: FC = () => {
     const { namespace, translationKey } = useWebMachineWard();

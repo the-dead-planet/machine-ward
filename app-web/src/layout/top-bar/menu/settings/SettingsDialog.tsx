@@ -1,7 +1,7 @@
 import { FC, useState } from "react";
 import classNames from "classnames";
 import { DateTime } from "luxon";
-import { Button, Dialog, Dropdown, ThemeSelect } from "@web-ui";
+import { Button, Checkbox, Dialog, Dropdown, ThemeSelect } from "@web-ui";
 import { Individuator, IndividuatorSettings, Language, Translatron, useTranslate } from "@apparatus";
 import { useWebMachineWard } from "@web-apparatus";
 import { T } from "@web-apparatus";
@@ -25,6 +25,8 @@ export const SettingsDialog: FC<Props> = ({ onClose, onOpenKeyboardShortcuts }) 
     const [media] = useSubjectState(theme.media$);
     const isWide = !media.isLessThanSm;
     const popoverClassName = isWide ? styles['skewed-popover'] : undefined;
+    const shortcutsLabelId = "individuator-enable-keyboard-shortcuts-label";
+    const shortcutsLabel = <T n={individuator.namespace} t={individuator.translationKey.EnableKeyboardShortcuts} />;
 
     return (
         <Dialog
@@ -159,25 +161,28 @@ export const SettingsDialog: FC<Props> = ({ onClose, onOpenKeyboardShortcuts }) 
                 >
                     <T n={individuator.namespace} t={individuator.translationKey.ConfirmBeforeLeave} />
                 </SettingsCheckbox>
-                <SettingsCheckbox
-                    wide={isWide}
-                    id="individuator-enable-keyboard-shortcuts-label"
-                    checked={pendingSettings.enableKeyboardShortcuts}
-                    onChange={(checked) => setPendingSettings((prev) => ({ ...prev, enableKeyboardShortcuts: checked }))}
-                    action={(
-                        <Button
-                            size="xs"
-                            color="primary"
-                            icon={Icons.NounProject.GoTo}
-                            aria-label={translate({ n: individuator.namespace, t: individuator.translationKey.GoToKeyboardShortcuts })}
-                            onClick={onOpenKeyboardShortcuts}
-                        >
-                            <T n={individuator.namespace} t={individuator.translationKey.GoTo} />
-                        </Button>
-                    )}
-                >
-                    <T n={individuator.namespace} t={individuator.translationKey.EnableKeyboardShortcuts} />
-                </SettingsCheckbox>
+                {isWide && <SettingsLabel id={shortcutsLabelId}>{shortcutsLabel}</SettingsLabel>}
+                <div className={styles['checkbox-actions']}>
+                    <Checkbox
+                        className={isWide ? undefined : styles['settings-checkbox']}
+                        size="xs"
+                        color="primary"
+                        labelledBy={shortcutsLabelId}
+                        checked={pendingSettings.enableKeyboardShortcuts}
+                        onChange={(checked) => setPendingSettings((prev) => ({ ...prev, enableKeyboardShortcuts: checked }))}
+                    >
+                        {!isWide && <span id={shortcutsLabelId}>{shortcutsLabel}</span>}
+                    </Checkbox>
+                    <Button
+                        size="xs"
+                        color="primary"
+                        icon={Icons.NounProject.GoTo}
+                        aria-label={translate({ n: individuator.namespace, t: individuator.translationKey.GoToKeyboardShortcuts })}
+                        onClick={onOpenKeyboardShortcuts}
+                    >
+                        <T n={individuator.namespace} t={individuator.translationKey.GoTo} />
+                    </Button>
+                </div>
                 {isDev ? (
                     <SettingsCheckbox
                         wide={isWide}

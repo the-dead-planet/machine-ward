@@ -195,6 +195,7 @@ export enum RouteStoryTranslationKey {
     MoveImageHint = 'move-image-hint',
     MoveImageMakeAvailable = 'move-image-make-available',
     MoveImageMakeUnavailable = 'move-image-make-unavailable',
+    MoveImageActivationHint = 'move-image-activation-hint',
     PanToImage = 'pan-to-image',
     ShowImageMarkers = 'show-image-markers',
     ShowImageLayer = 'show-image-layer',

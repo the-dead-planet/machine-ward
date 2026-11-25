@@ -20,7 +20,7 @@ import { GeoJson, ParsingResultWithError } from "@tinker-chest";
 import { RouteStoryProps, RouteTimes, RouteStoryFile, RouteStoryTranslationKey, RouteStoryState, PresetOption, Preset, RouteStoryLayerStylingPopupProps } from "./model";
 import { FileOperator } from "./file-operator";
 import { PlayerOperator } from "./player-operator";
-import { getRouteGeometryData, RouteGeometryData, routeStoryPlayerToolId } from "./tinkers";
+import { getRouteGeometryData, RouteGeometryData } from "./tinkers";
 import { Icons, SliderRange } from "@ui";
 import * as Translations from "./translations";
 import { AnimationControlsType, Animatrix } from "./animatrix";
@@ -48,9 +48,13 @@ export abstract class RouteStoryGear<TMap, TChronoLens extends ChronoLens, TFile
     public readonly routeTimes$ = new BehaviorSubject<RouteTimes | null>(null);
     public readonly images$ = new BehaviorSubject<MarkerImage<TImageData>[]>([]);
     public readonly progressMs$ = new BehaviorSubject(0);
+    protected readonly playerActive$ = this.apparatus.toolsStation.activeBottomPanelToolId$.pipe(
+        map((id) => id === this.playerToolId),
+        distinctUntilChanged(),
+    );
     public readonly viewportRanges$: Observable<SliderRange[]> = combineLatest([
         this.state$.pipe(map((state) => state.viewportRangePlayerVisibility), distinctUntilChanged()),
-        this.apparatus.toolsStation.activeBottomPanelToolId$.pipe(map((id) => id === this.playerToolId), distinctUntilChanged()),
+        this.playerActive$,
     ]).pipe(
         switchMap(([visible, active]) => visible && active
             ? combineLatest([
@@ -130,7 +134,7 @@ export abstract class RouteStoryGear<TMap, TChronoLens extends ChronoLens, TFile
     private layerStylingToolPopupId = 'layer-styling';
     public abstract layerStylingComponent: ComponentType<ToolPopupProps<TMap> & RouteStoryLayerStylingPopupProps<TMap> & RouteStoryProps<TMap, TChronoLens, TFile, TImageData>>;
 
-    private readonly playerToolId = routeStoryPlayerToolId;
+    private readonly playerToolId = 'player';
     public abstract playerComponent: ComponentType<ToolPanelProps<TMap> & RouteStoryProps<TMap, TChronoLens, TFile, TImageData>>;
 
     private animatrixToolId = 'animatrix';

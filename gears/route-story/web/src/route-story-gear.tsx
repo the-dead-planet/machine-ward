@@ -14,7 +14,7 @@ import { AnimationControlsSearch } from './animation-controls/AnimationControlsS
 import { WebChronoLens } from '@web-apparatus';
 import { RecChip } from './top-bar/RecChip';
 import { LayerStylingPopup } from './layer-styling/LayerStylingPopup';
-import { registerImageMarkerShortcuts } from './images/registerImageMarkerShortcuts';
+import { registerImageMarkerShortcuts } from './images/tinkers';
 
 const SAMPLE_IMAGE_NAMES = [
    'IMG20260403173904.jpg',
@@ -135,14 +135,15 @@ export class WebRouteStoryGear extends RouteStoryGear<maplibregl.Map, WebChronoL
    public engageRouteStory = () => {
       this.confirmBeforeLeaveSubscription = this.subscribeConfirmBeforeLeave();
       this.unregisterImageMarkerShortcuts?.();
-      const { keysmith, toolsStation, cartomancer } = this.apparatus;
+      const { keysmith, cartomancer } = this.apparatus;
       this.unregisterImageMarkerShortcuts = registerImageMarkerShortcuts(
-         this.id, this, keysmith, toolsStation.activeBottomPanelToolId$, cartomancer.isStyleLoaded$,
+         this.id, this, keysmith, this.playerActive$, cartomancer.isStyleLoaded$,
       );
    };
 
    public disengageRouteStory = () => {
       this.unregisterImageMarkerShortcuts?.();
+      this.unregisterImageMarkerShortcuts = undefined;
       this.confirmBeforeLeaveSubscription?.unsubscribe();
    };
 

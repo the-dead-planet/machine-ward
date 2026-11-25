@@ -1,5 +1,8 @@
 import { KeyBinding } from "./model";
 
+/**
+ * Display a binding as individual keycaps, with modifiers before the main key.
+ */
 export const getKeyBindingLabels = (binding: KeyBinding): string[] => {
     const arrows: Record<string, string> = {
         ArrowLeft: "←",

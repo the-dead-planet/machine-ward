@@ -10,7 +10,7 @@ import {
 } from "@ui";
 import { Button } from "../../gizmos/button";
 import { Dialog } from "../../rigs/dialog";
-import { P, Label } from "../../design-system/typography";
+import { P, Text } from "../../design-system/typography";
 import { useFileInput } from "./useFileInput";
 import styles from "./file-input.module.css";
 
@@ -106,7 +106,8 @@ export const FileInput: FC<
                 disabled={disabled || fileUploadButtonProps?.disabled}
                 onClick={() => inputRef.current?.click()}
             />
-            <Label
+            <Text
+                usage="label"
                 color={color}
                 highlightColor={highlightColor}
                 shade={glyphsShade}
@@ -118,7 +119,7 @@ export const FileInput: FC<
                 className={styles["file-name"]}
             >
                 {fileName || noNameLabel}
-            </Label>
+            </Text>
             {actionButtons?.map(({ id, element }) => (
                 <Fragment key={id}>{element}</Fragment>
             ))}

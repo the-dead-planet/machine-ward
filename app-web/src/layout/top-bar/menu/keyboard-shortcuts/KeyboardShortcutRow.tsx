@@ -1,3 +1,4 @@
+import { FC } from "react";
 import { getKeyBindingLabels, ShortcutStatus, useTranslate } from "@apparatus";
 import { useWebMachineWard } from "@web-apparatus";
 import { Icons } from "@ui";
@@ -8,7 +9,7 @@ interface Props {
     shortcut: ShortcutStatus;
 }
 
-export const KeyboardShortcutRow = ({ shortcut }: Props) => {
+export const KeyboardShortcutRow: FC<Props> = ({ shortcut }) => {
     const { namespace, translationKey } = useWebMachineWard();
     const translate = useTranslate();
     const availability = translate({
@@ -33,6 +34,11 @@ export const KeyboardShortcutRow = ({ shortcut }: Props) => {
                 </Text>
             </td>
             <td className={styles["description"]}>
+                {shortcut.activationHint && (
+                    <Text usage="caption" color="primary" bold>
+                        {translate(shortcut.activationHint)}
+                    </Text>
+                )}
                 <Text usage="caption" color="primary">
                     {translate(shortcut.description)}
                 </Text>

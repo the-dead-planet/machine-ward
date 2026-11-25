@@ -67,6 +67,7 @@ const jp: TranslationTable<GearTranslationKey | RouteStoryTranslationKey>['jp'] 
     "move-image-hint": '移動ショートカットを使って、選択した画像をルート上に配置してください。',
     "move-image-make-available": 'このショートカットを利用できるようにするには、地図または開いているプレーヤーに画像マーカーを表示してください。',
     "move-image-make-unavailable": 'このショートカットを利用できないようにするには、地図とプレーヤーの両方で画像マーカーを非表示にしてください。',
+    "move-image-activation-hint": '地図またはプレーヤーでマーカーを選択',
     "pan-to-image": '画像に移動',
     "show-image-markers": '画像マーカーを表示',
     "hide-image-markers": '画像マーカーを非表示',

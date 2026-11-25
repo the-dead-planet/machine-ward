@@ -1,11 +1,20 @@
 import { BehaviorSubject, combineLatest, of, Subscription } from "rxjs";
 import { KeyBinding, ShortcutRegistration, ShortcutStatus } from "./model";
 
+/**
+ * Machine Ward's platform-neutral registry and dispatcher for keyboard shortcuts.
+ */
 export class Keysmith {
     private readonly registrations = new Map<string, { shortcut: ShortcutStatus; execute: () => void; subscription: Subscription }>();
     private readonly definitions$ = new BehaviorSubject<readonly ShortcutStatus[]>([]);
+    /**
+     * Snapshots of all registered shortcuts, including those not currently present or active.
+     */
     public readonly shortcuts$ = this.definitions$.asObservable();
 
+    /**
+     * Register a unique shortcut ID and return an idempotent disposer. Owner call it on disengage or teardown.
+     */
     public register = ({ presence$ = of(true), availability$, execute, ...definition }: ShortcutRegistration): (() => void) => {
         if (this.registrations.has(definition.id)) {
             throw new Error(`Shortcut already registered: ${definition.id}`);
@@ -24,7 +33,7 @@ export class Keysmith {
             }
         }));
         this.publishDefinitions();
-        
+
         return () => {
             if (this.registrations.get(definition.id) === registration) {
                 registration.subscription.unsubscribe();
@@ -34,6 +43,9 @@ export class Keysmith {
         };
     };
 
+    /**
+     * Run the sole active match with exact modifiers; return false for no match or an ambiguous binding.
+     */
     public handleKey = (binding: KeyBinding, repeated = false): boolean => {
         const matches = [...this.registrations.values()].filter(({ shortcut }) =>
             shortcut.binding.key.toLowerCase() === binding.key.toLowerCase() &&
@@ -51,6 +63,9 @@ export class Keysmith {
         return true;
     };
 
+    /**
+     * Remove every registration and unsubscribe from its status streams.
+     */
     public cleanUp = (): void => {
         for (const { subscription } of this.registrations.values()) {
             subscription.unsubscribe();
@@ -59,6 +74,9 @@ export class Keysmith {
         this.publishDefinitions();
     };
 
+    /**
+     *
+     */
     private publishDefinitions = (): void => {
         this.definitions$.next([...this.registrations.values()].map(({ shortcut }) => shortcut));
     };

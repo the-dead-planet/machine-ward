@@ -67,6 +67,7 @@ const en: TranslationTable<GearTranslationKey | RouteStoryTranslationKey>['en'] 
     "move-image-hint": 'Use the movement shortcuts to position the selected image along the route.',
     "move-image-make-available": 'To make this shortcut available, show image markers on the map or in the open player.',
     "move-image-make-unavailable": 'To make this shortcut unavailable, hide image markers on both the map and the player.',
+    "move-image-activation-hint": 'Select a marker on the map or in the player',
     "pan-to-image": 'Pan to image',
     "show-image-markers": 'Show image markers',
     "hide-image-markers": 'Hide image markers',

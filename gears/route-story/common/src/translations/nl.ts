@@ -67,6 +67,7 @@ const nl: TranslationTable<GearTranslationKey | RouteStoryTranslationKey>['nl'] 
     "move-image-hint": 'Gebruik de verplaatsingssneltoetsen om de geselecteerde afbeelding langs de route te plaatsen.',
     "move-image-make-available": 'Toon afbeeldingsmarkeringen op de kaart of in de geopende speler om de sneltoets beschikbaar te maken.',
     "move-image-make-unavailable": 'Verberg afbeeldingsmarkeringen op de kaart én in de speler om de sneltoets niet langer beschikbaar te maken.',
+    "move-image-activation-hint": 'Selecteer een markering op de kaart of in de speler',
     "pan-to-image": 'Naar afbeelding verschuiven',
     "show-image-markers": 'Afbeeldingsmarkeringen tonen',
     "hide-image-markers": 'Afbeeldingsmarkeringen verbergen',

@@ -1,5 +1,5 @@
 import { FC, useState } from "react";
-import { getKeyBindingLabels, useTranslate } from "@apparatus";
+import { getKeyBindingLabels, ShortcutStatus, useTranslate } from "@apparatus";
 import { useWebMachineWard } from "@web-apparatus";
 import { useObservableState } from "@tinker-chest";
 import { Dialog, Dropdown, Text } from "@web-ui";
@@ -10,12 +10,7 @@ interface Props {
     onClose: () => void;
 }
 
-export const KeyboardShortcutsDialog: FC<Props> = ({ onClose }) => {
-    const { namespace, translationKey, keysmith } = useWebMachineWard();
-    const shortcuts = useObservableState(keysmith.shortcuts$, []);
-    const [filter, setFilter] = useState("");
-    const translate = useTranslate();
-    const title = translate({ n: namespace, t: translationKey.KeyboardShortcuts });
+const countShortcutsByKey = (shortcuts: readonly ShortcutStatus[]) => {
     const keyCounts = new Map<string, number>();
 
     for (const { binding } of shortcuts) {
@@ -23,7 +18,16 @@ export const KeyboardShortcutsDialog: FC<Props> = ({ onClose }) => {
             keyCounts.set(key, (keyCounts.get(key) ?? 0) + 1);
         }
     }
-    
+    return keyCounts;
+};
+
+export const KeyboardShortcutsDialog: FC<Props> = ({ onClose }) => {
+    const { namespace, translationKey, keysmith } = useWebMachineWard();
+    const shortcuts = useObservableState(keysmith.shortcuts$, []);
+    const [filter, setFilter] = useState("");
+    const translate = useTranslate();
+    const subtitle = translate({ n: namespace, t: translationKey.KeyboardShortcuts });
+    const keyCounts = countShortcutsByKey(shortcuts);
     const selectedKey = keyCounts.has(filter) ? filter : "";
     const filteredShortcuts = shortcuts.filter(({ binding }) => !selectedKey || getKeyBindingLabels(binding).includes(selectedKey));
 
@@ -32,11 +36,14 @@ export const KeyboardShortcutsDialog: FC<Props> = ({ onClose }) => {
             color="primary"
             variant="fill-translucent"
             placement="right-drawer"
-            header={title}
+            header="Keysmith"
             closeText={translate({ n: namespace, t: translationKey.Close })}
             onClose={onClose}
         >
             <div className={styles["container"]}>
+                <Text as="p" usage="label" color="primary" className={styles["subtitle"]}>
+                    {subtitle}
+                </Text>
                 <Dropdown
                     ariaLabel={translate({ n: namespace, t: translationKey.FilterShortcutKeys })}
                     value={selectedKey}
@@ -56,7 +63,7 @@ export const KeyboardShortcutsDialog: FC<Props> = ({ onClose }) => {
                     disabled={keyCounts.size === 0}
                 />
                 {filteredShortcuts.length > 0 ? (
-                    <KeyboardShortcutsTable title={title} shortcuts={filteredShortcuts} />
+                    <KeyboardShortcutsTable title={subtitle} shortcuts={filteredShortcuts} />
                 ) : (
                     <Text usage="caption" color="primary" role="status">
                         {translate({ n: namespace, t: translationKey.NoKeyboardShortcuts })}

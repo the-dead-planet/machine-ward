@@ -67,6 +67,7 @@ const fr: TranslationTable<GearTranslationKey | RouteStoryTranslationKey>['fr'] 
     "move-image-hint": 'Utilisez les raccourcis de déplacement pour positionner l’image sélectionnée le long du parcours.',
     "move-image-make-available": 'Pour rendre ce raccourci disponible, affichez les marqueurs d’image sur la carte ou dans le lecteur ouvert.',
     "move-image-make-unavailable": 'Pour rendre ce raccourci indisponible, masquez les marqueurs d’image sur la carte et dans le lecteur.',
+    "move-image-activation-hint": 'Sélectionnez un marqueur sur la carte ou dans le lecteur',
     "pan-to-image": 'Centrer sur l\'image',
     "show-image-markers": 'Afficher les marqueurs d\'image',
     "hide-image-markers": 'Masquer les marqueurs d\'image',

@@ -1,6 +1,9 @@
 import { useEffect } from "react";
 import { useWebMachineWard } from "./useWebMachineWard";
 
+/**
+ * Dispatch page shortcuts without taking over focused controls, dialogs, or text composition.
+ */
 export const useKeysmithKeyboard = () => {
     const { keysmith, cartomancer, individuator } = useWebMachineWard();
 

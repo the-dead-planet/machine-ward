@@ -67,6 +67,7 @@ const de: TranslationTable<GearTranslationKey | RouteStoryTranslationKey>['de'] 
     "move-image-hint": 'Mit den Bewegungstasten das ausgewählte Bild entlang der Route positionieren.',
     "move-image-make-available": 'Blenden Sie die Bildmarkierungen auf der Karte oder im geöffneten Player ein, damit das Tastenkürzel verfügbar wird.',
     "move-image-make-unavailable": 'Blenden Sie die Bildmarkierungen auf der Karte und im Player aus, damit das Tastenkürzel nicht mehr verfügbar ist.',
+    "move-image-activation-hint": 'Wählen Sie eine Markierung auf der Karte oder im Player aus',
     "pan-to-image": 'Zum Bild schwenken',
     "show-image-markers": 'Bildmarkierungen anzeigen',
     "hide-image-markers": 'Bildmarkierungen ausblenden',

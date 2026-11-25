@@ -67,6 +67,7 @@ const pl: TranslationTable<GearTranslationKey | RouteStoryTranslationKey>['pl'] 
     "move-image-hint": 'Użyj skrótów przesuwania, aby umieścić wybrany obraz w odpowiednim miejscu na trasie.',
     "move-image-make-available": 'Aby skrót stał się dostępny, pokaż znaczniki obrazów na mapie lub w otwartym odtwarzaczu.',
     "move-image-make-unavailable": 'Aby skrót stał się niedostępny, ukryj znaczniki obrazów zarówno na mapie, jak i w odtwarzaczu.',
+    "move-image-activation-hint": 'Zaznacz marker na mapie lub w odtwarzaczu',
     "pan-to-image": 'Przesuń do obrazu',
     "show-image-markers": 'Pokaż znaczniki obrazów',
     "hide-image-markers": 'Ukryj znaczniki obrazów',

@@ -67,6 +67,7 @@ const es: TranslationTable<GearTranslationKey | RouteStoryTranslationKey>['es'] 
     "move-image-hint": 'Usa los atajos de movimiento para colocar la imagen seleccionada a lo largo de la ruta.',
     "move-image-make-available": 'Para que el atajo esté disponible, muestra los marcadores de imagen en el mapa o en el reproductor abierto.',
     "move-image-make-unavailable": 'Para que el atajo deje de estar disponible, oculta los marcadores de imagen tanto en el mapa como en el reproductor.',
+    "move-image-activation-hint": 'Selecciona un marcador en el mapa o en el reproductor',
     "pan-to-image": 'Desplazar a la imagen',
     "show-image-markers": 'Mostrar marcadores de imagen',
     "hide-image-markers": 'Ocultar marcadores de imagen',

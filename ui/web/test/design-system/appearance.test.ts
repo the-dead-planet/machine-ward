@@ -619,9 +619,9 @@ describe('Composed appearance rendering', () => {
                 color: 'secured',
             },
         }));
-        expect(defaultMarkup.match(/<label\b[^>]*>route\.gpx<\/label>/)?.[0])
+        expect(defaultMarkup.match(/<span\b[^>]*>route\.gpx<\/span>/)?.[0])
             .to.include('data-appearance-variant="default"');
-        const filename = ghostMarkup.match(/<label\b[^>]*>route\.gpx<\/label>/)?.[0];
+        const filename = ghostMarkup.match(/<span\b[^>]*>route\.gpx<\/span>/)?.[0];
         expect(filename).to.include('data-appearance-variant="ghost"');
         expect(filename).to.include('data-appearance-mode="light"');
         const defaultButtons = defaultMarkup.match(/<button\b[^>]*>/g) ?? [];

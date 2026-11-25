@@ -2,6 +2,9 @@
     max-width: calc(100dvw - 40px);
 }
 
+.subtitle {
+    margin: 0 0 8px;
+}
 @media (min-width: 600px) {
     .container {
         /* Reserve space for the drawer's 25px shift and 8° skew. */

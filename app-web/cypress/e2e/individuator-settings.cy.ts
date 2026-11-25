@@ -76,16 +76,31 @@ describe('Individuator settings draft', () => {
             return cy.get('input[aria-labelledby="individuator-enable-keyboard-shortcuts-label"]');
         };
 
-        openSettings().should('be.checked').uncheck({ force: true });
+        openSettings().should('be.checked');
+        cy.get('[role="dialog"] input[type="checkbox"]').should('have.length', 3).each(($input) => {
+            const input = $input[0] as HTMLInputElement;
+            const label = input.ownerDocument.getElementById(input.getAttribute('aria-labelledby')!);
+            expect(label?.textContent?.trim()).to.be.a('string').and.not.be.empty;
+            expect(input.labels).to.have.length(0);
+        });
+        cy.get('input[aria-labelledby="individuator-enable-keyboard-shortcuts-label"]')
+            .click().should('not.be.checked');
         cy.document().then((document) => document.fonts.ready);
         const shortcutsButton = () => cy.get('[role="dialog"] button[aria-label="Go to keyboard shortcuts"]');
         for (const [width, wraps] of [[1100, false], [500, false], [280, true]] as const) {
             cy.viewport(width, 844);
             shortcutsButton().should(($button) => {
                 expect($button.text().trim()).to.equal('Go to');
-                const label = $button[0].ownerDocument.getElementById('individuator-enable-keyboard-shortcuts-label')!;
-                const checkbox = label.closest('label')!.getBoundingClientRect();
+                const document = $button[0].ownerDocument;
+                const label = document.getElementById('individuator-enable-keyboard-shortcuts-label')!;
+                const checkbox = document.querySelector('input[aria-labelledby="individuator-enable-keyboard-shortcuts-label"]')!.parentElement!.getBoundingClientRect();
                 const button = $button[0].getBoundingClientRect();
+                expect(document.defaultView!.getComputedStyle(label).textTransform).to.equal('uppercase');
+                if (width === 1100) {
+                    const confirmLabel = document.getElementById('individuator-confirm-before-leave-label')!;
+                    expect(label.offsetLeft).to.equal(confirmLabel.offsetLeft);
+                    expect(label.getBoundingClientRect().left).to.be.lessThan(checkbox.left);
+                }
                 if (wraps) {
                     expect(button.top).to.be.at.least(checkbox.bottom);
                 } else {

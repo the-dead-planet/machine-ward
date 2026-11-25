@@ -1,3 +1,4 @@
+import { FC } from "react";
 import { ShortcutStatus, TranslationId, useTranslate } from "@apparatus";
 import { useWebMachineWard } from "@web-apparatus";
 import { Text } from "@web-ui";
@@ -10,13 +11,10 @@ interface Props {
     shortcuts: readonly ShortcutStatus[];
 }
 
-export const KeyboardShortcutsTable = ({ title, shortcuts }: Props) => {
-    const { namespace, translationKey } = useWebMachineWard();
-    const translate = useTranslate();
+const groupShortcutsByOwner = (shortcuts: readonly ShortcutStatus[], defaultOwner: TranslationId) => {
     const groups = new Map<string, { owner: TranslationId; shortcuts: ShortcutStatus[] }>();
-    
     for (const shortcut of shortcuts) {
-        const owner = shortcut.owner ?? { n: namespace, t: translationKey.MachineWard };
+        const owner = shortcut.owner ?? defaultOwner;
         const groupId = JSON.stringify([owner.n, owner.t]);
         const group = groups.get(groupId);
         if (group) {
@@ -25,6 +23,13 @@ export const KeyboardShortcutsTable = ({ title, shortcuts }: Props) => {
             groups.set(groupId, { owner, shortcuts: [shortcut] });
         }
     }
+    return groups;
+};
+
+export const KeyboardShortcutsTable: FC<Props> = ({ title, shortcuts }) => {
+    const { namespace, translationKey } = useWebMachineWard();
+    const translate = useTranslate();
+    const groups = groupShortcutsByOwner(shortcuts, { n: namespace, t: translationKey.MachineWard });
 
     return (
         <section className={styles["table-scroll"]} tabIndex={0} aria-label={title}>

@@ -15,7 +15,9 @@ describe("Keyboard shortcut overview", () => {
         cy.get('button[aria-label="Application menu"]').click();
         cy.get('[role="menu"] [role^="menuitem"]').eq(1)
             .should("contain.text", "Keyboard shortcuts").click();
-        cy.get('[role="dialog"]').should("be.visible").and("contain.text", "Keyboard shortcuts");
+        cy.get('[role="dialog"]').should("be.visible");
+        cy.get('[role="dialog"] h3').should("have.text", "Keysmith");
+        cy.contains('[role="dialog"] p', /^Keyboard shortcuts$/).should("be.visible");
         cy.get('[role="dialog"] thead th', { timeout: 20000 }).should("have.length", 4);
         cy.get('[role="dialog"] thead th').last().should("have.text", "Status");
         cy.get('[role="dialog"] thead').should("have.css", "position", "absolute")
@@ -26,8 +28,13 @@ describe("Keyboard shortcut overview", () => {
         cy.get('[role="tooltip"]').should("be.visible")
             .and("have.text", "Available - To make this shortcut unavailable, hide image markers on both the map and the player.");
         cy.contains(shortcutRows, "Move image backward along the route")
-            .should("contain.text", "1 metre").and("contain.text", "1 second")
-            .find("kbd").should("have.text", "←");
+            .within(() => {
+                cy.get("kbd").should("have.text", "←");
+                cy.contains("td", "1 metre").children().should(($lines) => {
+                    expect($lines.eq(0)).to.have.text("Select a marker on the map or in the player");
+                    expect($lines.eq(1)).to.contain.text("1 metre").and.to.contain.text("1 second");
+                });
+            });
         cy.contains(shortcutRows, "Move image forward by 1%")
             .should("contain.text", "1% of the route distance or timeline duration")
             .and("not.contain.text", "+")

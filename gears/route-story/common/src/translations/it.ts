@@ -67,6 +67,7 @@ const it: TranslationTable<GearTranslationKey | RouteStoryTranslationKey>['it'] 
     "move-image-hint": 'Usa le scorciatoie di movimento per posizionare l’immagine selezionata lungo il percorso.',
     "move-image-make-available": 'Per rendere disponibile la scorciatoia, mostra i marcatori delle immagini sulla mappa o nel lettore aperto.',
     "move-image-make-unavailable": 'Per rendere la scorciatoia non disponibile, nascondi i marcatori delle immagini sia sulla mappa sia nel lettore.',
+    "move-image-activation-hint": 'Seleziona un marcatore sulla mappa o nel lettore',
     "pan-to-image": 'Sposta sull\'immagine',
     "show-image-markers": 'Mostra markeri immagine',
     "hide-image-markers": 'Nascondi markeri immagine',
