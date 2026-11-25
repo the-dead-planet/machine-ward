@@ -18,14 +18,14 @@ export const useDialog = () => {
         const previousFocus = document.activeElement;
         dialogRef.current
             ?.querySelector<HTMLElement>(focusableSelector)
-            ?.focus();
+            ?.focus({ preventScroll: true });
 
         return () => {
             if (
                 previousFocus instanceof HTMLElement &&
                 previousFocus.isConnected
             ) {
-                previousFocus.focus();
+                previousFocus.focus({ preventScroll: true });
             }
         };
     }, []);
