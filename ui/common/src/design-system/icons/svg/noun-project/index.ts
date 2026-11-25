@@ -32,6 +32,7 @@ export { default as Destroy } from './output/destroy.svg';
 export { default as EBikeSide01 } from './output/e-bike-side-01.svg';
 export { default as ElectricDevice } from './output/electric-device.svg';
 export { default as Gear } from './output/gear.svg';
+export { default as GoTo } from './output/go-to.svg';
 export { default as Hide } from './output/hide.svg';
 export { default as ImageMarker } from './output/image-marker.svg';
 export { default as ImageMarkerHidden } from './output/image-marker-hidden.svg';
