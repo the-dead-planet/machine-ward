@@ -24,6 +24,14 @@
     text-transform: uppercase;
 }
 
+.checkbox-actions {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+}
+
 .option {
     display: flex;
     gap: 12px;

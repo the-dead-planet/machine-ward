@@ -1,21 +1,22 @@
 import { FC, useState } from "react";
 import classNames from "classnames";
 import { DateTime } from "luxon";
-import { Dialog, Dropdown, ThemeSelect } from "@web-ui";
+import { Button, Dialog, Dropdown, ThemeSelect } from "@web-ui";
 import { Individuator, IndividuatorSettings, Language, Translatron, useTranslate } from "@apparatus";
 import { useWebMachineWard } from "@web-apparatus";
 import { T } from "@web-apparatus";
 import { DateFormat, DistanceUnit, TimeFormat, useSubjectState } from "@tinker-chest";
-import { useTheme } from "@ui";
+import { Icons, useTheme } from "@ui";
 import { SettingsCheckbox } from "./SettingsCheckbox";
 import { SettingsLabel } from "./SettingsLabel";
 import styles from './settings-dialog.module.css';
 
 interface Props {
     onClose: () => void;
+    onOpenKeyboardShortcuts: () => void;
 }
 
-export const SettingsDialog: FC<Props> = ({ onClose }) => {
+export const SettingsDialog: FC<Props> = ({ onClose, onOpenKeyboardShortcuts }) => {
     const { isDev, namespace, translationKey, individuator } = useWebMachineWard();
     const [, setSettings] = useSubjectState(individuator.settings$);
     const [pendingSettings, setPendingSettings] = useState(individuator.settings$.value);
@@ -69,33 +70,33 @@ export const SettingsDialog: FC<Props> = ({ onClose }) => {
                         <T n={individuator.namespace} t={individuator.translationKey.DateFormat} />
                     </SettingsLabel>
                     <Dropdown<DateFormat>
-                    popoverClassName={popoverClassName}
-                    labelledBy="individuator-date-format-label"
-                    size="xs"
-                    color="primary"
-                    variant="fill"
-                    value={pendingSettings.dateFormat.value}
-                    options={Individuator.dateFormatOptions.map(({ value, short }) => ({
-                        value,
-                        short,
-                        label: DateTime.fromObject(
-                            { year: 2026, month: 6, day: 17 },
-                            { locale: Translatron.languages[pendingSettings.language].locale }
-                        ).toFormat(value),
-                    }))}
-                    onChange={(dateFormat) => setPendingSettings((prev): IndividuatorSettings => {
-                        const option = Individuator.dateFormatOptions.find((option) => option.value === dateFormat);
-                        if (!option) {
-                            return prev;
-                        }
-                        return {
-                            ...prev,
-                            dateFormat: {
-                                value: option.value,
-                                short: option.short,
+                        popoverClassName={popoverClassName}
+                        labelledBy="individuator-date-format-label"
+                        size="xs"
+                        color="primary"
+                        variant="fill"
+                        value={pendingSettings.dateFormat.value}
+                        options={Individuator.dateFormatOptions.map(({ value, short }) => ({
+                            value,
+                            short,
+                            label: DateTime.fromObject(
+                                { year: 2026, month: 6, day: 17 },
+                                { locale: Translatron.languages[pendingSettings.language].locale }
+                            ).toFormat(value),
+                        }))}
+                        onChange={(dateFormat) => setPendingSettings((prev): IndividuatorSettings => {
+                            const option = Individuator.dateFormatOptions.find((option) => option.value === dateFormat);
+                            if (!option) {
+                                return prev;
                             }
-                        };
-                    })}
+                            return {
+                                ...prev,
+                                dateFormat: {
+                                    value: option.value,
+                                    short: option.short,
+                                }
+                            };
+                        })}
                     />
                 </div>
 
@@ -104,14 +105,14 @@ export const SettingsDialog: FC<Props> = ({ onClose }) => {
                         <T n={individuator.namespace} t={individuator.translationKey.TimeFormat} />
                     </SettingsLabel>
                     <Dropdown<TimeFormat>
-                    popoverClassName={popoverClassName}
-                    labelledBy="individuator-time-format-label"
-                    size="xs"
-                    color="primary"
-                    variant="fill"
-                    value={pendingSettings.timeFormat}
-                    options={Individuator.timeFormatOptions}
-                    onChange={(timeFormat) => setPendingSettings((prev): IndividuatorSettings => ({ ...prev, timeFormat }))}
+                        popoverClassName={popoverClassName}
+                        labelledBy="individuator-time-format-label"
+                        size="xs"
+                        color="primary"
+                        variant="fill"
+                        value={pendingSettings.timeFormat}
+                        options={Individuator.timeFormatOptions}
+                        onChange={(timeFormat) => setPendingSettings((prev): IndividuatorSettings => ({ ...prev, timeFormat }))}
                     />
                 </div>
 
@@ -120,17 +121,17 @@ export const SettingsDialog: FC<Props> = ({ onClose }) => {
                         <T n={individuator.namespace} t={individuator.translationKey.DistanceUnit} />
                     </SettingsLabel>
                     <Dropdown<DistanceUnit>
-                    popoverClassName={popoverClassName}
-                    labelledBy="individuator-distance-unit-label"
-                    size="xs"
-                    color="primary"
-                    variant="fill"
-                    value={pendingSettings.distanceUnit}
-                    options={Individuator.distanceUnitOptions.map(({ value, translationKey }) => ({
-                        value,
-                        label: translate({ n: individuator.namespace, t: translationKey }),
-                    }))}
-                    onChange={(distanceUnit) => setPendingSettings((prev): IndividuatorSettings => ({ ...prev, distanceUnit }))}
+                        popoverClassName={popoverClassName}
+                        labelledBy="individuator-distance-unit-label"
+                        size="xs"
+                        color="primary"
+                        variant="fill"
+                        value={pendingSettings.distanceUnit}
+                        options={Individuator.distanceUnitOptions.map(({ value, translationKey }) => ({
+                            value,
+                            label: translate({ n: individuator.namespace, t: translationKey }),
+                        }))}
+                        onChange={(distanceUnit) => setPendingSettings((prev): IndividuatorSettings => ({ ...prev, distanceUnit }))}
                     />
                 </div>
 
@@ -157,6 +158,25 @@ export const SettingsDialog: FC<Props> = ({ onClose }) => {
                     onChange={(checked) => setPendingSettings((prev): IndividuatorSettings => ({ ...prev, confirmBeforeLeave: checked }))}
                 >
                     <T n={individuator.namespace} t={individuator.translationKey.ConfirmBeforeLeave} />
+                </SettingsCheckbox>
+                <SettingsCheckbox
+                    wide={isWide}
+                    id="individuator-enable-keyboard-shortcuts-label"
+                    checked={pendingSettings.enableKeyboardShortcuts}
+                    onChange={(checked) => setPendingSettings((prev) => ({ ...prev, enableKeyboardShortcuts: checked }))}
+                    action={(
+                        <Button
+                            size="xs"
+                            color="primary"
+                            icon={Icons.NounProject.GoTo}
+                            aria-label={translate({ n: individuator.namespace, t: individuator.translationKey.GoToKeyboardShortcuts })}
+                            onClick={onOpenKeyboardShortcuts}
+                        >
+                            <T n={individuator.namespace} t={individuator.translationKey.GoTo} />
+                        </Button>
+                    )}
+                >
+                    <T n={individuator.namespace} t={individuator.translationKey.EnableKeyboardShortcuts} />
                 </SettingsCheckbox>
                 {isDev ? (
                     <SettingsCheckbox
