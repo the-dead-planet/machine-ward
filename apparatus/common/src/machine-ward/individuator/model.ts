@@ -9,6 +9,7 @@ export interface IndividuatorSettings {
      * When set to `true`, a native confirmation popup will be shown before closing or reloading the page.
      */
     confirmBeforeLeave: boolean;
+    enableKeyboardShortcuts: boolean;
     dateFormat: { value: DateFormat; short: DateFormat; };
     timeFormat: TimeFormat;
     locale: string;
@@ -30,5 +31,8 @@ export enum IndividuatorTranslationKey {
     Imperial = 'imperial',
     Theme = 'theme',
     ConfirmBeforeLeave = 'confirm-before-leave',
+    EnableKeyboardShortcuts = 'enable-keyboard-shortcuts',
+    GoToKeyboardShortcuts = 'go-to-keyboard-shortcuts',
+    GoTo = 'go-to',
     DebugMode = 'debug-mode',
 };

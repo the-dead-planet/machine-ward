@@ -11,6 +11,9 @@ const ru: TranslationTable<IndividuatorTranslationKey>['ru'] = {
     imperial: 'Имперские (мили)',
     theme: 'Тема',
     "confirm-before-leave": 'Подтверждение перед выходом',
+    "enable-keyboard-shortcuts": 'Включить сочетания клавиш',
+    "go-to-keyboard-shortcuts": 'Перейти к сочетаниям клавиш',
+    "go-to": 'Перейти',
     "debug-mode": 'Режим отладки',
 };
 

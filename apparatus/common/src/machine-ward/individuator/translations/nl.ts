@@ -11,6 +11,9 @@ const nl: TranslationTable<IndividuatorTranslationKey>['nl'] = {
     imperial: 'Imperiaal (mi)',
     theme: 'Thema',
     "confirm-before-leave": 'Bevestigen voor vertrek',
+    "enable-keyboard-shortcuts": 'Sneltoetsen inschakelen',
+    "go-to-keyboard-shortcuts": 'Naar de sneltoetsen',
+    "go-to": 'Ga naar',
     "debug-mode": 'Debugmodus',
 };
 

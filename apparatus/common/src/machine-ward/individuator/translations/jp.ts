@@ -11,6 +11,9 @@ const jp: TranslationTable<IndividuatorTranslationKey>['jp'] = {
     imperial: 'ヤード・ポンド法 (mi)',
     theme: 'テーマ',
     "confirm-before-leave": 'ページを離れる前に確認',
+    "enable-keyboard-shortcuts": 'キーボードショートカットを有効にする',
+    "go-to-keyboard-shortcuts": 'キーボードショートカットを表示',
+    "go-to": '表示',
     "debug-mode": 'デバッグモード',
 };
 

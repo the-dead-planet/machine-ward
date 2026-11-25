@@ -11,6 +11,9 @@ const en:TranslationTable<IndividuatorTranslationKey>['en'] = {
     imperial: 'Imperial (mi)',
     theme: 'Theme',
     "confirm-before-leave": 'Confirm before leaving',
+    "enable-keyboard-shortcuts": 'Enable keyboard shortcuts',
+    "go-to-keyboard-shortcuts": 'Go to keyboard shortcuts',
+    "go-to": 'Go to',
     "debug-mode": 'Debug mode',
 };
 

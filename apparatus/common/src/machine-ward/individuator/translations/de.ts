@@ -11,6 +11,9 @@ const de: TranslationTable<IndividuatorTranslationKey>['de'] = {
     imperial: 'Imperial (mi)',
     theme: 'Thema',
     "confirm-before-leave": 'Bestätigen vor Verlassen',
+    "enable-keyboard-shortcuts": 'Tastenkürzel aktivieren',
+    "go-to-keyboard-shortcuts": 'Zu den Tastenkürzeln',
+    "go-to": 'Öffnen',
     "debug-mode": 'Debug-Modus',
 };
 
