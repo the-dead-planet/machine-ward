@@ -20,7 +20,7 @@ import { GeoJson, ParsingResultWithError } from "@tinker-chest";
 import { RouteStoryProps, RouteTimes, RouteStoryFile, RouteStoryTranslationKey, RouteStoryState, PresetOption, Preset, RouteStoryLayerStylingPopupProps } from "./model";
 import { FileOperator } from "./file-operator";
 import { PlayerOperator } from "./player-operator";
-import { getRouteGeometryData, RouteGeometryData } from "./tinkers";
+import { getRouteGeometryData, RouteGeometryData, routeStoryPlayerToolId } from "./tinkers";
 import { Icons, SliderRange } from "@ui";
 import * as Translations from "./translations";
 import { AnimationControlsType, Animatrix } from "./animatrix";
@@ -130,7 +130,7 @@ export abstract class RouteStoryGear<TMap, TChronoLens extends ChronoLens, TFile
     private layerStylingToolPopupId = 'layer-styling';
     public abstract layerStylingComponent: ComponentType<ToolPopupProps<TMap> & RouteStoryLayerStylingPopupProps<TMap> & RouteStoryProps<TMap, TChronoLens, TFile, TImageData>>;
 
-    private playerToolId = 'player';
+    private readonly playerToolId = routeStoryPlayerToolId;
     public abstract playerComponent: ComponentType<ToolPanelProps<TMap> & RouteStoryProps<TMap, TChronoLens, TFile, TImageData>>;
 
     private animatrixToolId = 'animatrix';

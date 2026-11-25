@@ -14,6 +14,7 @@ import { AnimationControlsSearch } from './animation-controls/AnimationControlsS
 import { WebChronoLens } from '@web-apparatus';
 import { RecChip } from './top-bar/RecChip';
 import { LayerStylingPopup } from './layer-styling/LayerStylingPopup';
+import { registerImageMarkerShortcuts } from './images/registerImageMarkerShortcuts';
 
 const SAMPLE_IMAGE_NAMES = [
    'IMG20260403173904.jpg',
@@ -34,6 +35,12 @@ export class WebRouteStoryGear extends RouteStoryGear<maplibregl.Map, WebChronoL
    public imagesLayerComponent = ImagesLayer;
    public topBarChipComponent = RecChip;
    public layerStylingComponent = LayerStylingPopup;
+   private unregisterImageMarkerShortcuts?: () => void;
+
+   public override cleanup(): void {
+      this.unregisterImageMarkerShortcuts?.();
+      super.cleanup();
+   }
 
    public constructor(apparatus: GearApparatus<maplibregl.Map, WebChronoLens>) {
       super(apparatus);
@@ -127,9 +134,15 @@ export class WebRouteStoryGear extends RouteStoryGear<maplibregl.Map, WebChronoL
 
    public engageRouteStory = () => {
       this.confirmBeforeLeaveSubscription = this.subscribeConfirmBeforeLeave();
+      this.unregisterImageMarkerShortcuts?.();
+      const { keysmith, toolsStation, cartomancer } = this.apparatus;
+      this.unregisterImageMarkerShortcuts = registerImageMarkerShortcuts(
+         this.id, this, keysmith, toolsStation.activeBottomPanelToolId$, cartomancer.isStyleLoaded$,
+      );
    };
 
    public disengageRouteStory = () => {
+      this.unregisterImageMarkerShortcuts?.();
       this.confirmBeforeLeaveSubscription?.unsubscribe();
    };
 

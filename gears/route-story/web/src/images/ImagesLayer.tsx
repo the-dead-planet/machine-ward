@@ -28,7 +28,6 @@ import { ImageGroupPager } from "./ImageGroupPager";
 import { useImageLayerAssets } from "./useImageLayerAssets";
 import { useImageConnectionsLayer } from "./useImageConnectionsLayer";
 import { useMapImageInteraction } from "./useMapImageInteraction";
-import { useImageMarkerKeyboard } from "./useImageMarkerKeyboard";
 
 export const ImagesLayer: FC<OverlayComponentProps<MapLibreMap> & WebRouteStoryProps> = ({
     map,
@@ -37,7 +36,6 @@ export const ImagesLayer: FC<OverlayComponentProps<MapLibreMap> & WebRouteStoryP
     data$,
     state$,
     routeGeometryData$,
-    routeTimes$,
     images$,
     playerOperator,
 }) => {
@@ -64,7 +62,6 @@ export const ImagesLayer: FC<OverlayComponentProps<MapLibreMap> & WebRouteStoryP
         imageHoverColor,
         badgeTextColor,
     );
-    useImageMarkerKeyboard({ gearId, data$, routeTimes$, routeGeometryData$, images$, animatrix });
 
     const sourceDataGeojson = useMemo(
         () => getImageSource(loadedImages, geojson, routeGeometryData),

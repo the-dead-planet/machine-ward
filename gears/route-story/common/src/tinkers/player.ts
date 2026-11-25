@@ -3,6 +3,7 @@ import { PlaybackPacing } from "../animatrix";
 import { RouteTimes } from "../model";
 import { getRouteLngLatAtDistanceFraction, RouteGeometryData, RoutePlacement } from "./source-layers";
 
+export const routeStoryPlayerToolId = 'player';
 export const getPlayerSliderStep = (playbackPacing: PlaybackPacing): number => playbackPacing === 'distance' ? 1 : 1000;
 
 /**

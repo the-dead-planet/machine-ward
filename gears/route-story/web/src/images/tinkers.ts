@@ -38,6 +38,7 @@ export const findMapImageFeature = <T extends ImageHitFeature>(
                 geometry.coordinates[0],
                 geometry.coordinates[1],
             ]);
+            
             if (properties.markerAnchor) {
                 return (
                     Math.hypot(point.x - center.x, point.y - center.y) <=
@@ -45,6 +46,7 @@ export const findMapImageFeature = <T extends ImageHitFeature>(
                 );
             }
             const offset = getMapImageThumbnailOffsetY(properties.markerGroupSize, properties.markerScale, properties.markerOffsetY);
+
             return (
                 Math.hypot(point.x - center.x, point.y - center.y - offset) <=
                 (THUMBNAIL_IMAGE_SIZE * (properties.markerScale ?? 1)) / 2
