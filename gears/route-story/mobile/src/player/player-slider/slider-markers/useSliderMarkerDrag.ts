@@ -11,8 +11,7 @@ import {
     draggingPlacement$,
     highlightIdsBySourceId$,
     imageSourceIds,
-    clearImageMarkerSelection,
-    toggleImageMarkerGroup,
+    ImageMarkerOperator,
     updateImageDistanceFraction,
     getRoutePlacementAtPercent,
 } from "@the-dead-planet/machine-ward-gears-route-story-common";
@@ -35,6 +34,7 @@ interface MarkerGesture {
 }
 
 interface Props {
+    imageMarkerOperator: ImageMarkerOperator;
     data$: BehaviorSubject<ParsingResultWithError>;
     routeGeometryData$: BehaviorSubject<RouteGeometryData | null>;
     routeTimes$: BehaviorSubject<RouteTimes | null>;
@@ -42,7 +42,8 @@ interface Props {
     animatrix: Animatrix;
 }
 
-export const useSliderMarkerDrag = ({ data$, routeGeometryData$, routeTimes$, images$, animatrix }: Props) => {
+export const useSliderMarkerDrag = ({ data$, routeGeometryData$, routeTimes$, images$, animatrix, imageMarkerOperator }: Props) => {
+    const { clearImageMarkerSelection, toggleImageMarkerGroup } = imageMarkerOperator;
     const [{ geojson }] = useSubjectState(data$);
     const [routeGeometryData] = useSubjectState(routeGeometryData$);
     const [routeTimes] = useSubjectState(routeTimes$);

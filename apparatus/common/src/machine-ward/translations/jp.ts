@@ -2,6 +2,19 @@ import { TranslationTable } from "../translatron";
 import { MachineTranslationKey } from "../model";
 
 const jp: TranslationTable<MachineTranslationKey>['jp'] = {
+    enabled: '有効',
+    disabled: '無効',
+    status: '状態',
+    'filter-shortcut-keys': 'キーで絞り込む',
+    'all-shortcut-keys': 'すべてのキー',
+    available: '利用可能',
+    unavailable: '利用不可',
+    'keyboard-shortcuts': 'キーボードショートカット',
+    'keysmith': 'キー工房',
+    label: '名前',
+    'shortcut-keys': 'キーの組み合わせ',
+    description: '説明',
+    'no-keyboard-shortcuts': '現在登録されているキーボードショートカットはありません。',
     'machine-ward': '機械病棟',
     'powering-up-machine-ward': '機械病棟の電源を投入中…',
     'component-library': 'コンポーネントライブラリ',

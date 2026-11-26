@@ -2,12 +2,10 @@ import { useEffect, useRef, useState } from "react";
 import type { Map as MapLibreMap } from "maplibre-gl";
 import { useSubjectState } from "@tinker-chest";
 import {
-    expandedImageGroupId$,
+    ImageMarkerOperator,
     getImageMarkerGroups,
     getImageMarkerSourceFromGroups,
     getImageSource,
-    selectedImageId$,
-    imageGroupOffset$,
 } from "@the-dead-planet/machine-ward-gears-route-story-common";
 
 interface ImageGroupCache {
@@ -21,6 +19,7 @@ export const useImageMarkerSource = (
     map: MapLibreMap,
     source: ReturnType<typeof getImageSource>,
     isDisplayingImage: boolean,
+    { selectedImageId$, expandedImageGroupId$, imageGroupOffset$ }: ImageMarkerOperator,
 ) => {
     const [selectedImageId] = useSubjectState(selectedImageId$);
     const [expandedImageGroupId] = useSubjectState(expandedImageGroupId$);

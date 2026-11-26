@@ -7,6 +7,7 @@ import { StorageKeeper } from "./storage-keeper";
 import { MachineWardContext } from "./MachineWardContext";
 import { useSubjectState } from "@tinker-chest";
 import { MachineTranslationKey, MachineWardComponents } from "./model";
+import { Keysmith } from "./keysmith";
 
 interface MachineWardProps<TMap, TChronoLens extends ChronoLens, TNavigationPath extends string> {
     isDev: boolean;
@@ -22,6 +23,7 @@ interface MachineWardProps<TMap, TChronoLens extends ChronoLens, TNavigationPath
     cartomancer: Cartomancer<TMap>;
     chronoLens: TChronoLens;
     toolsStation: ToolsStation<TMap>;
+    keysmith: Keysmith;
     translatron: Translatron;
     engine: Engine<TMap, TChronoLens>
     components: MachineWardComponents<TNavigationPath>;
@@ -44,6 +46,7 @@ export function MachineWardApp<TMap, TChronoLens extends ChronoLens, TNavigation
     cartomancer,
     chronoLens,
     toolsStation,
+    keysmith,
     signaliumBureau,
     translatron,
     engine,
@@ -90,6 +93,7 @@ export function MachineWardApp<TMap, TChronoLens extends ChronoLens, TNavigation
                         cartomancer: cartomancer as Cartomancer<unknown>,
                         chronoLens,
                         toolsStation: toolsStation as ToolsStation<unknown>,
+                        keysmith,
                         signaliumBureau,
                         translatron,
                         engine: engine as unknown as Engine<unknown, ChronoLens>,

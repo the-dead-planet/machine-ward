@@ -1,0 +1,70 @@
+.container {
+    max-width: calc(100dvw - 40px);
+}
+
+.drawer {
+    --dialog-header-margin-bottom: 0px;
+}
+
+.subtitle {
+    margin: 0 0 16px;
+}
+
+.filter-label {
+    display: block;
+    margin-bottom: 4px;
+}
+
+.shortcut-settings {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+@media (min-width: 600px) {
+    .container {
+        /* Reserve space for the drawer's 25px shift and 8° skew. */
+        max-width: calc(100dvw - 65px - 7.1dvh);
+    }
+}
+
+.table-scroll {
+    overflow-x: auto;
+}
+
+.shortcuts {
+    border-spacing: 0 12px;
+    text-align: left;
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+}
+
+.shortcuts th,
+.shortcuts td {
+    padding: 0 8px 0 0;
+    vertical-align: top;
+    overflow-wrap: anywhere;
+}
+
+.description > span {
+    display: block;
+    max-inline-size: 42ch;
+}
+
+.key-combination {
+    display: inline-flex;
+    gap: 4px;
+}
+
+.keys {
+    font: inherit;
+    border: 1px solid currentColor;
+    border-radius: 2px;
+    padding: 1px 4px;
+    white-space: nowrap;
+}

@@ -2,6 +2,19 @@ import { TranslationTable } from "../translatron";
 import { MachineTranslationKey } from "../model";
 
 const de: TranslationTable<MachineTranslationKey>['de'] = {
+    enabled: 'Aktiviert',
+    disabled: 'Deaktiviert',
+    status: 'Status',
+    'filter-shortcut-keys': 'Nach Taste filtern',
+    'all-shortcut-keys': 'Alle Tasten',
+    available: 'Verfügbar',
+    unavailable: 'Nicht verfügbar',
+    'keyboard-shortcuts': 'Tastenkürzel',
+    'keysmith': 'Tastenschmied',
+    label: 'Bezeichnung',
+    'shortcut-keys': 'Tastenkombination',
+    description: 'Beschreibung',
+    'no-keyboard-shortcuts': 'Derzeit sind keine Tastenkürzel registriert.',
     'machine-ward': 'Maschinenstation',
     'powering-up-machine-ward': 'Die Stromversorgung der Maschinenstation wird eingeschaltet…',
     'component-library': 'Komponentenbibliothek',

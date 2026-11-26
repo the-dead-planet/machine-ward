@@ -23,7 +23,7 @@ export abstract class Gear<TMap, TChronoLens extends ChronoLens> {
 
     private subscription: Subscription | null = null;
 
-    public setup = () => {
+    public setup(): void {
         this.apparatus.translatron.register(this.id, this.translations);
         this.subscription = this.isEngaged$.subscribe((isEngaged) => {
             if (isEngaged) {
@@ -32,10 +32,10 @@ export abstract class Gear<TMap, TChronoLens extends ChronoLens> {
                 this.disengage();
             }
         });
-    };
+    }
 
-    public cleanup = () => {
+    public cleanup(): void {
         this.subscription?.unsubscribe();
         this.apparatus.translatron.deregister(this.id);
-    };
+    }
 }

@@ -75,6 +75,7 @@ export class Individuator {
          * When set to true, user will be shown a confirmation popup on page close or reload.
          */
         confirmBeforeLeave: false,
+        enableKeyboardShortcuts: true,
         debugMode: false,
         dateFormat: {
             value: this.defaultDateFormat,
@@ -102,6 +103,7 @@ export class Individuator {
 
             return {
                 ...maybeSettings,
+                enableKeyboardShortcuts: maybeSettings.enableKeyboardShortcuts !== false,
                 locale: typeof maybeSettings.locale === 'string' && maybeSettings.locale.length > 0
                     ? maybeSettings.locale
                     : Individuator.getPreferredLocale(),

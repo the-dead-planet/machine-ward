@@ -2,13 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import { auditTime, debounceTime, combineLatest, tap } from "rxjs";
 import { useMobileMachineWard, MobileMap } from "@mobile-apparatus";
 import {
-    expandedImageGroupId$,
+    ImageMarkerOperator,
     getImageMarkerGroups,
     getImageMarkerSourceFromGroups,
     getImageSource,
     getImageSourceWithAnchors,
-    selectedImageId$,
-    imageGroupOffset$,
 } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { MapImageHitTarget } from "./model";
 
@@ -22,6 +20,7 @@ export const useImageMarkerSource = (
     map: MobileMap,
     source: ReturnType<typeof getImageSource>,
     isDisplayingImage: boolean,
+    { selectedImageId$, expandedImageGroupId$, imageGroupOffset$ }: ImageMarkerOperator,
 ) => {
     const { cartomancer } = useMobileMachineWard();
     const [grouping, setGrouping] = useState({ source, groupedSource: source });
@@ -134,7 +133,7 @@ export const useImageMarkerSource = (
             hitTargets.current = [];
             subscription.unsubscribe();
         };
-    }, [map, source, cartomancer, isDisplayingImage]);
+    }, [map, source, cartomancer, isDisplayingImage, selectedImageId$, expandedImageGroupId$, imageGroupOffset$]);
 
     return {
         groupedSource: grouping.source === source ? grouping.groupedSource : source,

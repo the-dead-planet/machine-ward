@@ -3,7 +3,7 @@ import { it } from "mocha";
 import { act, createElement } from "react";
 import { createRoot } from "test-renderer";
 import type { Map as MapLibreMap } from "maplibre-gl";
-import { expandedImageGroupId$, imageGroupOffset$, ImageMarkerSource, selectedImageId$ } from "@the-dead-planet/machine-ward-gears-route-story-common";
+import { ImageMarkerOperator, ImageMarkerSource } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { useImageMarkerSource } from "../src/images/useImageMarkerSource";
 
 it("caches projections and group membership across selection and scrolling, not camera or source changes", async () => {
@@ -12,9 +12,8 @@ it("caches projections and group membership across selection and scrolling, not 
         value: true,
         configurable: true,
     });
-    const previousSelection = selectedImageId$.value;
-    const previousGroup = expandedImageGroupId$.value;
-    const previousOffset = imageGroupOffset$.value;
+    const imageMarkerOperator = new ImageMarkerOperator();
+    const { selectedImageId$, expandedImageGroupId$, imageGroupOffset$ } = imageMarkerOperator;
     selectedImageId$.next(1);
     expandedImageGroupId$.next(1);
     imageGroupOffset$.next(0);
@@ -56,7 +55,7 @@ it("caches projections and group membership across selection and scrolling, not 
     let rendered: ImageMarkerSource = source;
     const renderedSources: ImageMarkerSource[] = [];
     const Probe = ({ images }: { images: ImageMarkerSource }) => {
-        rendered = useImageMarkerSource(map, images, false);
+        rendered = useImageMarkerSource(map, images, false, imageMarkerOperator);
         renderedSources.push(rendered);
         return null;
     };
@@ -114,9 +113,6 @@ it("caches projections and group membership across selection and scrolling, not 
         expect(projections).to.equal(35);
     } finally {
         await act(async () => root.unmount());
-        selectedImageId$.next(previousSelection);
-        expandedImageGroupId$.next(previousGroup);
-        imageGroupOffset$.next(previousOffset);
         if (environment) {
             Object.defineProperty(globalThis, "IS_REACT_ACT_ENVIRONMENT", environment);
         } else {

@@ -24,7 +24,8 @@ import { getRouteGeometryData, RouteGeometryData } from "./tinkers";
 import { Icons, SliderRange } from "@ui";
 import * as Translations from "./translations";
 import { AnimationControlsType, Animatrix } from "./animatrix";
-import { defaultRouteStoryState } from "./layer-specification";
+import { defaultRouteStoryState, draggingImage$, draggingPlacement$ } from "./layer-specification";
+import { ImageMarkerOperator } from "./image-marker-operator";
 import { cleanUpRouteStoryState } from "./route-story-state";
 import { getVisibleRouteRanges } from "./player/player-slider/route-ranges";
 
@@ -48,9 +49,13 @@ export abstract class RouteStoryGear<TMap, TChronoLens extends ChronoLens, TFile
     public readonly routeTimes$ = new BehaviorSubject<RouteTimes | null>(null);
     public readonly images$ = new BehaviorSubject<MarkerImage<TImageData>[]>([]);
     public readonly progressMs$ = new BehaviorSubject(0);
+    protected readonly playerActive$ = this.apparatus.toolsStation.activeBottomPanelToolId$.pipe(
+        map((id) => id === this.playerToolId),
+        distinctUntilChanged(),
+    );
     public readonly viewportRanges$: Observable<SliderRange[]> = combineLatest([
         this.state$.pipe(map((state) => state.viewportRangePlayerVisibility), distinctUntilChanged()),
-        this.apparatus.toolsStation.activeBottomPanelToolId$.pipe(map((id) => id === this.playerToolId), distinctUntilChanged()),
+        this.playerActive$,
     ]).pipe(
         switchMap(([visible, active]) => visible && active
             ? combineLatest([
@@ -130,7 +135,7 @@ export abstract class RouteStoryGear<TMap, TChronoLens extends ChronoLens, TFile
     private layerStylingToolPopupId = 'layer-styling';
     public abstract layerStylingComponent: ComponentType<ToolPopupProps<TMap> & RouteStoryLayerStylingPopupProps<TMap> & RouteStoryProps<TMap, TChronoLens, TFile, TImageData>>;
 
-    private playerToolId = 'player';
+    private readonly playerToolId = 'player';
     public abstract playerComponent: ComponentType<ToolPanelProps<TMap> & RouteStoryProps<TMap, TChronoLens, TFile, TImageData>>;
 
     private animatrixToolId = 'animatrix';
@@ -167,7 +172,9 @@ export abstract class RouteStoryGear<TMap, TChronoLens extends ChronoLens, TFile
         progressMs$: this.progressMs$,
         viewportRanges$: this.viewportRanges$,
         fileOperator: this.fileOperator,
+        resetStory: this.resetStory,
         playerOperator: this.playerOperator,
+        imageMarkerOperator: this.imageMarkerOperator,
         fitBoundsHandler: this.fitBoundsHandler,
     });
 
@@ -284,6 +291,7 @@ export abstract class RouteStoryGear<TMap, TChronoLens extends ChronoLens, TFile
     };
 
     public disengage = () => {
+        this.clearMarkerInteraction();
         this.apparatus.cartomancer.removeOverlay(this.imagesOverlayId);
         this.apparatus.cartomancer.removeOverlay(this.routeOverlayId);
         this.apparatus.toolsStation.removeToolPanel(this.animatrixToolId);
@@ -298,6 +306,31 @@ export abstract class RouteStoryGear<TMap, TChronoLens extends ChronoLens, TFile
         this.presetActiveSubscription?.unsubscribe();
         this.presetSubscription?.unsubscribe();
         this.animatrix.cleanUp();
+    };
+
+    public override cleanup(): void {
+        this.clearMarkerInteraction();
+        super.cleanup();
+    }
+
+    private clearMarkerInteraction(): void {
+        this.imageMarkerOperator.clearImageMarkerSelection();
+        draggingPlacement$.next(null);
+        draggingImage$.next(null);
+    }
+
+    public resetStory = async (): Promise<void> => {
+        this.fileOperator.isLoading$.next(true);
+        try {
+            await this.onCleanupStory(this.data$.value, this.images$.value);
+            this.progressMs$.next(0);
+            this.data$.next({});
+            this.images$.next([]);
+            this.imageMarkerOperator.clearImageMarkerSelection();
+            this.routeTimes$.next(null);
+        } finally {
+            this.fileOperator.isLoading$.next(false);
+        }
     };
 
     public fitBoundsHandler = (map: TMap, boundingBox?: GeoJSON.BBox) => {
@@ -324,6 +357,7 @@ export abstract class RouteStoryGear<TMap, TChronoLens extends ChronoLens, TFile
     };
 
     public fileOperator = new FileOperator(this);
+    public readonly imageMarkerOperator = new ImageMarkerOperator();
     private playerOperator = new PlayerOperator(this);
 
     /**

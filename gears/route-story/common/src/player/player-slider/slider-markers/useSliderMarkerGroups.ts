@@ -3,11 +3,12 @@ import { GeoJson, ParsingResultWithError, useSubjectState } from "@tinker-chest"
 import { Animatrix } from "../../../animatrix/animatrix";
 import { PlaybackPacing } from "../../../animatrix/model";
 import { RouteTimes } from "../../../model";
-import { selectedImageId$ } from "../../../layer-specification/images/images-layers";
+import type { ImageMarkerOperator } from "../../../image-marker-operator";
 import { getSliderImageMarkers } from "../../../tinkers/images";
 import { getDistanceFractionPercent, RouteGeometryData } from "../../../tinkers/source-layers";
 
 interface Props<T> {
+    imageMarkerOperator: ImageMarkerOperator;
     data$: BehaviorSubject<ParsingResultWithError>;
     routeGeometryData$: BehaviorSubject<RouteGeometryData | null>;
     routeTimes$: BehaviorSubject<RouteTimes | null>;
@@ -36,7 +37,7 @@ export function getSliderMarkerGroups<T extends { id: number; distanceFraction?:
 }
 
 export function useSliderMarkerGroups<T extends { id: number; distanceFraction?: number }>(
-    { data$, routeGeometryData$, routeTimes$, images$, animatrix }: Props<T>,
+    { data$, routeGeometryData$, routeTimes$, images$, animatrix, imageMarkerOperator }: Props<T>,
     width: number,
 ) {
     const [{ geojson }] = useSubjectState(data$);
@@ -44,7 +45,7 @@ export function useSliderMarkerGroups<T extends { id: number; distanceFraction?:
     const [times] = useSubjectState(routeTimes$);
     const [images] = useSubjectState(images$);
     const [controls] = useSubjectState(animatrix.controls$);
-    const [selectedImageId] = useSubjectState(selectedImageId$);
+    const [selectedImageId] = useSubjectState(imageMarkerOperator.selectedImageId$);
 
     return getSliderMarkerGroups(images, geojson, geometry, times, controls.playbackPacing, width, selectedImageId);
 }

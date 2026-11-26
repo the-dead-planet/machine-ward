@@ -4,7 +4,7 @@ import { useOverlayDismiss } from '../useOverlayDismiss';
 const focusableSelector =
     'button:not(:disabled), [href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex="0"]';
 
-export const useDialog = () => {
+export const useDialog = (focusDialogOnOpen = false) => {
     const [render, setRender] = useState(true);
     const dialogRef = useRef<HTMLDivElement>(null);
     const close = () => setRender(false);
@@ -16,16 +16,17 @@ export const useDialog = () => {
     });
     useEffect(() => {
         const previousFocus = document.activeElement;
-        dialogRef.current
-            ?.querySelector<HTMLElement>(focusableSelector)
-            ?.focus();
+        const initialControl = focusDialogOnOpen
+            ? dialogRef.current
+            : dialogRef.current?.querySelector<HTMLElement>(focusableSelector);
+        initialControl?.focus({ preventScroll: true });
 
         return () => {
             if (
                 previousFocus instanceof HTMLElement &&
                 previousFocus.isConnected
             ) {
-                previousFocus.focus();
+                previousFocus.focus({ preventScroll: true });
             }
         };
     }, []);
@@ -42,7 +43,7 @@ export const useDialog = () => {
         const first = controls[0];
         const last = controls[controls.length - 1];
 
-        if (event.shiftKey && document.activeElement === first) {
+        if (event.shiftKey && (document.activeElement === first || document.activeElement === dialogRef.current)) {
             event.preventDefault();
             last?.focus();
         } else if (!event.shiftKey && document.activeElement === last) {

@@ -47,7 +47,6 @@ export const draggingImage$ = new BehaviorSubject<{
     id: number;
 } | null>(null);
 export const draggingPlacement$ = new BehaviorSubject<RoutePlacement | null>(null);
-export const selectedImageId$ = new BehaviorSubject<number | null>(null);
 export const IMAGE_MARKER_ANCHOR_ID = "route-story-image-anchor-hexagon";
 export const IMAGE_MARKER_OUTLINE_ID = "route-story-image-outline-circle";
 const thumbnailTranslate: [number, number] = [0, 0];
@@ -61,51 +60,6 @@ const countText = [
     "9+",
     ["to-string", ["get", "markerCount"]],
 ] satisfies ExpressionSpecification;
-export const expandedImageGroupId$ = new BehaviorSubject<number | null>(null);
-export const imageGroupOffset$ = new BehaviorSubject(0);
-
-export const shiftImageGroup = (
-    pagination: ImageGroupPagination,
-    direction: number,
-): void => {
-    imageGroupOffset$.next(
-        (((imageGroupOffset$.value - direction) % pagination.totalCount) +
-            pagination.totalCount) %
-            pagination.totalCount,
-    );
-};
-
-export const clearImageMarkerSelection = (): void => {
-    selectedImageId$.next(null);
-    expandedImageGroupId$.next(null);
-    imageGroupOffset$.next(0);
-};
-
-export const toggleImageMarkerGroup = (imageIds: number[]) => {
-    if (!imageIds.length) {
-        return;
-    }
-    if (imageIds.some((id) => id === selectedImageId$.value)) {
-        clearImageMarkerSelection();
-        return;
-    }
-    const imageId = imageIds[0];
-    imageGroupOffset$.next(0);
-    selectedImageId$.next(imageId);
-    expandedImageGroupId$.next(imageId);
-};
-
-export const selectMapImageMarker = (
-    imageId: number,
-    groupSize: number,
-    groupId = imageId,
-) => {
-    if (expandedImageGroupId$.value !== groupId || groupSize <= 1) {
-        imageGroupOffset$.next(0);
-    }
-    selectedImageId$.next(groupSize > 1 || selectedImageId$.value !== imageId ? imageId : null);
-    expandedImageGroupId$.next(groupSize > 1 ? groupId : null);
-};
 
 const thumbnailsFilter = [
     "all",

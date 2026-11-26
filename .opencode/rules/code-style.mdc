@@ -11,6 +11,7 @@ alwaysApply: true
 - Match VS Code's Format Document (`Alt+Shift+F`) using the selected workspace/user formatter; TypeScript and JavaScript currently use VS Code's built-in formatter. Do not invoke Prettier. If that formatter is unavailable, format changed code manually to match the surrounding style. Put nested JSX and JSX with more than five props on multiple lines.
 - Do not enforce a fixed line length, including an 80-character limit. Break lines for readability and logical grouping; avoid formatter runs that introduce width-only wrapping.
 - Keep configuration objects multiline, with one property per line, including nested controls and styles.
+- Write JSDoc blocks in multiline form, even for one sentence: put `/**` and `*/` on separate lines from the description.
 - Write self-explanatory code. Do not add `// ponytail:` markers, AI annotations, or comments narrating shortcuts. Comments describe behavior; record genuine trade-offs in the commit message.
 - Extract a block when a meaningful name such as `canDeleteProject`, `TimelineTicks`, or `useDragSelection` makes the codebase's language clearer. Do not extract code only to shorten a file.
 - Keep top-level code focused on feature intent rather than implementation details.

@@ -3,7 +3,7 @@ import { StyleSheet, View, ViewStyle } from "react-native";
 import { BehaviorSubject, Observable } from "rxjs";
 import { MarkerImage } from "@apparatus";
 import { ParsingResultWithError, useObservableState, useSubjectState } from "@tinker-chest";
-import { RouteStoryState, RouteStoryTranslationKey, RouteTimes, Animatrix, RouteGeometryData, getRouteDistanceFraction, getRouteTimelinePositionForDistanceFraction } from "@the-dead-planet/machine-ward-gears-route-story-common";
+import { RouteStoryState, RouteStoryTranslationKey, RouteTimes, Animatrix, RouteGeometryData, getRouteDistanceFraction, getRouteTimelinePositionForDistanceFraction, getPlayerSliderStep } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { SliderRange } from "@ui";
 import { Slider } from "@mobile-ui";
 import { currentPointRef$, linesRef$ } from "../../layers/RouteLayer";
@@ -13,8 +13,10 @@ import { MobileMarkerImageData } from "../../images/image-parser";
 import { MobileMap } from "@mobile-apparatus";
 import { MobilePlayerOperator } from "../../model";
 import { useSliderMarkerDrag } from "./slider-markers/useSliderMarkerDrag";
+import type { ImageMarkerOperator } from "@the-dead-planet/machine-ward-gears-route-story-common";
 
 interface Props {
+    imageMarkerOperator: ImageMarkerOperator;
     gearId: string;
     translationKey: typeof RouteStoryTranslationKey;
     map: MobileMap;
@@ -54,6 +56,7 @@ export const SliderWithMarkers: FC<Props> = ({
     progressMs$,
     viewportRanges$,
     playerOperator,
+    imageMarkerOperator,
     state$,
     animatrix,
     fitBoundsHandler,
@@ -66,7 +69,7 @@ export const SliderWithMarkers: FC<Props> = ({
     const [animationControls] = useSubjectState(animatrix.controls$);
     const [{ markerPlayerVisibility: showImageMarkers }] = useSubjectState(state$);
     const viewportRanges = useObservableState(viewportRanges$, []);
-    const markerDrag = useSliderMarkerDrag({ data$, routeGeometryData$, routeTimes$, images$, animatrix });
+    const markerDrag = useSliderMarkerDrag({ data$, routeGeometryData$, routeTimes$, images$, animatrix, imageMarkerOperator });
 
     const handleProgressChange = (value: number) => {
         const nextProgressMs = animationControls.playbackPacing === 'distance' && geojson && routeGeometryData && routeTimes
@@ -94,6 +97,7 @@ export const SliderWithMarkers: FC<Props> = ({
                     routeGeometryData$={routeGeometryData$}
                     routeTimes$={routeTimes$}
                     images$={images$}
+                    imageMarkerOperator={imageMarkerOperator}
                     animatrix={animatrix}
                     fitBoundsHandler={fitBoundsHandler}
                     drag={markerDrag}
@@ -106,7 +110,7 @@ export const SliderWithMarkers: FC<Props> = ({
                     : progressMs}
                 min={0}
                 max={animationControls.playbackPacing === 'distance' ? Math.max(routeGeometryData?.totalDistanceMeters ?? 0, 1) : routeTimes?.duration ?? 1}
-                step={animationControls.playbackPacing === 'distance' ? 1 : 1000}
+                step={getPlayerSliderStep(animationControls.playbackPacing)}
                 onChange={handleProgressChange}
                 color="tertiary"
                 activeGlow="glow"

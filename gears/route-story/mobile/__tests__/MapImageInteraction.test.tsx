@@ -9,12 +9,11 @@ import {
     draggingPlacement$,
     RouteGeometryData,
     updateImageDistanceFraction,
-    selectMapImageMarker,
-    clearImageMarkerSelection,
 } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { useMapImageInteraction } from "../src/images/useMapImageInteraction";
 import { MobileMarkerImageData } from "../src/images/image-parser";
 import { MapImageHitTarget } from "../src/images/model";
+import { ImageMarkerOperator } from "../../common/src/image-marker-operator";
 
 jest.mock("@the-dead-planet/machine-ward-gears-route-story-common", () => {
     const { BehaviorSubject } = jest.requireActual<typeof import("rxjs")>("rxjs");
@@ -33,10 +32,12 @@ jest.mock("@the-dead-planet/machine-ward-gears-route-story-common", () => {
         THUMBNAIL_IMAGE_SIZE: 50,
         getRoutePlacement: () => ({ distanceFraction: 0.5 }),
         updateImageDistanceFraction: jest.fn(),
-        selectMapImageMarker: jest.fn(),
-        clearImageMarkerSelection: jest.fn(),
     };
 });
+
+const imageMarkerOperator = new ImageMarkerOperator();
+const selectMapImageMarker = jest.spyOn(imageMarkerOperator, 'selectMapImageMarker');
+const clearImageMarkerSelection = jest.spyOn(imageMarkerOperator, 'clearImageMarkerSelection');
 
 test("claims cached hits only after animation, leaves the pager active, and preserves drag ownership and cancellation", async () => {
     const queryRenderedFeatures = jest.fn();
@@ -108,6 +109,7 @@ test("claims cached hits only after animation, leaves the pager active, and pres
             paginationTarget,
             paginationDimensions,
             markersReady,
+            imageMarkerOperator,
         ),
         { initialProps: { markersReady: true } },
     );

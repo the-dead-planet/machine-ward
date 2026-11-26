@@ -27,7 +27,6 @@ import { ImageGroupPager } from "./ImageGroupPager";
 import { useImageLayerAssets } from "./useImageLayerAssets";
 import { useImageConnectionsLayer } from "./useImageConnectionsLayer";
 import { useMapImageInteraction } from "./useMapImageInteraction";
-import { useImageMarkerKeyboard } from "./useImageMarkerKeyboard";
 
 export const ImagesLayer: FC<OverlayComponentProps<MapLibreMap> & WebRouteStoryProps> = ({
     map,
@@ -36,9 +35,9 @@ export const ImagesLayer: FC<OverlayComponentProps<MapLibreMap> & WebRouteStoryP
     data$,
     state$,
     routeGeometryData$,
-    routeTimes$,
     images$,
     playerOperator,
+    imageMarkerOperator,
 }) => {
     const theme = useTheme();
     const {
@@ -54,6 +53,7 @@ export const ImagesLayer: FC<OverlayComponentProps<MapLibreMap> & WebRouteStoryP
     const [{ markerLayerVisibility }] = useSubjectState(state$);
     const loadedImages = useLoadedWebImages(images);
     const [highlightIdsBySourceId] = useSubjectState(highlightIdsBySourceId$);
+    const [selectedImageId] = useSubjectState(imageMarkerOperator.selectedImageId$);
 
     useImageLayerAssets(
         map,
@@ -62,15 +62,15 @@ export const ImagesLayer: FC<OverlayComponentProps<MapLibreMap> & WebRouteStoryP
         imageHoverColor,
         badgeTextColor,
     );
-    useImageMarkerKeyboard({ map, data$, routeTimes$, routeGeometryData$, images$, animatrix });
 
     const sourceDataGeojson = useMemo(
         () => getImageSource(loadedImages, geojson, routeGeometryData),
         [loadedImages, geojson, routeGeometryData],
     );
-    const targetSource = useImageMarkerSource(map, sourceDataGeojson, displayImageId !== null);
+    const targetSource = useImageMarkerSource(map, sourceDataGeojson, displayImageId !== null, imageMarkerOperator);
     const reducedMotion = useReducedMotion();
-    const groupedSource = useAnimatedImageMarkerSource(targetSource, reducedMotion, true);
+    // Drag release clears selection; keyboard moves keep it.
+    const groupedSource = useAnimatedImageMarkerSource(targetSource, reducedMotion, selectedImageId !== null);
     const visibleSource = useMemo(
         () => getImageSourceWithMarkerVisibility(groupedSource, markerLayerVisibility),
         [groupedSource, markerLayerVisibility],
@@ -83,8 +83,10 @@ export const ImagesLayer: FC<OverlayComponentProps<MapLibreMap> & WebRouteStoryP
             imageColor,
             imageHoverColor,
             imageActiveColor,
+            imageMarkerOperator,
         );
     const handlers = useMapImageInteraction({
+        imageMarkerOperator,
         map,
         sourceDataGeojson,
         loadedImages,
@@ -171,6 +173,7 @@ export const ImagesLayer: FC<OverlayComponentProps<MapLibreMap> & WebRouteStoryP
             />
             {markerLayerVisibility && groupedSource.pagination && (
                 <ImageGroupPager
+                    imageMarkerOperator={imageMarkerOperator}
                     map={map}
                     pagination={groupedSource.pagination}
                     gearId={gearId}

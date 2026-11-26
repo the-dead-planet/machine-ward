@@ -5,6 +5,7 @@ import classNames from "classnames";
 import { MarkerImage, useMultipleTranslations } from "@apparatus";
 import { ParsingResultWithError, useObservableState, useSubjectState } from "@tinker-chest";
 import {
+    ImageMarkerOperator,
     RouteStoryState,
     RouteStoryTranslationKey,
     RouteTimes,
@@ -12,6 +13,7 @@ import {
     RouteGeometryData,
     getRouteDistanceFraction,
     getRouteTimelinePositionForDistanceFraction,
+    getPlayerSliderStep,
 } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { updateRouteLayer } from "../../tinkers";
 import { Slider } from "@web-ui";
@@ -23,6 +25,7 @@ import { WebPlayerOperator } from "../../model";
 import styles from './player-slider.module.css';
 
 interface Props {
+    imageMarkerOperator: ImageMarkerOperator;
     gearId: string;
     translationKey: typeof RouteStoryTranslationKey;
     map: maplibregl.Map;
@@ -50,6 +53,7 @@ export const SliderWithMarkers: FC<Props> = ({
     progressMs$,
     viewportRanges$,
     playerOperator,
+    imageMarkerOperator,
     state$,
     fitBoundsHandler,
     animatrix,
@@ -94,6 +98,7 @@ export const SliderWithMarkers: FC<Props> = ({
                         routeGeometryData$={routeGeometryData$}
                         routeTimes$={routeTimes$}
                         images$={images$}
+                        imageMarkerOperator={imageMarkerOperator}
                         fitBoundsHandler={fitBoundsHandler}
                         animatrix={animatrix}
                     />
@@ -106,7 +111,7 @@ export const SliderWithMarkers: FC<Props> = ({
                         : progressMs}
                     min={0}
                     max={animationControls.playbackPacing === 'distance' ? Math.max(routeGeometryData?.totalDistanceMeters ?? 0, 1) : routeTimes?.duration ?? 1}
-                    step={animationControls.playbackPacing === 'distance' ? 1 : 1000}
+                    step={getPlayerSliderStep(animationControls.playbackPacing)}
                     onChange={handleProgressChange}
                     color="tertiary"
                     activeGlow="glow"

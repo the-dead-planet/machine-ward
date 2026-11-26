@@ -2,14 +2,15 @@ import { act, renderHook } from "@testing-library/react-native";
 import { BehaviorSubject } from "rxjs";
 import { MobileMap } from "@mobile-apparatus";
 import {
-    expandedImageGroupId$,
     getGroupedImageSource,
     getImageSource,
     getImageSourceWithAnchors,
-    imageGroupOffset$,
-    selectedImageId$,
 } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { useImageMarkerSource } from "../src/images/useImageMarkerSource";
+import { ImageMarkerOperator } from "../../common/src/image-marker-operator";
+
+const imageMarkerOperator = new ImageMarkerOperator();
+const { selectedImageId$, expandedImageGroupId$, imageGroupOffset$ } = imageMarkerOperator;
 
 const mockCartomancer = {
     zoom$: new BehaviorSubject(10),
@@ -21,13 +22,9 @@ jest.mock("@mobile-apparatus", () => ({
     useMobileMachineWard: () => ({ cartomancer: mockCartomancer }),
 }));
 jest.mock("@the-dead-planet/machine-ward-gears-route-story-common", () => {
-    const { BehaviorSubject } = jest.requireActual<typeof import("rxjs")>("rxjs");
     return {
         ...jest.requireActual("../../common/src/layer-specification/images/images-sources"),
         ...jest.requireActual("../../common/src/layer-specification/images/grouped-image-source"),
-        selectedImageId$: new BehaviorSubject(null),
-        expandedImageGroupId$: new BehaviorSubject(null),
-        imageGroupOffset$: new BehaviorSubject(0),
     };
 });
 
@@ -71,7 +68,7 @@ test("reuses group projections for selection and hit targets, invalidating them 
     const { map, project, unproject } = createMap();
     const source = createSource(2, true);
     const hook = await renderHook(
-        ({ currentSource }: { currentSource: typeof source }) => useImageMarkerSource(map, currentSource, false),
+        ({ currentSource }: { currentSource: typeof source }) => useImageMarkerSource(map, currentSource, false, imageMarkerOperator),
         { initialProps: { currentSource: source } },
     );
     try {
@@ -122,7 +119,7 @@ test.each([50, 250, 1000])("selects among %i photos without native reprojection 
     await getGroupedImageSource(source, project, unproject, 0, null);
     expect(project).toHaveBeenCalledTimes(count);
     project.mockClear();
-    const hook = await renderHook(() => useImageMarkerSource(map, source, false));
+    const hook = await renderHook(() => useImageMarkerSource(map, source, false, imageMarkerOperator));
     try {
         await act(() => jest.advanceTimersByTimeAsync(100));
         expect(project).toHaveBeenCalledTimes(count);
@@ -152,7 +149,7 @@ test("ignores stale projections and retries after a native projection failure", 
         finishProjection = resolve;
     }));
     const source = createSource(1);
-    const hook = await renderHook(() => useImageMarkerSource(map, source, false));
+    const hook = await renderHook(() => useImageMarkerSource(map, source, false, imageMarkerOperator));
     try {
         await act(() => jest.advanceTimersByTimeAsync(100));
         await act(() => map.cameraMoving$.next(true));
@@ -179,7 +176,7 @@ test("retains paging geometry and the pager hit target while reusing expanded gr
     const { map, project, unproject } = createMap();
     const source = createSource(12, true);
     expandedImageGroupId$.next(0);
-    const hook = await renderHook(() => useImageMarkerSource(map, source, false));
+    const hook = await renderHook(() => useImageMarkerSource(map, source, false, imageMarkerOperator));
     try {
         await act(() => jest.advanceTimersByTimeAsync(100));
         const initialCalls = unproject.mock.calls.length;

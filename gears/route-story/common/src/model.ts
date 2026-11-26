@@ -4,6 +4,7 @@ import { ParsingResultWithError } from "@tinker-chest";
 import { Icons, SliderRange } from "@ui";
 import { FileOperator } from "./file-operator";
 import { PlayerOperator } from "./player-operator";
+import type { ImageMarkerOperator } from "./image-marker-operator";
 import { Animatrix } from "./animatrix";
 import { RouteGeometryData } from "./tinkers";
 
@@ -119,7 +120,9 @@ export interface RouteStoryProps<TMap, TChronoLens extends ChronoLens, TFile ext
     progressMs$: BehaviorSubject<number>;
     viewportRanges$: Observable<SliderRange[]>;
     fileOperator: FileOperator<TMap, TChronoLens, TFile, TImageData>;
+    resetStory: () => Promise<void>;
     playerOperator: PlayerOperator<TMap, TChronoLens, TFile, TImageData>;
+    imageMarkerOperator: ImageMarkerOperator;
     fitBoundsHandler: (map: TMap, boundingBox?: GeoJSON.BBox) => void;
 }
 
@@ -186,6 +189,15 @@ export enum RouteStoryTranslationKey {
     Play = 'play',
     Pause = 'pause',
     Image = 'image',
+    MoveImageBackward = 'move-image-backward',
+    MoveImageForward = 'move-image-forward',
+    MoveImageBackwardLargeStep = 'move-image-backward-large-step',
+    MoveImageForwardLargeStep = 'move-image-forward-large-step',
+    MoveImageStepDescription = 'move-image-step-description',
+    MoveImageLargeStepDescription = 'move-image-large-step-description',
+    MoveImageMakeAvailable = 'move-image-make-available',
+    MoveImageMakeUnavailable = 'move-image-make-unavailable',
+    MoveImageActivationHint = 'move-image-activation-hint',
     PanToImage = 'pan-to-image',
     ShowImageMarkers = 'show-image-markers',
     ShowImageLayer = 'show-image-layer',
