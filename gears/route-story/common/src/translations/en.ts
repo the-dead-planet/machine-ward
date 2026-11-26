@@ -64,7 +64,6 @@ const en: TranslationTable<GearTranslationKey | RouteStoryTranslationKey>['en'] 
     "move-image-forward-large-step": 'Move image forward by 1%',
     "move-image-step-description": 'With an image selected, move it by 1 metre in distance mode or 1 second in timeline mode.',
     "move-image-large-step-description": 'With an image selected, move it by 1% of the route distance or timeline duration.',
-    "move-image-hint": 'Use the movement shortcuts to position the selected image along the route.',
     "move-image-make-available": 'To make this shortcut available, show image markers on the map or in the open player.',
     "move-image-make-unavailable": 'To make this shortcut unavailable, hide image markers on both the map and the player.',
     "move-image-activation-hint": 'Select a marker on the map or in the player',

@@ -64,7 +64,6 @@ const nl: TranslationTable<GearTranslationKey | RouteStoryTranslationKey>['nl'] 
     "move-image-forward-large-step": 'Afbeelding 1% vooruit verplaatsen',
     "move-image-step-description": 'Verplaats de geselecteerde afbeelding 1 meter in afstandsmodus of 1 seconde in tijdlijnmodus.',
     "move-image-large-step-description": 'Verplaats de geselecteerde afbeelding 1% van de routeafstand of de tijdlijnduur.',
-    "move-image-hint": 'Gebruik de verplaatsingssneltoetsen om de geselecteerde afbeelding langs de route te plaatsen.',
     "move-image-make-available": 'Toon afbeeldingsmarkeringen op de kaart of in de geopende speler om de sneltoets beschikbaar te maken.',
     "move-image-make-unavailable": 'Verberg afbeeldingsmarkeringen op de kaart én in de speler om de sneltoets niet langer beschikbaar te maken.',
     "move-image-activation-hint": 'Selecteer een markering op de kaart of in de speler',

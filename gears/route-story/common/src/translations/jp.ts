@@ -64,7 +64,6 @@ const jp: TranslationTable<GearTranslationKey | RouteStoryTranslationKey>['jp'] 
     "move-image-forward-large-step": '画像を1%前に移動',
     "move-image-step-description": '選択した画像を距離モードでは1メートル、タイムラインモードでは1秒移動します。',
     "move-image-large-step-description": '選択した画像をルートの距離またはタイムラインの長さの1%分移動します。',
-    "move-image-hint": '移動ショートカットを使って、選択した画像をルート上に配置してください。',
     "move-image-make-available": 'このショートカットを利用できるようにするには、地図または開いているプレーヤーに画像マーカーを表示してください。',
     "move-image-make-unavailable": 'このショートカットを利用できないようにするには、地図とプレーヤーの両方で画像マーカーを非表示にしてください。',
     "move-image-activation-hint": '地図またはプレーヤーでマーカーを選択',

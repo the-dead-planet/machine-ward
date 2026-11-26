@@ -64,7 +64,6 @@ const pl: TranslationTable<GearTranslationKey | RouteStoryTranslationKey>['pl'] 
     "move-image-forward-large-step": 'Przesuń obraz do przodu o 1%',
     "move-image-step-description": 'Przesuń wybrany obraz o 1 metr w trybie odległości lub o 1 sekundę w trybie osi czasu.',
     "move-image-large-step-description": 'Przesuń wybrany obraz o 1% długości trasy lub czasu trwania osi czasu.',
-    "move-image-hint": 'Użyj skrótów przesuwania, aby umieścić wybrany obraz w odpowiednim miejscu na trasie.',
     "move-image-make-available": 'Aby skrót stał się dostępny, pokaż znaczniki obrazów na mapie lub w otwartym odtwarzaczu.',
     "move-image-make-unavailable": 'Aby skrót stał się niedostępny, ukryj znaczniki obrazów zarówno na mapie, jak i w odtwarzaczu.',
     "move-image-activation-hint": 'Zaznacz marker na mapie lub w odtwarzaczu',

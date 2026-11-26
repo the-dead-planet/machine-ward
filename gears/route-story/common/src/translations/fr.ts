@@ -64,7 +64,6 @@ const fr: TranslationTable<GearTranslationKey | RouteStoryTranslationKey>['fr'] 
     "move-image-forward-large-step": 'Avancer l’image de 1%',
     "move-image-step-description": 'Déplacer l’image sélectionnée de 1 mètre en mode distance ou de 1 seconde en mode chronologie.',
     "move-image-large-step-description": 'Déplacer l’image sélectionnée de 1% de la distance du parcours ou de la durée de la chronologie.',
-    "move-image-hint": 'Utilisez les raccourcis de déplacement pour positionner l’image sélectionnée le long du parcours.',
     "move-image-make-available": 'Pour rendre ce raccourci disponible, affichez les marqueurs d’image sur la carte ou dans le lecteur ouvert.',
     "move-image-make-unavailable": 'Pour rendre ce raccourci indisponible, masquez les marqueurs d’image sur la carte et dans le lecteur.',
     "move-image-activation-hint": 'Sélectionnez un marqueur sur la carte ou dans le lecteur',

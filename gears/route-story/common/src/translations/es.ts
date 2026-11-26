@@ -64,7 +64,6 @@ const es: TranslationTable<GearTranslationKey | RouteStoryTranslationKey>['es'] 
     "move-image-forward-large-step": 'Mover la imagen un 1% hacia adelante',
     "move-image-step-description": 'Con una imagen seleccionada, moverla 1 metro en modo distancia o 1 segundo en modo cronología.',
     "move-image-large-step-description": 'Con una imagen seleccionada, moverla un 1% de la distancia de la ruta o de la duración de la cronología.',
-    "move-image-hint": 'Usa los atajos de movimiento para colocar la imagen seleccionada a lo largo de la ruta.',
     "move-image-make-available": 'Para que el atajo esté disponible, muestra los marcadores de imagen en el mapa o en el reproductor abierto.',
     "move-image-make-unavailable": 'Para que el atajo deje de estar disponible, oculta los marcadores de imagen tanto en el mapa como en el reproductor.',
     "move-image-activation-hint": 'Selecciona un marcador en el mapa o en el reproductor',

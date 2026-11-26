@@ -192,7 +192,6 @@ export enum RouteStoryTranslationKey {
     MoveImageForwardLargeStep = 'move-image-forward-large-step',
     MoveImageStepDescription = 'move-image-step-description',
     MoveImageLargeStepDescription = 'move-image-large-step-description',
-    MoveImageHint = 'move-image-hint',
     MoveImageMakeAvailable = 'move-image-make-available',
     MoveImageMakeUnavailable = 'move-image-make-unavailable',
     MoveImageActivationHint = 'move-image-activation-hint',
