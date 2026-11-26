@@ -1,7 +1,7 @@
 import { FC, useRef, useState } from "react";
 import * as maplibregl from "maplibre-gl";
 import { ToolPopupProps, useMultipleTranslations } from "@apparatus";
-import { getDefaultRouteStoryState, imageMarkerSizeScale, THUMBNAIL_IMAGE_SIZE, CurrentPointStyle, RouteStoryLayerStylingPopupProps, RouteStoryLineStyle, RouteStoryState } from "@the-dead-planet/machine-ward-gears-route-story-common";
+import { getDefaultRouteStoryState, imageMarkerSizeScale, restoreRouteStoryStyling, THUMBNAIL_IMAGE_SIZE, CurrentPointStyle, RouteStoryLayerStylingPopupProps, RouteStoryLineStyle, RouteStoryState } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { useTheme } from "@ui";
 import { HudConnector, Popup, Tabstrip } from "@web-ui";
 import { useSubjectState } from "@tinker-chest";
@@ -159,7 +159,7 @@ export const LayerStylingPopup: FC<Props> = ({
                                 },
                                 secondary: hasCustomStyling(state, defaults) ? {
                                     label: restoreDefaultsLabel,
-                                    onPress: () => setState(defaults),
+                                    onPress: () => setState((previous) => restoreRouteStoryStyling(previous, defaults)),
                                 } : undefined,
                             }}
                             options={[

@@ -1,6 +1,14 @@
 import { defaultRouteStoryState } from "./layer-specification";
 import { currentPointIconNames, CurrentPointIconName, RouteStoryState } from "./model";
 
+export const restoreRouteStoryStyling = (state: RouteStoryState, defaults: RouteStoryState): RouteStoryState => ({
+    ...state,
+    routeStyleActive: defaults.routeStyleActive,
+    routeStyleInactive: defaults.routeStyleInactive,
+    currentPoint: defaults.currentPoint,
+    imageMarkerStyle: defaults.imageMarkerStyle,
+});
+
 const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null;
 
 const mergeKnownFields = <T extends object>(defaults: T, value: unknown): T => {

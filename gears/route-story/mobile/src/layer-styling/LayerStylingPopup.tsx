@@ -2,7 +2,7 @@ import { FC, useEffect, useRef, useState } from "react";
 import { BackHandler, HostInstance, ScrollView, StyleSheet, View } from "react-native";
 import { ToolPopupProps, useMultipleTranslations } from "@apparatus";
 import { useTheme } from "@ui";
-import { getDefaultRouteStoryState, imageMarkerSizeScale, THUMBNAIL_IMAGE_SIZE, CurrentPointStyle, RouteStoryLayerStylingPopupProps, RouteStoryLineStyle, RouteStoryState } from "@the-dead-planet/machine-ward-gears-route-story-common";
+import { getDefaultRouteStoryState, imageMarkerSizeScale, restoreRouteStoryStyling, THUMBNAIL_IMAGE_SIZE, CurrentPointStyle, RouteStoryLayerStylingPopupProps, RouteStoryLineStyle, RouteStoryState } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { useSubjectState } from "@tinker-chest";
 import { MobileMap } from "@mobile-apparatus";
 import { MobileRouteStoryProps } from "../model";
@@ -204,7 +204,7 @@ export const LayerStylingPopup: FC<Props> = ({
                                 },
                                 secondary: isDirty ? {
                                     label: restoreDefaultsLabel,
-                                    onPress: () => setState(defaults),
+                                    onPress: () => setState((previous) => restoreRouteStoryStyling(previous, defaults)),
                                 } : undefined,
                             }}
                             options={[
