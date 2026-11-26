@@ -168,8 +168,10 @@ describe("Route player alignment", () => {
                 expect(marker.ownerDocument.elementFromPoint(centerX, track.top + track.height / 2), "the slider receives pointers at the crossing").to.equal(range);
                 expect(marker.ownerDocument.elementFromPoint(centerX, bounds.bottom - 4), "the marker thumb remains reachable below the slider").to.equal(marker);
             });
-        cy.get('span[role="button"][aria-label*="Image"]').first()
-            .trigger("mouseover", "bottom", { waitForAnimations: false });
+        cy.document().then((document) => {
+            cy.get('span[role="button"][aria-label*="Image"]').first()
+                .trigger("mouseover", "bottom", { eventConstructor: "MouseEvent", relatedTarget: document.body });
+        });
         cy.get('span[role="button"][aria-label*="Image"]').first()
             .invoke("attr", "class").should("match", /highlight/);
         cy.get('span[role="button"][aria-label*="Image"]').first()
@@ -181,8 +183,10 @@ describe("Route player alignment", () => {
                 expect(readout.bottom).to.be.at.most(icon.top);
             });
         cy.get('[role="tooltip"]').should("not.exist");
-        cy.get('span[role="button"][aria-label*="Image"]').first()
-            .trigger("mouseout", "bottom", { waitForAnimations: false });
+        cy.document().then((document) => {
+            cy.get('span[role="button"][aria-label*="Image"]').first()
+                .trigger("mouseout", "bottom", { eventConstructor: "MouseEvent", relatedTarget: document.body });
+        });
         cy.get('span[role="button"][aria-label*="Image"]').first()
             .invoke("attr", "class").should("not.match", /highlight/);
         cy.get('span[role="button"][aria-label*="Image"]').first().siblings('span').should("not.exist");

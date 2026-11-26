@@ -1,8 +1,8 @@
 import { expect } from "chai";
-import { Cartomancer, ChronoLens, GearApparatus, ToolsStation } from "@apparatus";
+import { Cartomancer, ChronoLens, GearApparatus, ToolsStation, Translatron } from "@apparatus";
 import { GeoJson } from "@tinker-chest";
 import { SliderRange } from "@ui";
-import { RouteStoryGear, getRouteGeometryData, RouteStoryFile } from "../src";
+import { RouteStoryGear, getRouteGeometryData, RouteStoryFile, draggingImage$, draggingPlacement$ } from "../src";
 
 class TestRouteStoryGear extends RouteStoryGear<unknown, ChronoLens, RouteStoryFile, unknown> {
     public fitBounds = () => {};
@@ -18,6 +18,30 @@ class TestRouteStoryGear extends RouteStoryGear<unknown, ChronoLens, RouteStoryF
     public routeLayerComponent = () => null;
     public imagesLayerComponent = () => null;
 }
+
+it("cancels marker drags on disengage and teardown without moving the image", () => {
+    const gear = new TestRouteStoryGear({
+        cartomancer: new Cartomancer<unknown>(),
+        toolsStation: new ToolsStation<unknown>(),
+        translatron: new Translatron(),
+    } as GearApparatus<unknown, ChronoLens>);
+    gear.images$.next([{ id: 1, name: "marker.jpg", progress: 100, distanceFraction: 0.5 }]);
+    try {
+        for (const end of [gear.disengage, () => gear.cleanup()]) {
+            gear.imageMarkerOperator.toggleImageMarkerGroup([1]);
+            draggingImage$.next({ id: 1, interaction: "player" });
+            draggingPlacement$.next({ distanceFraction: 0.75, lngLat: { lng: 0, lat: 0 } });
+            end();
+            expect(draggingImage$.value).to.equal(null);
+            expect(draggingPlacement$.value).to.equal(null);
+            expect(gear.imageMarkerOperator.selectedImageId$.value).to.equal(null);
+            expect(gear.images$.value[0].distanceFraction).to.equal(0.5);
+        }
+    } finally {
+        draggingImage$.next(null);
+        draggingPlacement$.next(null);
+    }
+});
 
 it("clears marker selection when the story is reset and releases the loading flag if cleanup fails", async () => {
     const cartomancer = new Cartomancer<unknown>();

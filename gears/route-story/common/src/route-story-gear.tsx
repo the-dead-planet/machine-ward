@@ -24,7 +24,7 @@ import { getRouteGeometryData, RouteGeometryData } from "./tinkers";
 import { Icons, SliderRange } from "@ui";
 import * as Translations from "./translations";
 import { AnimationControlsType, Animatrix } from "./animatrix";
-import { defaultRouteStoryState } from "./layer-specification";
+import { defaultRouteStoryState, draggingImage$, draggingPlacement$ } from "./layer-specification";
 import { ImageMarkerOperator } from "./image-marker-operator";
 import { cleanUpRouteStoryState } from "./route-story-state";
 import { getVisibleRouteRanges } from "./player/player-slider/route-ranges";
@@ -291,7 +291,7 @@ export abstract class RouteStoryGear<TMap, TChronoLens extends ChronoLens, TFile
     };
 
     public disengage = () => {
-        this.imageMarkerOperator.clearImageMarkerSelection();
+        this.clearMarkerInteraction();
         this.apparatus.cartomancer.removeOverlay(this.imagesOverlayId);
         this.apparatus.cartomancer.removeOverlay(this.routeOverlayId);
         this.apparatus.toolsStation.removeToolPanel(this.animatrixToolId);
@@ -309,8 +309,14 @@ export abstract class RouteStoryGear<TMap, TChronoLens extends ChronoLens, TFile
     };
 
     public override cleanup(): void {
-        this.imageMarkerOperator.clearImageMarkerSelection();
+        this.clearMarkerInteraction();
         super.cleanup();
+    }
+
+    private clearMarkerInteraction(): void {
+        this.imageMarkerOperator.clearImageMarkerSelection();
+        draggingPlacement$.next(null);
+        draggingImage$.next(null);
     }
 
     public resetStory = async (): Promise<void> => {

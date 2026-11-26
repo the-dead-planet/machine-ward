@@ -11,7 +11,7 @@ import {
     RouteStoryTranslationKey,
 } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { WebRouteStoryProps } from "../model";
-import { getSliderStepDistanceFraction } from "../player/player-slider/slider-markers/tinkers";
+import { getMarkerSliderMax, getSliderStepDistanceFraction } from "../player/player-slider/slider-markers/tinkers";
 import { isLoadedWebImage } from "../hooks/useLoadedWebImages";
 
 type ImageMarkerShortcutContext = Pick<WebRouteStoryProps, "data$" | "routeTimes$" | "routeGeometryData$" | "images$" | "animatrix" | "state$" | "imageMarkerOperator"> & {
@@ -79,8 +79,9 @@ export const registerImageMarkerShortcuts = (
     );
 
     const { selectedImageId$ } = imageMarkerOperator;
-    const availability$ = combineLatest([draggingImage$, images$, selectedImageId$]).pipe(
-        map(([dragging, images, selectedId]) => dragging === null &&
+    const availability$ = combineLatest([draggingImage$, images$, selectedImageId$, routeTimes$, routeGeometryData$, animatrix.controls$]).pipe(
+        map(([dragging, images, selectedId, times, geometry, { playbackPacing }]) => dragging === null &&
+            times !== null && geometry !== null && getMarkerSliderMax(times, geometry, playbackPacing) !== null &&
             images.some((image) => image.id === selectedId && image.distanceFraction !== undefined),
         ),
         distinctUntilChanged(),

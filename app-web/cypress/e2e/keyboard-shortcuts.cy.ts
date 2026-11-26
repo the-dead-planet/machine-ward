@@ -20,9 +20,18 @@ describe("Keyboard shortcut overview", () => {
         cy.contains('[role="dialog"] p', /^Keyboard shortcuts$/).should("be.visible");
         const goToIndividuator = '[role="dialog"] header button[aria-label="Go to individuator"]';
         cy.contains('[role="tooltip"]', /^Go to individuator$/).should("not.exist");
-        cy.get(goToIndividuator).trigger('mouseover');
-        cy.contains('[role="tooltip"]', /^Go to individuator$/).should("be.visible");
-        cy.get(goToIndividuator).trigger('mouseout');
+        cy.window().then((window) => {
+            if (window.matchMedia('(hover: hover)').matches) {
+                const outside = window.document.body;
+                cy.get(goToIndividuator).trigger('mouseover', { eventConstructor: 'MouseEvent', relatedTarget: outside });
+                cy.contains('[role="tooltip"]', /^Go to individuator$/).should("be.visible");
+                cy.get(goToIndividuator).trigger('mouseout', { eventConstructor: 'MouseEvent', relatedTarget: outside });
+            } else {
+                cy.get(goToIndividuator).focus();
+                cy.contains('[role="tooltip"]', /^Go to individuator$/).should("be.visible");
+                cy.get('[role="dialog"]').focus();
+            }
+        });
         cy.contains('[role="tooltip"]', /^Go to individuator$/).should("not.exist");
         cy.get('[role="dialog"] thead th', { timeout: 20000 }).should("have.length", 4);
         cy.get('[role="dialog"] thead th').last().should("have.text", "Status");
