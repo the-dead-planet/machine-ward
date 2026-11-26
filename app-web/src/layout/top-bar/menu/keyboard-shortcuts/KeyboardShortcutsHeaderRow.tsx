@@ -7,10 +7,10 @@ export const KeyboardShortcutsHeaderRow: FC = () => {
     const { namespace, translationKey } = useWebMachineWard();
     const translate = useTranslate();
     const columns = [
-        translationKey.ShortcutLabel,
+        translationKey.Label,
         translationKey.ShortcutKeys,
-        translationKey.ShortcutDescription,
-        translationKey.ShortcutStatus,
+        translationKey.Description,
+        translationKey.Status,
     ];
 
     return (

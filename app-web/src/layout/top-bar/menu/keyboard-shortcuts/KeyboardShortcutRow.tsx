@@ -15,7 +15,7 @@ export const KeyboardShortcutRow: FC<Props> = ({ shortcut, shortcutsEnabled }) =
     const translate = useTranslate();
     const availability = translate({
         n: namespace,
-        t: shortcut.present ? translationKey.ShortcutAvailable : translationKey.ShortcutUnavailable,
+        t: shortcut.present ? translationKey.Available : translationKey.Unavailable,
     });
     const guidance = shortcut.present ? shortcut.makeUnavailableHint : shortcut.requirements;
     const tooltip = guidance ? `${availability} - ${translate(guidance)}` : availability;
