@@ -19,7 +19,6 @@ describe("Keysmith", () => {
             id: "route.move-backward",
             label: { n: "route", t: "move-backward-label" },
             description: { n: "route", t: "move-backward" },
-            hint: { n: "route", t: "move-backward-hint" },
             binding: { key: "ArrowLeft" },
             allowRepeat: true,
             availability$: of(true),
@@ -30,7 +29,6 @@ describe("Keysmith", () => {
         expect(definitions.map(({ id }) => id)).to.deep.equal(["route.move-backward", "route.move-forward"]);
         expect(definitions[0].description).to.deep.equal({ n: "route", t: "move-backward" });
         expect(definitions[0].label).to.deep.equal({ n: "route", t: "move-backward-label" });
-        expect(definitions[0].hint).to.deep.equal({ n: "route", t: "move-backward-hint" });
         expect(definitions[0].binding).to.deep.equal({ key: "ArrowLeft" });
         expect(definitions[0].allowRepeat).to.equal(true);
         unregister();
@@ -56,7 +54,6 @@ describe("Keysmith", () => {
             id: "route.move-forward",
             label: { n: "route", t: "move-forward-label" },
             description: { n: "route", t: "move-forward" },
-            hint: { n: "route", t: "move-forward-hint" },
             binding: { key: "ArrowRight", control: true },
             availability$,
             presence$,
@@ -107,7 +104,6 @@ describe("Keysmith", () => {
             id: "first",
             label: { n: "test", t: "first-label" },
             description: { n: "test", t: "first" },
-            hint: { n: "test", t: "first-hint" },
             binding: { key: "ArrowLeft" },
             availability$: of(true),
             execute: () => calls.push("first"),

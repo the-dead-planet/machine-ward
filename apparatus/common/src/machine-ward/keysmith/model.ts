@@ -25,10 +25,6 @@ export interface ShortcutDefinition {
      */
     activationHint?: TranslationId;
     /**
-     * Guidance for a contextual UI, separate from the overview.
-     */
-    hint: TranslationId;
-    /**
      * How to make an absent shortcut present.
      */
     requirements?: TranslationId;

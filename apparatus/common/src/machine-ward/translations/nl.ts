@@ -2,16 +2,15 @@ import { TranslationTable } from "../translatron";
 import { MachineTranslationKey } from "../model";
 
 const nl: TranslationTable<MachineTranslationKey>['nl'] = {
-    'shortcut-active': 'Actief',
-    'shortcut-inactive': 'Inactief',
+    enabled: 'Ingeschakeld',
+    disabled: 'Uitgeschakeld',
     'shortcut-status': 'Status',
     'filter-shortcut-keys': 'Filteren op toets',
     'all-shortcut-keys': 'Alle toetsen',
-    'no-matching-shortcut-keys': 'Geen sneltoetsen komen overeen met deze toetsen.',
-    'shortcut-requirements': 'Gebruik',
     'shortcut-available': 'Beschikbaar',
     'shortcut-unavailable': 'Niet beschikbaar',
     'keyboard-shortcuts': 'Sneltoetsen',
+    'keysmith': 'Toetsensmid',
     'shortcut-label': 'Naam',
     'shortcut-keys': 'Toetscombinatie',
     'shortcut-description': 'Beschrijving',

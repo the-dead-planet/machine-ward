@@ -92,6 +92,7 @@ export const LayoutMenu: FC = () => {
             {openDialog === 'keyboard-shortcuts' ? (
                 <KeyboardShortcutsDialog
                     onClose={() => setOpenDialog(null)}
+                    onOpenIndividuator={() => setOpenDialog('individuator')}
                 />
             ) : null}
         </>

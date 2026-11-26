@@ -2,16 +2,15 @@ import { TranslationTable } from "../translatron";
 import { MachineTranslationKey } from "../model";
 
 const jp: TranslationTable<MachineTranslationKey>['jp'] = {
-    'shortcut-active': '有効',
-    'shortcut-inactive': '無効',
+    enabled: '有効',
+    disabled: '無効',
     'shortcut-status': '状態',
     'filter-shortcut-keys': 'キーで絞り込む',
     'all-shortcut-keys': 'すべてのキー',
-    'no-matching-shortcut-keys': 'これらのキーに一致するショートカットはありません。',
-    'shortcut-requirements': '使い方',
     'shortcut-available': '利用可能',
     'shortcut-unavailable': '利用不可',
     'keyboard-shortcuts': 'キーボードショートカット',
+    'keysmith': 'キー工房',
     'shortcut-label': '名前',
     'shortcut-keys': 'キーの組み合わせ',
     'shortcut-description': '説明',

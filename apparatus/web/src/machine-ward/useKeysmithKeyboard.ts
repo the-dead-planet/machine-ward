@@ -1,8 +1,17 @@
 import { useEffect } from "react";
 import { useWebMachineWard } from "./useWebMachineWard";
 
+const shortcutOwningControls = [
+    'input', 'textarea', 'select', '[contenteditable]:not([contenteditable="false"])',
+    'dialog', '[role="dialog"]', '[role="alertdialog"]',
+    '[role="slider"]', '[role="spinbutton"]', '[role="separator"]',
+    '[role="combobox"]', '[role="listbox"]', '[role="menu"]', '[role="menubar"]',
+    '[role="tablist"]', '[role="tree"]', '[role="grid"]', '[role="radiogroup"]',
+    '[role="toolbar"]', '[aria-haspopup][aria-expanded="true"]',
+].join(', ');
+
 /**
- * Dispatch page shortcuts without taking over focused controls, dialogs, or text composition.
+ * Dispatch page shortcuts without taking over menus, dialogs, or text composition.
  */
 export const useKeysmithKeyboard = () => {
     const { keysmith, cartomancer, individuator } = useWebMachineWard();
@@ -13,11 +22,14 @@ export const useKeysmithKeyboard = () => {
                 return;
             }
             const target = event.target;
-            const canvas = cartomancer.map?.getCanvas();
-            if (!(target instanceof HTMLElement) || (target !== document.body && target !== canvas && !target.hasAttribute("data-keysmith-target"))) {
+            if (!(target instanceof Element) || target.closest(shortcutOwningControls)) {
                 return;
             }
-            if (target.isContentEditable || target.closest('dialog, [role="dialog"], [role="alertdialog"]')) {
+            const canvas = cartomancer.map?.getCanvas();
+            if (!event.key.startsWith('Arrow') && target !== document.body && target !== canvas) {
+                return;
+            }
+            if (document.querySelector('dialog[open], [role="dialog"][aria-modal="true"], [role="alertdialog"][aria-modal="true"]')) {
                 return;
             }
             if (keysmith.handleKey({
@@ -40,7 +52,7 @@ export const useKeysmithKeyboard = () => {
         };
         window.addEventListener("keydown", handleKeyDown);
         window.addEventListener("keydown", handleMapKeyDown, true);
-        
+
         return () => {
             window.removeEventListener("keydown", handleKeyDown);
             window.removeEventListener("keydown", handleMapKeyDown, true);

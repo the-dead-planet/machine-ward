@@ -7,9 +7,10 @@ import styles from "./keyboard-shortcuts-dialog.module.css";
 
 interface Props {
     shortcut: ShortcutStatus;
+    shortcutsEnabled: boolean;
 }
 
-export const KeyboardShortcutRow: FC<Props> = ({ shortcut }) => {
+export const KeyboardShortcutRow: FC<Props> = ({ shortcut, shortcutsEnabled }) => {
     const { namespace, translationKey } = useWebMachineWard();
     const translate = useTranslate();
     const availability = translate({
@@ -27,7 +28,7 @@ export const KeyboardShortcutRow: FC<Props> = ({ shortcut }) => {
                 </Text>
             </th>
             <td>
-                <Text usage="caption" color="primary" disabled={!shortcut.present} className={styles["key-combination"]}>
+                <Text usage="caption" color="primary" disabled={!shortcutsEnabled || !shortcut.present} className={styles["key-combination"]}>
                     {getKeyBindingLabels(shortcut.binding).map((label, index) => (
                         <kbd key={index} className={styles["keys"]}>{label}</kbd>
                     ))}

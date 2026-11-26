@@ -12,9 +12,13 @@ const de: TranslationTable<IndividuatorTranslationKey>['de'] = {
     theme: 'Thema',
     "confirm-before-leave": 'Bestätigen vor Verlassen',
     "enable-keyboard-shortcuts": 'Tastenkürzel aktivieren',
-    "go-to-keyboard-shortcuts": 'Zu den Tastenkürzeln',
-    "go-to": 'Öffnen',
+    "go-to-keysmith": 'Tastenschmied öffnen',
+    "go-to-individuator": 'Individuator öffnen',
     "debug-mode": 'Debug-Modus',
+    "unsaved-change": 'Ungespeicherte Änderung',
+    "unsaved-change-count": '{{count}} ungespeicherte Änderung',
+    "unsaved-changes-count": '{{count}} ungespeicherte Änderungen',
+    "unsaved-changes-many-count": '{{count}} ungespeicherte Änderungen',
 };
 
 export default de;

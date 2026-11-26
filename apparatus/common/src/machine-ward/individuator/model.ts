@@ -32,7 +32,11 @@ export enum IndividuatorTranslationKey {
     Theme = 'theme',
     ConfirmBeforeLeave = 'confirm-before-leave',
     EnableKeyboardShortcuts = 'enable-keyboard-shortcuts',
-    GoToKeyboardShortcuts = 'go-to-keyboard-shortcuts',
-    GoTo = 'go-to',
+    GoToKeysmith = 'go-to-keysmith',
+    GoToIndividuator = 'go-to-individuator',
     DebugMode = 'debug-mode',
+    UnsavedChange = 'unsaved-change',
+    UnsavedChangeCount = 'unsaved-change-count',
+    UnsavedChangesCount = 'unsaved-changes-count',
+    UnsavedChangesManyCount = 'unsaved-changes-many-count',
 };

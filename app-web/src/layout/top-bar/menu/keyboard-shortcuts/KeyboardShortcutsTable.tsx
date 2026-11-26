@@ -9,6 +9,7 @@ import styles from "./keyboard-shortcuts-dialog.module.css";
 interface Props {
     title: string;
     shortcuts: readonly ShortcutStatus[];
+    shortcutsEnabled: boolean;
 }
 
 const groupShortcutsByOwner = (shortcuts: readonly ShortcutStatus[], defaultOwner: TranslationId) => {
@@ -26,7 +27,7 @@ const groupShortcutsByOwner = (shortcuts: readonly ShortcutStatus[], defaultOwne
     return groups;
 };
 
-export const KeyboardShortcutsTable: FC<Props> = ({ title, shortcuts }) => {
+export const KeyboardShortcutsTable: FC<Props> = ({ title, shortcuts, shortcutsEnabled }) => {
     const { namespace, translationKey } = useWebMachineWard();
     const translate = useTranslate();
     const groups = groupShortcutsByOwner(shortcuts, { n: namespace, t: translationKey.MachineWard });
@@ -47,7 +48,7 @@ export const KeyboardShortcutsTable: FC<Props> = ({ title, shortcuts }) => {
                             </th>
                         </tr>
                         {group.shortcuts.map((shortcut) => (
-                            <KeyboardShortcutRow key={shortcut.id} shortcut={shortcut} />
+                            <KeyboardShortcutRow key={shortcut.id} shortcut={shortcut} shortcutsEnabled={shortcutsEnabled} />
                         ))}
                     </tbody>
                 ))}

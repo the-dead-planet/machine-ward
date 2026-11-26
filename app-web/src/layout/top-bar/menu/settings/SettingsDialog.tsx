@@ -42,6 +42,7 @@ export const SettingsDialog: FC<Props> = ({ onClose, onOpenKeyboardShortcuts }) 
     };
     const unsavedFor = (key: keyof typeof changed) => changed[key] ? unsaved : undefined;
     const unsavedCount = Object.values(changed).filter(Boolean).length;
+    const unsavedPlural = new Intl.PluralRules(Translatron.languages[savedSettings.language].locale).select(unsavedCount);
 
     return (
         <Dialog
@@ -55,7 +56,9 @@ export const SettingsDialog: FC<Props> = ({ onClose, onOpenKeyboardShortcuts }) 
                 <Text usage="caption" color="primary" role="status" className={styles['unsaved-count']}>
                     {unsavedCount > 0 && translate({
                         n: individuator.namespace,
-                        t: unsavedCount === 1 ? IndividuatorTranslationKey.UnsavedChangeCount : IndividuatorTranslationKey.UnsavedChangesCount,
+                        t: unsavedPlural === 'one' ? IndividuatorTranslationKey.UnsavedChangeCount
+                            : unsavedPlural === 'many' ? IndividuatorTranslationKey.UnsavedChangesManyCount
+                            : IndividuatorTranslationKey.UnsavedChangesCount,
                         p: { count: unsavedCount },
                     })}
                 </Text>

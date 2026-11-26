@@ -12,9 +12,13 @@ const jp: TranslationTable<IndividuatorTranslationKey>['jp'] = {
     theme: 'テーマ',
     "confirm-before-leave": 'ページを離れる前に確認',
     "enable-keyboard-shortcuts": 'キーボードショートカットを有効にする',
-    "go-to-keyboard-shortcuts": 'キーボードショートカットを表示',
-    "go-to": '表示',
+    "go-to-keysmith": 'キー工房を表示',
+    "go-to-individuator": 'インディヴィデュエーターを開く',
     "debug-mode": 'デバッグモード',
+    "unsaved-change": '未保存の変更',
+    "unsaved-change-count": '未保存の変更：{{count}}件',
+    "unsaved-changes-count": '未保存の変更：{{count}}件',
+    "unsaved-changes-many-count": '未保存の変更：{{count}}件',
 };
 
 export default jp;

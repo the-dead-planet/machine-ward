@@ -12,9 +12,13 @@ const nl: TranslationTable<IndividuatorTranslationKey>['nl'] = {
     theme: 'Thema',
     "confirm-before-leave": 'Bevestigen voor vertrek',
     "enable-keyboard-shortcuts": 'Sneltoetsen inschakelen',
-    "go-to-keyboard-shortcuts": 'Naar de sneltoetsen',
-    "go-to": 'Ga naar',
+    "go-to-keysmith": 'Ga naar toetsensmid',
+    "go-to-individuator": 'Ga naar individuator',
     "debug-mode": 'Debugmodus',
+    "unsaved-change": 'Niet-opgeslagen wijziging',
+    "unsaved-change-count": '{{count}} niet-opgeslagen wijziging',
+    "unsaved-changes-count": '{{count}} niet-opgeslagen wijzigingen',
+    "unsaved-changes-many-count": '{{count}} niet-opgeslagen wijzigingen',
 };
 
 export default nl;
