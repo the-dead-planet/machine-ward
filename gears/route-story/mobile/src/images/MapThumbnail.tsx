@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { Platform, StyleSheet, View } from "react-native";
-import Svg, { Circle, ClipPath, Defs, Image } from "react-native-svg";
+import Svg, { ClipPath, Defs, Image, Path } from "react-native-svg";
 import { Images } from "@maplibre/maplibre-react-native";
 import RNFS from "react-native-fs";
-import { getOutlinedThumbnailId, MAP_THUMBNAIL_SIZE, MAP_THUMBNAIL_BORDER_SIZE, OUTLINED_MAP_THUMBNAIL_SIZE } from "@the-dead-planet/machine-ward-gears-route-story-common";
+import { getOutlinedThumbnailId, getImageMarkerShapePath, MAP_THUMBNAIL_SIZE, MAP_THUMBNAIL_BORDER_SIZE, OUTLINED_MAP_THUMBNAIL_SIZE, ImageMarkerShape } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { glitchmitter } from "@apparatus";
 import { determineSize, extractFilePathFromData } from "./image-parser";
 
@@ -19,6 +19,7 @@ const styles = StyleSheet.create({
 interface Props {
     imageId: string;
     uri: string;
+    shape: ImageMarkerShape;
     outlineColors?: string[];
 }
 
@@ -52,10 +53,12 @@ const MapThumbnailSprite = ({
     imageId,
     imageUri,
     outlineColor,
+    shape,
 }: {
     imageId: string;
     imageUri: string;
     outlineColor?: string;
+    shape: ImageMarkerShape;
 }) => {
     const [svg, setSvg] = useState<Svg | null>(null);
     const [loaded, setLoaded] = useState(Platform.OS === "android");
@@ -99,16 +102,12 @@ const MapThumbnailSprite = ({
                 viewBox={`0 0 ${size} ${size}`}
             >
                 <Defs>
-                    <ClipPath id="thumbnail-circle">
-                        <Circle
-                            cx="50%"
-                            cy="50%"
-                            r={outlineColor ? MAP_THUMBNAIL_SIZE / 2 : "50%"}
-                        />
+                    <ClipPath id="thumbnail-mask">
+                        <Path d={getImageMarkerShapePath(shape, MAP_THUMBNAIL_SIZE, padding)} />
                     </ClipPath>
                 </Defs>
                 {outlineColor && (
-                    <Circle cx="50%" cy="50%" r="50%" fill={outlineColor} />
+                    <Path d={getImageMarkerShapePath(shape, size)} fill={outlineColor} />
                 )}
                 <Image
                     href={{ uri: imageUri }}
@@ -117,7 +116,7 @@ const MapThumbnailSprite = ({
                     width={MAP_THUMBNAIL_SIZE}
                     height={MAP_THUMBNAIL_SIZE}
                     preserveAspectRatio="xMidYMid slice"
-                    clipPath="url(#thumbnail-circle)"
+                    clipPath="url(#thumbnail-mask)"
                     onLoad={() => {
                         if (Platform.OS !== "android") {
                             setLoaded(true);
@@ -129,9 +128,10 @@ const MapThumbnailSprite = ({
     );
 };
 
-export const CircularMapThumbnail = ({
+export const MapThumbnail = ({
     imageId,
     uri,
+    shape,
     outlineColors = [],
 }: Props) => {
     const imageUri = useThumbnailImage(uri);
@@ -140,13 +140,14 @@ export const CircularMapThumbnail = ({
     }
     return (
         <>
-            <MapThumbnailSprite imageId={imageId} imageUri={imageUri} />
+            <MapThumbnailSprite key={imageId} imageId={imageId} imageUri={imageUri} shape={shape} />
             {[...new Set(outlineColors)].map((color) => (
                 <MapThumbnailSprite
                     key={getOutlinedThumbnailId(imageId, color)}
                     imageId={getOutlinedThumbnailId(imageId, color)}
                     imageUri={imageUri}
                     outlineColor={color}
+                    shape={shape}
                 />
             ))}
         </>

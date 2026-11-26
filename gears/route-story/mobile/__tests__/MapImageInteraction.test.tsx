@@ -23,11 +23,8 @@ jest.mock("@the-dead-planet/machine-ward-gears-route-story-common", () => {
         MAP_IMAGE_MARKER_OFFSET_Y: -35,
         MAP_IMAGE_ANCHOR_SIDE: 4,
         MAP_IMAGE_MARKER_OUTLINE_WIDTH: 2,
-        getMapImageThumbnailOffsetY: (
-            groupSize: number | undefined,
-            scale = 1,
-            offsetY = -35,
-        ) => offsetY - (groupSize === 1 ? (scale - 1) * 25 : 0),
+        getMapImageThumbnailOffsetY: jest.requireActual("../../common/src/tinkers/images").getMapImageThumbnailOffsetY,
+        isInsideImageMarker: jest.requireActual("../../common/src/tinkers/images").isInsideImageMarker,
         MAP_IMAGE_COUNT_BADGE_OFFSET: [20, -20],
         THUMBNAIL_IMAGE_SIZE: 50,
         getRoutePlacement: () => ({ distanceFraction: 0.5 }),

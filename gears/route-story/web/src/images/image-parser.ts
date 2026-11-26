@@ -13,7 +13,6 @@ export interface WebMarkerImageData {
 export const parseImage = async (
     e: ProgressEvent<FileReader>,
     file: File,
-    options: { shape?: ResizeImageOptions['shape'] } = {}
 ): Promise<{
     data?: string;
     bitmap?: ImageBitmap;
@@ -22,17 +21,15 @@ export const parseImage = async (
     error?: string;
     lngLat?: LngLat;
 }> => {
-    const { shape } = options;
     const buffer = await file.arrayBuffer();
     const exif = EXIF.readFromBinaryFile(buffer) as false | ExifData;
 
     let bitmap: ImageBitmap | undefined;
     let thumbnailBitmap: ImageBitmap | undefined;
     try {
-        // TODO: Only leave full size original ratio and add shape processing in the component - user can select what shapes they want for thumbnails and display
         [bitmap, thumbnailBitmap] = await Promise.all([
             resizeImage(e.target?.result, { targetSize: FULL_SIZE_IMAGE_SIZE }),
-            resizeImage(e.target?.result, { targetSize: MAP_THUMBNAIL_SIZE  , shape }),
+            resizeImage(e.target?.result, { targetSize: MAP_THUMBNAIL_SIZE, squareCrop: true }),
         ]);
     } catch (err) {
         glitchmitter.transmit('Error resizing image', err);
@@ -49,9 +46,9 @@ export const parseImage = async (
     };
 };
 
-export interface ResizeImageOptions {
+interface ResizeImageOptions {
     targetSize?: number;
-    shape?: 'circle' | 'square',
+    squareCrop?: boolean;
 }
 
 /**
@@ -63,8 +60,7 @@ const resizeImage = (
     result?: FileReader['result'],
     options: ResizeImageOptions = {}
 ): Promise<ImageBitmap> => {
-    const { targetSize = 200, shape } = options;
-    const keepAspectRatio: boolean = shape === 'square' || shape === 'circle';
+    const { targetSize = 200, squareCrop = false } = options;
 
     return new Promise((resolve, reject) => {
         if (!result) {
@@ -82,25 +78,12 @@ const resizeImage = (
                 sourceHeight,
                 targetWidth,
                 targetHeight,
-            } = getResizeDimensions(img, targetSize, { keepAspectRatio });
+            } = getResizeDimensions(img, targetSize, { keepAspectRatio: squareCrop });
 
             const canvas = document.createElement("canvas");
             canvas.width = targetWidth;
             canvas.height = targetHeight;
             const ctx = canvas.getContext("2d")!;
-
-            if (shape === 'circle') {
-                ctx.beginPath();
-                ctx.arc(
-                    targetWidth / 2,
-                    targetHeight / 2,
-                    Math.min(targetWidth, targetHeight) / 2,
-                    0,
-                    Math.PI * 2
-                );
-                ctx.closePath();
-                ctx.clip();
-            }
 
             ctx.drawImage(
                 img,

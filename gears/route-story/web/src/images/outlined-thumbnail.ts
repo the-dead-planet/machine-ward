@@ -1,20 +1,22 @@
-import { MAP_THUMBNAIL_BORDER_SIZE, MAP_THUMBNAIL_SIZE, OUTLINED_MAP_THUMBNAIL_SIZE } from "@the-dead-planet/machine-ward-gears-route-story-common";
+import { getImageMarkerShapePath, MAP_THUMBNAIL_BORDER_SIZE, MAP_THUMBNAIL_SIZE, OUTLINED_MAP_THUMBNAIL_SIZE, ImageMarkerShape } from "@the-dead-planet/machine-ward-gears-route-story-common";
 
-export const getOutlinedThumbnail = (image: ImageBitmap, color: string): ImageBitmap => {
-    const canvas = new OffscreenCanvas(OUTLINED_MAP_THUMBNAIL_SIZE, OUTLINED_MAP_THUMBNAIL_SIZE);
+export const getOutlinedThumbnail = (image: ImageBitmap, color?: string, shape: ImageMarkerShape = 'circle'): ImageBitmap => {
+    const size = color ? OUTLINED_MAP_THUMBNAIL_SIZE : MAP_THUMBNAIL_SIZE;
+    const inset = color ? MAP_THUMBNAIL_BORDER_SIZE : 0;
+    const canvas = new OffscreenCanvas(size, size);
     const context = canvas.getContext("2d");
     if (!context) {
         throw new Error("Cannot render map thumbnail outline");
     }
-    const radius = OUTLINED_MAP_THUMBNAIL_SIZE / 2;
-    context.fillStyle = color;
-    context.beginPath();
-    context.arc(radius, radius, radius, 0, Math.PI * 2);
-    context.fill();
+    if (color) {
+        context.fillStyle = color;
+        context.fill(new Path2D(getImageMarkerShapePath(shape, size)));
+    }
+    context.clip(new Path2D(getImageMarkerShapePath(shape, MAP_THUMBNAIL_SIZE, inset)));
     context.drawImage(
         image,
-        MAP_THUMBNAIL_BORDER_SIZE,
-        MAP_THUMBNAIL_BORDER_SIZE,
+        inset,
+        inset,
         MAP_THUMBNAIL_SIZE,
         MAP_THUMBNAIL_SIZE,
     );

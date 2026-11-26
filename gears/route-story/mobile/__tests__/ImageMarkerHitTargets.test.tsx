@@ -113,6 +113,40 @@ test("reuses group projections for selection and hit targets, invalidating them 
     }
 });
 
+test("regroups resized image markers without native reprojection or the camera debounce", async () => {
+    const { map, project } = createMap();
+    const source = createSource(2, true);
+    source.features[1].geometry.coordinates = [0.55, 0];
+    const hook = await renderHook(
+        ({ currentSource }: { currentSource: typeof source }) => useImageMarkerSource(map, currentSource, false, imageMarkerOperator),
+        { initialProps: { currentSource: source } },
+    );
+    try {
+        await act(() => jest.advanceTimersByTimeAsync(100));
+        expect(hook.result.current.hitTargets.current).toHaveLength(4);
+
+        await hook.rerender({
+            currentSource: {
+                ...source,
+                features: source.features.map((feature) => ({
+                    ...feature,
+                    properties: { ...feature.properties, markerSizeScale: 1.2, markerShape: "square" },
+                })),
+            },
+        });
+
+        expect(project).toHaveBeenCalledTimes(2);
+        expect(hook.result.current.hitTargets.current).toHaveLength(2);
+        expect(hook.result.current.hitTargets.current[0].feature.properties).toMatchObject({
+            markerCount: 2,
+            markerShape: "square",
+            markerSizeScale: 1.2,
+        });
+    } finally {
+        await hook.unmount();
+    }
+});
+
 test.each([50, 250, 1000])("selects among %i photos without native reprojection or the camera debounce", async (count) => {
     const { map, project, unproject } = createMap();
     const source = createSource(count);

@@ -210,6 +210,19 @@ describe("Expanded map image groups", () => {
         expect(Math.hypot(centers[0][0] - centers[1][0], centers[0][1] - centers[1][1])).to.be.closeTo(58, 0.00001);
     });
 
+    it("leaves room for the corners of large square thumbnails in an expanded group", async () => {
+        const source = sourceFor(6);
+        for (const { properties } of source.features) {
+            properties.markerShape = "square";
+            properties.markerSizeScale = 1.2;
+        }
+        const expanded = await getGroupedImageSource(source, identity, identity, 0, 0);
+        expect(visibleIds(expanded)).to.have.length(6);
+        const [first, second] = expanded.features.map(({ geometry }) => geometry.coordinates);
+        const centerSpacing = Math.hypot(first[0] - second[0], first[1] - second[1]);
+        expect(centerSpacing).to.be.greaterThan(60 * Math.SQRT2);
+    });
+
     it("shifts a five-image window one image at a time and wraps in both directions", async () => {
         const source = sourceFor(23);
         for (const [offset, ids] of [

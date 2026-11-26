@@ -6,7 +6,7 @@ import type { Map as MapLibreMap } from "maplibre-gl";
 import { useImageLayerAssets } from "../../src/images/useImageLayerAssets";
 
 it("reuses outlined bitmaps for position edits and rebuilds only changed thumbnails or colors", async () => {
-    const globals = ["IS_REACT_ACT_ENVIRONMENT", "Image", "OffscreenCanvas"];
+    const globals = ["IS_REACT_ACT_ENVIRONMENT", "Image", "OffscreenCanvas", "Path2D"];
     const descriptors = globals.map((name) => Object.getOwnPropertyDescriptor(globalThis, name));
     let rasterizations = 0;
     class Canvas {
@@ -14,7 +14,7 @@ it("reuses outlined bitmaps for position edits and rebuilds only changed thumbna
             rasterizations++;
         }
         public getContext() {
-            return { beginPath() {}, arc() {}, fill() {}, drawImage() {} };
+            return { clip() {}, fill() {}, drawImage() {} };
         }
         public transferToImageBitmap() {
             return {};
@@ -26,7 +26,7 @@ it("reuses outlined bitmaps for position edits and rebuilds only changed thumbna
             this.onload();
         }
     }
-    for (const [name, value] of Object.entries({ IS_REACT_ACT_ENVIRONMENT: true, Image: LoadedImage, OffscreenCanvas: Canvas })) {
+    for (const [name, value] of Object.entries({ IS_REACT_ACT_ENVIRONMENT: true, Image: LoadedImage, OffscreenCanvas: Canvas, Path2D: class {} })) {
         Object.defineProperty(globalThis, name, { value, configurable: true });
     }
     const registered = new Set<string>();
@@ -58,23 +58,23 @@ it("reuses outlined bitmaps for position edits and rebuilds only changed thumbna
     const root = createRoot();
     try {
         await act(async () => root.render(createElement(Probe, { images, color: "#123456" })));
-        expect(rasterizations).to.equal(200);
+        expect(rasterizations).to.equal(300);
         const initialAdditions = additions.length;
         const moved = images.map((image) => (image.id === 0 ? { ...image, distanceFraction: 0.7 } : image));
         await act(async () => root.render(createElement(Probe, { images: moved, color: "#123456" })));
-        expect(rasterizations).to.equal(200);
+        expect(rasterizations).to.equal(300);
         expect(additions).to.have.length(initialAdditions);
         expect(removals).to.deep.equal([]);
         const changed = moved.map((image) => (image.id === 0 ? { ...image, data: { ...image.data, thumbnailBitmap: bitmap() } } : image));
         await act(async () => root.render(createElement(Probe, { images: changed, color: "#123456" })));
-        expect(rasterizations).to.equal(202);
+        expect(rasterizations).to.equal(303);
         expect(additions).to.have.length(initialAdditions + 3);
         expect(removals).to.have.length(3);
         await act(async () => root.render(createElement(Probe, { images: changed, color: "#abcdef" })));
-        expect(rasterizations).to.equal(302);
+        expect(rasterizations).to.equal(403);
         await act(async () => root.render(createElement(Probe, { images: [], color: "#abcdef" })));
         await act(async () => root.render(createElement(Probe, { images: changed, color: "#abcdef" })));
-        expect(rasterizations).to.equal(502);
+        expect(rasterizations).to.equal(703);
     } finally {
         await act(async () => root.unmount());
         expect(registered.size).to.equal(0);

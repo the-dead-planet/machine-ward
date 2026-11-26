@@ -13,6 +13,7 @@ import {
     MAP_IMAGE_ANCHOR_SIDE,
     MAP_IMAGE_COUNT_BADGE_OFFSET,
     THUMBNAIL_IMAGE_SIZE,
+    isInsideImageMarker,
     RouteGeometryData,
     updateImageDistanceFraction,
     ImageMarkerOperator,
@@ -78,28 +79,25 @@ export const useMapImageInteraction = (
 
             const findThumbnail = (padding: number) =>
                 hitTargets.current.findLast(
-                    ({ feature, point: [x, y] }) =>
-                        !feature.properties.markerAnchor &&
-                        (Math.hypot(
+                    ({ feature: { properties }, point: [x, y] }) => {
+                        const sizeScale = properties.markerSizeScale ?? 1;
+                        return !properties.markerAnchor && (isInsideImageMarker(
                             locationX - x,
-                            locationY -
-                                y -
-                                getMapImageThumbnailOffsetY(feature.properties.markerGroupSize, feature.properties.markerScale, feature.properties.markerOffsetY),
-                        ) <=
-                            (THUMBNAIL_IMAGE_SIZE *
-                                (feature.properties.markerScale ?? 1)) /
-                                2 +
-                                padding ||
-                            ((feature.properties.markerCount ?? 1) > 1 &&
+                            locationY - y - getMapImageThumbnailOffsetY(properties.markerGroupSize, properties.markerScale, properties.markerOffsetY, sizeScale),
+                            THUMBNAIL_IMAGE_SIZE * (properties.markerScale ?? 1) * sizeScale / 2 + padding,
+                            properties.markerShape,
+                        ) ||
+                            ((properties.markerCount ?? 1) > 1 &&
                                 Math.hypot(
                                     locationX -
                                         x -
-                                        MAP_IMAGE_COUNT_BADGE_OFFSET[0],
+                                        MAP_IMAGE_COUNT_BADGE_OFFSET[0] * sizeScale,
                                     locationY -
                                         y -
-                                        (feature.properties.markerOffsetY ?? MAP_IMAGE_MARKER_OFFSET_Y) -
-                                        MAP_IMAGE_COUNT_BADGE_OFFSET[1],
-                                ) <= 12)),
+                                        getMapImageThumbnailOffsetY(properties.markerGroupSize, 1, MAP_IMAGE_MARKER_OFFSET_Y, sizeScale) -
+                                        MAP_IMAGE_COUNT_BADGE_OFFSET[1] * sizeScale,
+                                ) <= 12));
+                    },
                 );
             const thumbnail = findThumbnail(0);
             const selectedAnchor = hitTargets.current.findLast(

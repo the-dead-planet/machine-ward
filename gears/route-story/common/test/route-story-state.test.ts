@@ -2,9 +2,26 @@ import { expect } from "chai";
 import { describe, it } from "mocha";
 import { BehaviorSubject } from "rxjs";
 import { StorageKeeper } from "@apparatus";
-import { cleanUpRouteStoryState, defaultRouteStoryState } from "../src";
+import { cleanUpRouteStoryState, defaultRouteStoryState, restoreRouteStoryStyling } from "../src";
 
 describe("Route story saved state", () => {
+    it("restores styling without turning hidden layers and slider controls back on", () => {
+        const state = cleanUpRouteStoryState({
+            markerLayerVisibility: false,
+            markerPlayerVisibility: false,
+            viewportRangePlayerVisibility: false,
+            imageMarkerStyle: { shape: "hexagon", size: "large" },
+            routeStyleActive: { width: 8 },
+        });
+
+        expect(restoreRouteStoryStyling(state, defaultRouteStoryState)).to.deep.equal({
+            ...defaultRouteStoryState,
+            markerLayerVisibility: false,
+            markerPlayerVisibility: false,
+            viewportRangePlayerVisibility: false,
+        });
+    });
+
     it("persists independent player and layer visibility with route styling", async () => {
         const values = new Map<string, string>();
         const keeper = new StorageKeeper({
@@ -44,6 +61,16 @@ describe("Route story saved state", () => {
             expect(state.markerLayerVisibility).to.equal(true);
             expect(state.viewportRangePlayerVisibility).to.equal(true);
         }
+    });
+
+    it("keeps legacy thumbnail styling and restores valid image marker settings", () => {
+        expect(cleanUpRouteStoryState({}).imageMarkerStyle).to.deep.equal({ shape: "circle", size: "medium" });
+        expect(cleanUpRouteStoryState({ imageMarkerStyle: { shape: "hexagon", size: "large" } }).imageMarkerStyle)
+            .to.deep.equal({ shape: "hexagon", size: "large" });
+        expect(cleanUpRouteStoryState({ imageMarkerStyle: { shape: "octagon", size: null } }).imageMarkerStyle)
+            .to.deep.equal({ shape: "circle", size: "medium" });
+        expect(cleanUpRouteStoryState({ photoMarkers: { shape: "square", size: "small" } }).imageMarkerStyle)
+            .to.deep.equal({ shape: "square", size: "small" });
     });
 
     it("merges nested defaults, preserves saved fields, and rejects invalid icons", () => {
