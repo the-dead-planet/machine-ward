@@ -20,16 +20,6 @@
     gap: 8px;
 }
 
-.image-preview {
-    display: grid;
-    place-items: center;
-    height: 68px;
-    padding: 0;
-    border: 0;
-    background: transparent;
-    cursor: pointer;
-}
-
 .image-controls {
     display: flex;
     flex-wrap: wrap;

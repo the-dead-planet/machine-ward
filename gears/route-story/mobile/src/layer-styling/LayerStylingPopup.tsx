@@ -1,9 +1,8 @@
-import { FC, useEffect, useId, useRef, useState } from "react";
-import { BackHandler, HostInstance, Pressable, ScrollView, StyleSheet, View } from "react-native";
-import Svg, { Circle, ClipPath, Defs, G, Path, Rect } from "react-native-svg";
+import { FC, useEffect, useRef, useState } from "react";
+import { BackHandler, HostInstance, ScrollView, StyleSheet, View } from "react-native";
 import { ToolPopupProps, useMultipleTranslations } from "@apparatus";
-import { resolveMapImageMarkerColors, useTheme } from "@ui";
-import { getDefaultRouteStoryState, getImageMarkerShapePath, imageMarkerSizeScale, THUMBNAIL_IMAGE_SIZE, CurrentPointStyle, RouteStoryLayerStylingPopupProps, RouteStoryLineStyle, RouteStoryState } from "@the-dead-planet/machine-ward-gears-route-story-common";
+import { useTheme } from "@ui";
+import { getDefaultRouteStoryState, imageMarkerSizeScale, THUMBNAIL_IMAGE_SIZE, CurrentPointStyle, RouteStoryLayerStylingPopupProps, RouteStoryLineStyle, RouteStoryState } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { useSubjectState } from "@tinker-chest";
 import { MobileMap } from "@mobile-apparatus";
 import { MobileRouteStoryProps } from "../model";
@@ -11,6 +10,7 @@ import { HudConnector, Popup, Tabstrip } from "@mobile-ui";
 import { CurrentPointControls } from "./CurrentPointControls";
 import { LineStyleGroup } from "./LineStyleGroup";
 import { ImageMarkerChoices } from "./ImageMarkerChoices";
+import { DemoImageMarker } from "./demo-image-marker/DemoImageMarker";
 import { DemoLine } from "./demo-line/DemoLine";
 
 const styles = StyleSheet.create({
@@ -28,7 +28,6 @@ const styles = StyleSheet.create({
         paddingBottom: 4,
     },
     'demo-line': { flex: 1 },
-    'image-preview': { width: 68, height: 68, alignItems: 'center', justifyContent: 'center' },
     'image-controls': {
         flexDirection: 'row',
         flexWrap: 'wrap',
@@ -71,10 +70,6 @@ export const LayerStylingPopup: FC<Props> = ({
     const currentPointRef = useRef<HostInstance>(null);
     const inactiveRef = useRef<HostInstance>(null);
     const imagePreviewRef = useRef<HostInstance>(null);
-    const imageClipId = useId().replace(/[^a-zA-Z0-9_-]/g, '');
-    const imagePath = getImageMarkerShapePath(state.imageMarkerStyle.shape, 100, 4);
-    const imageSize = THUMBNAIL_IMAGE_SIZE * imageMarkerSizeScale[state.imageMarkerStyle.size];
-    const { defaultColor: imageBorder } = resolveMapImageMarkerColors(theme);
     const [
         currentPointLabel,
         activeLabel,
@@ -184,27 +179,12 @@ export const LayerStylingPopup: FC<Props> = ({
                             inactiveRef={inactiveRef}
                         />
                     </View>
-                    <Pressable
-                        ref={imagePreviewRef}
-                        style={styles['image-preview']}
-                        accessibilityRole="button"
-                        accessibilityLabel={imagesLabel}
+                    <DemoImageMarker
+                        value={state.imageMarkerStyle}
+                        label={imagesLabel}
+                        previewRef={imagePreviewRef}
                         onPress={() => setSelectedStyle("images")}
-                    >
-                        <Svg width={imageSize} height={imageSize} viewBox="0 0 108 108">
-                            <Defs>
-                                <ClipPath id={imageClipId}>
-                                    <Path d={imagePath} />
-                                </ClipPath>
-                            </Defs>
-                            <G clipPath={`url(#${imageClipId})`}>
-                                <Rect width="108" height="108" fill="#8eb5bc" />
-                                <Circle cx="73" cy="32" r="12" fill="#ffe4ad" />
-                                <Path d="M0 92L32 44L57 77L78 54L108 90V108H0Z" fill="#345b61" />
-                            </G>
-                            <Path d={imagePath} fill="none" stroke={imageBorder} strokeWidth="7" />
-                        </Svg>
-                    </Pressable>
+                    />
                 </View>
                 <ScrollView
                     style={styles.scroll}

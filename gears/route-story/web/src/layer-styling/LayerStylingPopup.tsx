@@ -1,14 +1,15 @@
-import { FC, useId, useRef, useState } from "react";
+import { FC, useRef, useState } from "react";
 import * as maplibregl from "maplibre-gl";
 import { ToolPopupProps, useMultipleTranslations } from "@apparatus";
-import { getDefaultRouteStoryState, getImageMarkerShapePath, imageMarkerSizeScale, THUMBNAIL_IMAGE_SIZE, CurrentPointStyle, RouteStoryLayerStylingPopupProps, RouteStoryLineStyle, RouteStoryState } from "@the-dead-planet/machine-ward-gears-route-story-common";
-import { resolveMapImageMarkerColors, useTheme } from "@ui";
+import { getDefaultRouteStoryState, imageMarkerSizeScale, THUMBNAIL_IMAGE_SIZE, CurrentPointStyle, RouteStoryLayerStylingPopupProps, RouteStoryLineStyle, RouteStoryState } from "@the-dead-planet/machine-ward-gears-route-story-common";
+import { useTheme } from "@ui";
 import { HudConnector, Popup, Tabstrip } from "@web-ui";
 import { useSubjectState } from "@tinker-chest";
 import { WebRouteStoryProps } from "../model";
 import { CurrentPointControls } from "./CurrentPointControls";
 import { LineStyleGroup } from "./LineStyleGroup";
 import { ImageMarkerChoices } from "./ImageMarkerChoices";
+import { DemoImageMarker } from "./demo-image-marker/DemoImageMarker";
 import { DemoLine } from "./demo-line/DemoLine";
 import styles from './layer-styling.module.css';
 
@@ -39,10 +40,6 @@ export const LayerStylingPopup: FC<Props> = ({
     const currentPointRef = useRef<SVGRectElement>(null);
     const inactiveRef = useRef<SVGRectElement>(null);
     const imagePreviewRef = useRef<HTMLButtonElement>(null);
-    const imageClipId = useId();
-    const imagePath = getImageMarkerShapePath(state.imageMarkerStyle.shape, 100, 4);
-    const imageSize = THUMBNAIL_IMAGE_SIZE * imageMarkerSizeScale[state.imageMarkerStyle.size];
-    const { defaultColor: imageBorder } = resolveMapImageMarkerColors(theme);
     const [
         currentPointLabel,
         activeLabel,
@@ -140,21 +137,12 @@ export const LayerStylingPopup: FC<Props> = ({
                         currentPointRef={currentPointRef}
                         inactiveRef={inactiveRef}
                     />
-                    <button ref={imagePreviewRef} type="button" className={styles["image-preview"]} aria-label={imagesLabel} onClick={() => setSelectedStyle("images")}>
-                        <svg aria-hidden="true" width={imageSize} height={imageSize} viewBox="0 0 108 108">
-                            <defs>
-                                <clipPath id={imageClipId}>
-                                    <path d={imagePath} />
-                                </clipPath>
-                            </defs>
-                            <g clipPath={`url(#${imageClipId})`}>
-                                <rect width="108" height="108" fill="#8eb5bc" />
-                                <circle cx="73" cy="32" r="12" fill="#ffe4ad" />
-                                <path d="M0 92L32 44L57 77L78 54L108 90V108H0Z" fill="#345b61" />
-                            </g>
-                            <path d={imagePath} fill="none" stroke={imageBorder} strokeWidth="7" />
-                        </svg>
-                    </button>
+                    <DemoImageMarker
+                        value={state.imageMarkerStyle}
+                        label={imagesLabel}
+                        previewRef={imagePreviewRef}
+                        onClick={() => setSelectedStyle("images")}
+                    />
                 </div>
                 <div className={styles["content"]}>
                     <div ref={tabstripRef}>
