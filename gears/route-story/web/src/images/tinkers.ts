@@ -7,6 +7,8 @@ import {
     imageLayerIds,
     MAP_IMAGE_ANCHOR_SIDE,
     THUMBNAIL_IMAGE_SIZE,
+    isInsideImageMarker,
+    ImageMarkerShape,
     updateImageDistanceFraction,
     RouteStoryTranslationKey,
 } from "@the-dead-planet/machine-ward-gears-route-story-common";
@@ -136,6 +138,8 @@ interface ImageHitFeature {
         imageId?: number;
         markerAnchor?: boolean;
         markerScale?: number;
+        markerSizeScale?: number;
+        markerShape?: ImageMarkerShape;
         markerGroupSize?: number;
         markerOffsetY?: number;
     };
@@ -170,11 +174,12 @@ export const findMapImageFeature = <T extends ImageHitFeature>(
                     MAP_IMAGE_ANCHOR_SIDE + 2
                 );
             }
-            const offset = getMapImageThumbnailOffsetY(properties.markerGroupSize, properties.markerScale, properties.markerOffsetY);
+            const offset = getMapImageThumbnailOffsetY(properties.markerGroupSize, properties.markerScale, properties.markerOffsetY, properties.markerSizeScale);
 
             return (
-                Math.hypot(point.x - center.x, point.y - center.y - offset) <=
-                (THUMBNAIL_IMAGE_SIZE * (properties.markerScale ?? 1)) / 2
+                isInsideImageMarker(point.x - center.x, point.y - center.y - offset,
+                    THUMBNAIL_IMAGE_SIZE * (properties.markerScale ?? 1) * (properties.markerSizeScale ?? 1) / 2,
+                    properties.markerShape)
             );
         }) ?? candidates[0]
     );

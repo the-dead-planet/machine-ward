@@ -2,6 +2,13 @@ import { GearTranslationKey, TranslationTable } from "@apparatus";
 import { RouteStoryTranslationKey } from "../model";
 
 const pl: TranslationTable<GearTranslationKey | RouteStoryTranslationKey>['pl'] = {
+    "images": 'Obrazy',
+    "shape": 'Kształt',
+    "square": 'Kwadrat',
+    "hexagon": 'Sześciokąt',
+    "small": 'Mały',
+    "medium": 'Średni',
+    "large": 'Duży',
     "description": 'Nieco osobliwy mechanizm twórczy, który tworzy z rozproszonych fragmentów świata animowane opowieści wizualne.',
     "previous-images": 'Poprzednie obrazy',
     "next-images": 'Następne obrazy',

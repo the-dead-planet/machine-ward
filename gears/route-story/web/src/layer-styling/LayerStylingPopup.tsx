@@ -1,20 +1,22 @@
-import { FC, useRef, useState } from "react";
+import { FC, useId, useRef, useState } from "react";
 import * as maplibregl from "maplibre-gl";
 import { ToolPopupProps, useMultipleTranslations } from "@apparatus";
-import { getDefaultRouteStoryState, CurrentPointStyle, RouteStoryLayerStylingPopupProps, RouteStoryLineStyle, RouteStoryState } from "@the-dead-planet/machine-ward-gears-route-story-common";
-import { useTheme } from "@ui";
+import { getDefaultRouteStoryState, getImageMarkerShapePath, imageMarkerSizeScale, THUMBNAIL_IMAGE_SIZE, CurrentPointStyle, RouteStoryLayerStylingPopupProps, RouteStoryLineStyle, RouteStoryState } from "@the-dead-planet/machine-ward-gears-route-story-common";
+import { resolveMapImageMarkerColors, useTheme } from "@ui";
 import { HudConnector, Popup, Tabstrip } from "@web-ui";
 import { useSubjectState } from "@tinker-chest";
 import { WebRouteStoryProps } from "../model";
 import { CurrentPointControls } from "./CurrentPointControls";
 import { LineStyleGroup } from "./LineStyleGroup";
+import { ImageMarkerChoices } from "./ImageMarkerChoices";
 import { DemoLine } from "./demo-line/DemoLine";
 import styles from './layer-styling.module.css';
 
 const hasCustomStyling = (current: RouteStoryState, defaults: RouteStoryState): boolean =>
     JSON.stringify(current.routeStyleActive) !== JSON.stringify(defaults.routeStyleActive) ||
     JSON.stringify(current.routeStyleInactive) !== JSON.stringify(defaults.routeStyleInactive) ||
-    JSON.stringify(current.currentPoint) !== JSON.stringify(defaults.currentPoint);
+    JSON.stringify(current.currentPoint) !== JSON.stringify(defaults.currentPoint) ||
+    current.imageMarkerStyle.shape !== defaults.imageMarkerStyle.shape || current.imageMarkerStyle.size !== defaults.imageMarkerStyle.size;
 
 type Props = ToolPopupProps<maplibregl.Map> &
     RouteStoryLayerStylingPopupProps<maplibregl.Map> &
@@ -36,6 +38,11 @@ export const LayerStylingPopup: FC<Props> = ({
     const activeRef = useRef<SVGRectElement>(null);
     const currentPointRef = useRef<SVGRectElement>(null);
     const inactiveRef = useRef<SVGRectElement>(null);
+    const imagePreviewRef = useRef<HTMLButtonElement>(null);
+    const imageClipId = useId();
+    const imagePath = getImageMarkerShapePath(state.imageMarkerStyle.shape, 100, 4);
+    const imageSize = THUMBNAIL_IMAGE_SIZE * imageMarkerSizeScale[state.imageMarkerStyle.size];
+    const { defaultColor: imageBorder } = resolveMapImageMarkerColors(theme);
     const [
         currentPointLabel,
         activeLabel,
@@ -43,6 +50,7 @@ export const LayerStylingPopup: FC<Props> = ({
         restoreDefaultsLabel,
         closeLabel,
         dialogLabel,
+        imagesLabel, shapeLabel, sizeLabel, circleLabel, squareLabel, hexagonLabel, smallLabel, mediumLabel, largeLabel,
     ] = useMultipleTranslations([
         { n: gearId, t: translationKey.CurrentPoint },
         { n: gearId, t: translationKey.Active },
@@ -50,6 +58,15 @@ export const LayerStylingPopup: FC<Props> = ({
         { n: gearId, t: translationKey.RestoreDefaults },
         { n: gearId, t: translationKey.Close },
         { n: gearId, t: translationKey.OpenLayerAestheticOptions },
+        { n: gearId, t: translationKey.Images },
+        { n: gearId, t: translationKey.Shape },
+        { n: gearId, t: translationKey.Size },
+        { n: gearId, t: translationKey.Circle },
+        { n: gearId, t: translationKey.Square },
+        { n: gearId, t: translationKey.Hexagon },
+        { n: gearId, t: translationKey.Small },
+        { n: gearId, t: translationKey.Medium },
+        { n: gearId, t: translationKey.Large },
     ]);
 
     const setActiveLine = (patch: Partial<RouteStoryLineStyle>) =>
@@ -78,7 +95,7 @@ export const LayerStylingPopup: FC<Props> = ({
             ? activeRef
             : selectedStyle === "current-point"
                 ? currentPointRef
-                : inactiveRef;
+                : selectedStyle === "images" ? imagePreviewRef : inactiveRef;
     const selectedTabRef: React.RefObject<Element | null> = {
         get current() {
             return (
@@ -110,20 +127,35 @@ export const LayerStylingPopup: FC<Props> = ({
                 color="secondary"
                 activeGlow="glow"
             >
-                <DemoLine
-                    state={state}
-                    onActiveClick={() => setSelectedStyle("active")}
-                    onCurrentPointClick={() =>
-                        setSelectedStyle("current-point")
-                    }
-                    onInactiveClick={() => setSelectedStyle("inactive")}
-                    activeMenuLabel={activeLabel}
-                    currentPointMenuLabel={currentPointLabel}
-                    inactiveMenuLabel={inactiveLabel}
-                    activeRef={activeRef}
-                    currentPointRef={currentPointRef}
-                    inactiveRef={inactiveRef}
-                />
+                <div className={styles["demo-row"]}>
+                    <DemoLine
+                        state={state}
+                        onActiveClick={() => setSelectedStyle("active")}
+                        onCurrentPointClick={() => setSelectedStyle("current-point")}
+                        onInactiveClick={() => setSelectedStyle("inactive")}
+                        activeMenuLabel={activeLabel}
+                        currentPointMenuLabel={currentPointLabel}
+                        inactiveMenuLabel={inactiveLabel}
+                        activeRef={activeRef}
+                        currentPointRef={currentPointRef}
+                        inactiveRef={inactiveRef}
+                    />
+                    <button ref={imagePreviewRef} type="button" className={styles["image-preview"]} aria-label={imagesLabel} onClick={() => setSelectedStyle("images")}>
+                        <svg aria-hidden="true" width={imageSize} height={imageSize} viewBox="0 0 108 108">
+                            <defs>
+                                <clipPath id={imageClipId}>
+                                    <path d={imagePath} />
+                                </clipPath>
+                            </defs>
+                            <g clipPath={`url(#${imageClipId})`}>
+                                <rect width="108" height="108" fill="#8eb5bc" />
+                                <circle cx="73" cy="32" r="12" fill="#ffe4ad" />
+                                <path d="M0 92L32 44L57 77L78 54L108 90V108H0Z" fill="#345b61" />
+                            </g>
+                            <path d={imagePath} fill="none" stroke={imageBorder} strokeWidth="7" />
+                        </svg>
+                    </button>
+                </div>
                 <div className={styles["content"]}>
                     <div ref={tabstripRef}>
                         <Tabstrip
@@ -149,9 +181,35 @@ export const LayerStylingPopup: FC<Props> = ({
                                     label: currentPointLabel,
                                 },
                                 { value: "inactive", label: inactiveLabel },
+                                { value: "images", label: imagesLabel },
                             ]}
                         >
-                            {selectedStyle === "current-point" ? (
+                            {selectedStyle === "images" ? (
+                                <div className={styles["image-controls"]}>
+                                    <ImageMarkerChoices<RouteStoryState['imageMarkerStyle']['shape']>
+                                        label={shapeLabel}
+                                        value={state.imageMarkerStyle.shape}
+                                        options={[
+                                            { value: "circle", label: circleLabel, shape: "circle", diameter: 26 },
+                                            { value: "square", label: squareLabel, shape: "square", diameter: 26 },
+                                            { value: "hexagon", label: hexagonLabel, shape: "hexagon", diameter: 26 },
+                                        ]}
+                                        onChange={(shape) => setState((prev) => ({ ...prev, imageMarkerStyle: { ...prev.imageMarkerStyle, shape } }))}
+                                    />
+                                    <ImageMarkerChoices<RouteStoryState['imageMarkerStyle']['size']>
+                                        label={sizeLabel}
+                                        value={state.imageMarkerStyle.size}
+                                        options={([
+                                            ["small", smallLabel],
+                                            ["medium", mediumLabel],
+                                            ["large", largeLabel],
+                                        ] as const).map(([value, label]) => ({
+                                            value, label, shape: state.imageMarkerStyle.shape, diameter: THUMBNAIL_IMAGE_SIZE * imageMarkerSizeScale[value],
+                                        }))}
+                                        onChange={(size) => setState((prev) => ({ ...prev, imageMarkerStyle: { ...prev.imageMarkerStyle, size } }))}
+                                    />
+                                </div>
+                            ) : selectedStyle === "current-point" ? (
                                 <CurrentPointControls
                                     gearId={gearId}
                                     translationKey={translationKey}

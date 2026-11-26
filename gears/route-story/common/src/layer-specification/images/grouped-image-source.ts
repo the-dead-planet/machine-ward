@@ -30,7 +30,7 @@ export async function getImageMarkerGroups(
     );
     return groupImageMarkers(
         positions,
-        MAP_IMAGE_GROUP_RADIUS,
+        MAP_IMAGE_GROUP_RADIUS * (source.features[0]?.properties.markerSizeScale ?? 1),
         (candidate, member) =>
             canGroupImageRouteDistances(candidate.properties.distanceFromStartMeters, member.properties.distanceFromStartMeters),
     );
@@ -69,6 +69,8 @@ export async function getImageMarkerSourceFromGroups(
             group.length > 1 &&
             group.some(({ item }) => item.properties.imageId === expandedImageGroupId);
         const lead = group.find(({ item }) => item.properties.imageId === selectedImageId) ?? group[0];
+        const { markerSizeScale = 1, markerShape } = lead.item.properties;
+        const ringRadius = MAP_IMAGE_GROUP_RING_RADIUS * markerSizeScale * (markerShape === 'square' ? Math.SQRT2 : 1);
         const paged = expanded && group.length > MAP_IMAGE_GROUP_SLOT_COUNT;
         const currentOffset = paged
             ? ((offset % group.length) + group.length) % group.length
@@ -100,10 +102,10 @@ export async function getImageMarkerSourceFromGroups(
                           (paged ? MAP_IMAGE_GROUP_SLOT_COUNT : visibleCount);
                       const x =
                           center.x +
-                          Math.sin(angle) * MAP_IMAGE_GROUP_RING_RADIUS;
+                          Math.sin(angle) * ringRadius;
                       const y =
                           center.y -
-                          Math.cos(angle) * MAP_IMAGE_GROUP_RING_RADIUS;
+                          Math.cos(angle) * ringRadius;
                       return unproject([x, y]);
                   }),
               )
@@ -112,7 +114,7 @@ export async function getImageMarkerSourceFromGroups(
             pagination = {
                 lngLat: await unproject([
                     center.x,
-                    center.y + MAP_IMAGE_GROUP_RING_RADIUS,
+                    center.y + ringRadius,
                 ]),
                 offset: currentOffset,
                 totalCount: group.length,

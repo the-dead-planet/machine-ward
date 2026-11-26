@@ -33,6 +33,11 @@ export interface RouteStoryState {
      */
     markerLayerVisibility: boolean;
     /**
+     * Shape and size of image marker thumbnails on the map.
+     * Defaults to a circle at medium size.
+     */
+    imageMarkerStyle: ImageMarkerStyle;
+    /**
      * Applied to the route line part after current point.
      */
     routeStyleInactive: RouteStoryLineStyle;
@@ -54,6 +59,14 @@ export interface RouteStoryLineStyle {
     outlineWidth: number;
     lineStyle: 'solid' | 'dashed';
     colorTransitionLengthPixels: number;
+}
+
+export type ImageMarkerShape = 'circle' | 'square' | 'hexagon';
+export type ImageMarkerSize = 'small' | 'medium' | 'large';
+
+export interface ImageMarkerStyle {
+    shape: ImageMarkerShape;
+    size: ImageMarkerSize;
 }
 
 export interface CurrentPointStyle {
@@ -137,6 +150,13 @@ export interface RouteStoryFile {
 }
 
 export enum RouteStoryTranslationKey {
+    Images = 'images',
+    Shape = 'shape',
+    Square = 'square',
+    Hexagon = 'hexagon',
+    Small = 'small',
+    Medium = 'medium',
+    Large = 'large',
     Description = 'description',
     PreviousImages = 'previous-images',
     NextImages = 'next-images',

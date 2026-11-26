@@ -46,6 +46,16 @@ describe("Route story saved state", () => {
         }
     });
 
+    it("keeps legacy thumbnail styling and restores valid image marker settings", () => {
+        expect(cleanUpRouteStoryState({}).imageMarkerStyle).to.deep.equal({ shape: "circle", size: "medium" });
+        expect(cleanUpRouteStoryState({ imageMarkerStyle: { shape: "hexagon", size: "large" } }).imageMarkerStyle)
+            .to.deep.equal({ shape: "hexagon", size: "large" });
+        expect(cleanUpRouteStoryState({ imageMarkerStyle: { shape: "octagon", size: null } }).imageMarkerStyle)
+            .to.deep.equal({ shape: "circle", size: "medium" });
+        expect(cleanUpRouteStoryState({ photoMarkers: { shape: "square", size: "small" } }).imageMarkerStyle)
+            .to.deep.equal({ shape: "square", size: "small" });
+    });
+
     it("merges nested defaults, preserves saved fields, and rejects invalid icons", () => {
         const state = cleanUpRouteStoryState({
             routeStyleActive: { color: "saved", pointColor: "saved-point", obsolete: true },

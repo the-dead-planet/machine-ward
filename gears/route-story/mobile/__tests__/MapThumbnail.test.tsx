@@ -1,7 +1,7 @@
 import { act, render } from "@testing-library/react-native";
 import { Platform } from "react-native";
 import RNFS from "react-native-fs";
-import { CircularMapThumbnail } from "../src/images/CircularMapThumbnail";
+import { MapThumbnail } from "../src/images/MapThumbnail";
 import { determineSize } from "../src/images/image-parser";
 
 const mockRasterize = jest.fn();
@@ -18,6 +18,7 @@ jest.mock("@the-dead-planet/machine-ward-gears-route-story-common", () => ({
     MAP_THUMBNAIL_BORDER_SIZE: 6,
     OUTLINED_MAP_THUMBNAIL_SIZE: 140,
     getOutlinedThumbnailId: (imageId: string, color: string) => `${imageId}:outline:${color}`,
+    getImageMarkerShapePath: jest.requireActual("../../common/src/tinkers/images").getImageMarkerShapePath,
 }));
 jest.mock("@maplibre/maplibre-react-native", () => {
     const { View } = jest.requireActual<typeof import("react-native")>("react-native");
@@ -48,8 +49,8 @@ jest.mock("react-native-svg", () => {
         Image: (props: import("react-native-svg").ImageProps) => (
             <View testID="svg-image" {...props} />
         ),
-        Circle: (props: import("react-native-svg").CircleProps) => (
-            <View testID="crop-circle" {...props} />
+        Path: (props: import("react-native-svg").PathProps) => (
+            <View testID="crop-shape" {...props} />
         ),
         ClipPath: (props: import("react-native-svg").ClipPathProps) => (
             <View testID="crop-path" {...props} />
@@ -70,7 +71,7 @@ test("bakes outlines into each sprite without decoding the photo again for color
     });
     try {
         const screen = await render(
-            <CircularMapThumbnail
+            <MapThumbnail shape="circle"
                 imageId="thumbnail"
                 uri="file:///cache/photo.jpg"
                 outlineColors={["red", "blue"]}
@@ -93,7 +94,7 @@ test("bakes outlines into each sprite without decoding the photo again for color
         ]);
         expect(
             screen
-                .getAllByTestId("crop-circle")
+                .getAllByTestId("crop-shape")
                 .map(({ props }) => props.fill)
                 .filter(Boolean),
         ).toEqual(["red", "blue"]);
@@ -115,7 +116,7 @@ test("bakes outlines into each sprite without decoding the photo again for color
             "thumbnail:outline:blue",
         ]);
         await screen.rerender(
-            <CircularMapThumbnail
+            <MapThumbnail shape="circle"
                 imageId="thumbnail"
                 uri="file:///cache/photo.jpg"
                 outlineColors={["green", "yellow"]}
@@ -146,7 +147,7 @@ test("decodes Android thumbnail data before mounting and rasterizing the SVG", a
     );
     try {
         const screen = await render(
-            <CircularMapThumbnail
+            <MapThumbnail shape="circle"
                 imageId="thumbnail"
                 uri="file:///cache/photo.jpg"
             />,
@@ -168,9 +169,9 @@ test("decodes Android thumbnail data before mounting and rasterizing the SVG", a
     }
 });
 
-test("crops to a circle and registers only the in-memory PNG after the image loads", async () => {
+test("crops to a hexagon and registers only the in-memory PNG after the image loads", async () => {
     const screen = await render(
-        <CircularMapThumbnail
+        <MapThumbnail shape="hexagon"
             imageId="thumbnail"
             uri="file:///cache/photo.jpg"
         />,
@@ -178,20 +179,16 @@ test("crops to a circle and registers only the in-memory PNG after the image loa
     expect(screen.getByTestId("thumbnail-svg").props.viewBox).toBe("0 0 128 128");
     const image = screen.getByTestId("svg-image");
     expect(image.props.preserveAspectRatio).toBe("xMidYMid slice");
-    expect(image.props.clipPath).toBe("url(#thumbnail-circle)");
-    expect(screen.getByTestId("crop-path").props.id).toBe("thumbnail-circle");
-    const circle = screen.getByTestId("crop-circle");
-    expect([circle.props.cx, circle.props.cy, circle.props.r]).toEqual([
-        "50%",
-        "50%",
-        "50%",
-    ]);
+    expect(image.props.clipPath).toBe("url(#thumbnail-mask)");
+    const halfHeight = 32 * Math.sqrt(3);
+    expect(screen.getByTestId("crop-shape").props.d).toBe(`M0 64 L32 ${64 - halfHeight} H96 L128 64 L96 ${64 + halfHeight} H32Z`);
+    expect(screen.getByTestId("crop-path").props.id).toBe("thumbnail-mask");
     expect(mockRasterize).not.toHaveBeenCalled();
     await act(() => image.props.onLoad());
     expect(mockRasterize.mock.calls[0][1]).toEqual({ width: 128, height: 128 });
-    await act(() => mockRasterize.mock.calls[0][0]("circular-png"));
+    await act(() => mockRasterize.mock.calls[0][0]("hexagon-png"));
     expect(JSON.parse(screen.getByTestId("map-images").props.accessibilityLabel)).toEqual({
-        thumbnail: { source: { uri: "data:image/png;base64,circular-png" } },
+        thumbnail: { source: { uri: "data:image/png;base64,hexagon-png" } },
     });
     await screen.unmount();
 });

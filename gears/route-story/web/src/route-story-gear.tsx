@@ -101,7 +101,7 @@ export class WebRouteStoryGear extends RouteStoryGear<maplibregl.Map, WebChronoL
       };
 
       reader.onload = async (e) => {
-         const { data, bitmap, thumbnailBitmap, lngLat, exif, error } = await parseImage(e, file, { shape: 'circle' });
+         const { data, bitmap, thumbnailBitmap, lngLat, exif, error } = await parseImage(e, file);
 
          const nextImages = this.images$.value.slice();
          const index = this.images$.value.findIndex((el) => el.name === file.name);

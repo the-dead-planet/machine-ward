@@ -50,7 +50,7 @@ export const ImagesLayer: FC<OverlayComponentProps<MapLibreMap> & WebRouteStoryP
     const [{ geojson }] = useSubjectState(data$);
     const [routeGeometryData] = useSubjectState(routeGeometryData$);
     const [images] = useSubjectState(images$);
-    const [{ markerLayerVisibility }] = useSubjectState(state$);
+    const [{ markerLayerVisibility, imageMarkerStyle }] = useSubjectState(state$);
     const loadedImages = useLoadedWebImages(images);
     const [highlightIdsBySourceId] = useSubjectState(highlightIdsBySourceId$);
     const [selectedImageId] = useSubjectState(imageMarkerOperator.selectedImageId$);
@@ -61,11 +61,12 @@ export const ImagesLayer: FC<OverlayComponentProps<MapLibreMap> & WebRouteStoryP
         imageColor,
         imageHoverColor,
         badgeTextColor,
+        imageMarkerStyle.shape,
     );
 
     const sourceDataGeojson = useMemo(
-        () => getImageSource(loadedImages, geojson, routeGeometryData),
-        [loadedImages, geojson, routeGeometryData],
+        () => getImageSource(loadedImages, geojson, routeGeometryData, imageMarkerStyle),
+        [loadedImages, geojson, routeGeometryData, imageMarkerStyle],
     );
     const targetSource = useImageMarkerSource(map, sourceDataGeojson, displayImageId !== null, imageMarkerOperator);
     const reducedMotion = useReducedMotion();

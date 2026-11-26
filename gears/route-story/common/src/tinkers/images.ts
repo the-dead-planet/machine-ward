@@ -1,4 +1,40 @@
+import type { ImageMarkerShape, ImageMarkerSize } from '../model';
+
 export const THUMBNAIL_IMAGE_SIZE = 50;
+export const imageMarkerSizeScale: Record<ImageMarkerSize, number> = { small: 0.8, medium: 1, large: 1.2 };
+const hexagonHeightRatio = Math.sqrt(3) / 2;
+
+export const getImageMarkerShapePath = (shape: ImageMarkerShape, size = 100, inset = 0): string => {
+    const start = inset;
+    const end = inset + size;
+    const middle = inset + size / 2;
+    if (shape === 'circle') {
+        return `M${start} ${middle} a${size / 2} ${size / 2} 0 1 0 ${size} 0 a${size / 2} ${size / 2} 0 1 0 -${size} 0Z`;
+    }
+    if (shape === 'square') {
+        return `M${start} ${start} H${end} V${end} H${start}Z`;
+    }
+    const left = inset + size / 4;
+    const right = inset + size * 3 / 4;
+    const halfHeight = size / 2 * hexagonHeightRatio;
+    return `M${start} ${middle} L${left} ${middle - halfHeight} H${right} L${end} ${middle} L${right} ${middle + halfHeight} H${left}Z`;
+};
+
+export const getImageMarkerEdgeDistance = (x: number, y: number, radius: number, shape: ImageMarkerShape): number => {
+    if (shape === 'circle') {
+        return radius - Math.hypot(x, y);
+    }
+    if (shape === 'square') {
+        return radius - Math.max(Math.abs(x), Math.abs(y));
+    }
+    return Math.min(
+        radius * hexagonHeightRatio - Math.abs(y),
+        (radius - Math.abs(x)) * hexagonHeightRatio - Math.abs(y) / 2,
+    );
+};
+
+export const isInsideImageMarker = (x: number, y: number, radius: number, shape: ImageMarkerShape = 'circle'): boolean =>
+    getImageMarkerEdgeDistance(x, y, radius, shape) >= 0;
 export const FULL_SIZE_IMAGE_SIZE = 800;
 export const MAP_THUMBNAIL_SIZE = 3 * THUMBNAIL_IMAGE_SIZE;
 export const MAP_IMAGE_ANCHOR_SIDE = 4;
@@ -6,8 +42,8 @@ export const MAP_IMAGE_ANCHOR_GAP = 4;
 export const MAP_IMAGE_MARKER_OFFSET_Y = -(THUMBNAIL_IMAGE_SIZE / 2 + 2 + MAP_IMAGE_ANCHOR_GAP + MAP_IMAGE_ANCHOR_SIDE);
 export const MAP_IMAGE_COUNT_BADGE_OFFSET: [number, number] = [20, -20];
 
-export const getMapImageThumbnailOffsetY = (groupSize: number | undefined, scale = 1, offsetY = MAP_IMAGE_MARKER_OFFSET_Y): number =>
-    offsetY - (groupSize === 1 ? (scale - 1) * THUMBNAIL_IMAGE_SIZE / 2 : 0);
+export const getMapImageThumbnailOffsetY = (groupSize: number | undefined, scale = 1, offsetY = MAP_IMAGE_MARKER_OFFSET_Y, sizeScale = 1): number =>
+    offsetY - (offsetY === 0 ? 0 : (sizeScale * (groupSize === 1 ? scale : 1) - 1) * THUMBNAIL_IMAGE_SIZE / 2);
 
 export const getImageIconSize = (
     imageSize: number,
