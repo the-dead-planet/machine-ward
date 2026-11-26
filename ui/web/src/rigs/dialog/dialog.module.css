@@ -90,8 +90,17 @@
 }
 
 .dialog > .header {
-    margin: 15px 20px 5px 20px;
+    margin: 15px 20px var(--dialog-header-margin-bottom, 5px);
     color: inherit;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    overflow-wrap: anywhere;
+}
+
+.header-end {
+    flex-shrink: 0;
+    margin-inline-start: auto;
 }
 
 .content {
@@ -109,4 +118,10 @@
     margin-top: 5px;
     display: flex;
     justify-content: flex-end;
+}
+
+.footer-start {
+    align-self: center;
+    margin-inline-end: auto;
+    min-width: 0;
 }
