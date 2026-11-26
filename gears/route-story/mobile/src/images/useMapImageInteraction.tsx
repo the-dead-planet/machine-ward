@@ -15,8 +15,7 @@ import {
     THUMBNAIL_IMAGE_SIZE,
     RouteGeometryData,
     updateImageDistanceFraction,
-    selectMapImageMarker,
-    clearImageMarkerSelection,
+    ImageMarkerOperator,
 } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { MobileMarkerImageData } from "./image-parser";
 import { ImageGroupPagerDimensions, MapImageHitTarget } from "./model";
@@ -40,6 +39,7 @@ export const useMapImageInteraction = (
     paginationTarget: RefObject<[number, number] | null>,
     paginationDimensions: RefObject<ImageGroupPagerDimensions | null>,
     markersReady: boolean,
+    { selectMapImageMarker, clearImageMarkerSelection }: ImageMarkerOperator,
 ) => {
     const gestureRef = useRef<MarkerGesture | null>(null);
     const pendingHits = useRef<MapImageHitTarget[]>([]);
@@ -255,5 +255,5 @@ export const useMapImageInteraction = (
             removeHandler(map.onPanResponderEndHandlers$);
             removeHandler(map.onPressHandlers$);
         };
-    }, [map, images$, geojson, routeGeometryData, markerLayerVisibility, hitTargets, paginationTarget, paginationDimensions]);
+    }, [map, images$, geojson, routeGeometryData, markerLayerVisibility, hitTargets, paginationTarget, paginationDimensions, selectMapImageMarker, clearImageMarkerSelection]);
 };

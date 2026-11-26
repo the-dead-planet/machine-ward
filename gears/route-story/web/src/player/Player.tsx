@@ -24,6 +24,7 @@ export const Player: FC<ToolPanelProps<maplibregl.Map> & WebRouteStoryProps> = (
     progressMs$,
     viewportRanges$,
     playerOperator,
+    imageMarkerOperator,
     fitBoundsHandler,
     animatrix,
 }) => {
@@ -48,6 +49,7 @@ export const Player: FC<ToolPanelProps<maplibregl.Map> & WebRouteStoryProps> = (
             routeGeometryData$={routeGeometryData$}
             routeTimes$={routeTimes$}
             images$={images$}
+            imageMarkerOperator={imageMarkerOperator}
             progressMs$={progressMs$}
             viewportRanges$={viewportRanges$}
             playerOperator={playerOperator}

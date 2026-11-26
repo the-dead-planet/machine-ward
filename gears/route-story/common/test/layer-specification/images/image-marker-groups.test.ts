@@ -4,17 +4,11 @@ import { FeatureStateProps } from "@apparatus";
 import { getSliderImageMarkers, groupImageMarkers } from "../../../src/tinkers/images";
 import { getGroupedImageSource, getImageMarkerConnections } from "../../../src/layer-specification/images/grouped-image-source";
 import { getImageDragPreviewSource, getImageSourceWithAnchors, ImageFeature } from "../../../src/layer-specification/images/images-sources";
-import {
-    expandedImageGroupId$,
-    selectedImageId$,
-    toggleImageMarkerGroup,
-    selectMapImageMarker,
-    clearImageMarkerSelection,
-} from "../../../src/layer-specification/images/images-layers";
+import { ImageMarkerOperator } from "../../../src/image-marker-operator";
 
 describe("Image marker groups", () => {
     it("uses map groups as persistent pickers and slider groups as open/close toggles", () => {
-        selectedImageId$.next(null);
+        const { expandedImageGroupId$, selectedImageId$, toggleImageMarkerGroup, selectMapImageMarker, clearImageMarkerSelection } = new ImageMarkerOperator();
         toggleImageMarkerGroup([1, 2]);
         expect(selectedImageId$.value).to.equal(1);
         toggleImageMarkerGroup([1, 2]);
@@ -36,6 +30,17 @@ describe("Image marker groups", () => {
         clearImageMarkerSelection();
         expect(selectedImageId$.value).to.equal(null);
         expect(expandedImageGroupId$.value).to.equal(null);
+    });
+
+    it("keeps marker state independent across operators", () => {
+        const first = new ImageMarkerOperator();
+        const second = new ImageMarkerOperator();
+        first.toggleImageMarkerGroup([1, 2]);
+        second.toggleImageMarkerGroup([3, 4]);
+        expect(first.selectedImageId$.value).to.equal(1);
+        first.clearImageMarkerSelection();
+        expect(second.selectedImageId$.value).to.equal(3);
+        expect(second.expandedImageGroupId$.value).to.equal(3);
     });
     it("groups by screen distance without chaining across the route", () => {
         const groups = groupImageMarkers(

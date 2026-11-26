@@ -5,6 +5,7 @@ import classNames from "classnames";
 import { MarkerImage, useMultipleTranslations } from "@apparatus";
 import { ParsingResultWithError, useObservableState, useSubjectState } from "@tinker-chest";
 import {
+    ImageMarkerOperator,
     RouteStoryState,
     RouteStoryTranslationKey,
     RouteTimes,
@@ -24,6 +25,7 @@ import { WebPlayerOperator } from "../../model";
 import styles from './player-slider.module.css';
 
 interface Props {
+    imageMarkerOperator: ImageMarkerOperator;
     gearId: string;
     translationKey: typeof RouteStoryTranslationKey;
     map: maplibregl.Map;
@@ -51,6 +53,7 @@ export const SliderWithMarkers: FC<Props> = ({
     progressMs$,
     viewportRanges$,
     playerOperator,
+    imageMarkerOperator,
     state$,
     fitBoundsHandler,
     animatrix,
@@ -95,6 +98,7 @@ export const SliderWithMarkers: FC<Props> = ({
                         routeGeometryData$={routeGeometryData$}
                         routeTimes$={routeTimes$}
                         images$={images$}
+                        imageMarkerOperator={imageMarkerOperator}
                         fitBoundsHandler={fitBoundsHandler}
                         animatrix={animatrix}
                     />

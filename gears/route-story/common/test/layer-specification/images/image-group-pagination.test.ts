@@ -2,13 +2,8 @@ import { expect } from "chai";
 import { describe, it } from "mocha";
 import { getGroupedImageSource, getImageMarkerConnections } from "../../../src/layer-specification/images/grouped-image-source";
 import { ImageMarkerSource, getImageSourceWithAnchors } from "../../../src/layer-specification/images/images-sources";
-import ImagesLayers, {
-    shiftImageGroup,
-    clearImageMarkerSelection,
-    expandedImageGroupId$,
-    imageGroupOffset$,
-    selectMapImageMarker,
-} from "../../../src/layer-specification/images/images-layers";
+import ImagesLayers from "../../../src/layer-specification/images/images-layers";
+import { ImageMarkerOperator } from "../../../src/image-marker-operator";
 import { getImageMarkerTransition, IMAGE_GROUP_PAGING_DURATION } from "../../../src/layer-specification/images/image-marker-transition";
 import { MAP_IMAGE_GROUP_RING_RADIUS } from "../../../src/tinkers/images";
 import { createExpression } from "@maplibre/maplibre-gl-style-spec";
@@ -376,7 +371,7 @@ describe("Expanded map image groups", () => {
     });
 
     it("preserves the window when picking a group member and resets it on dismissal or a different group", async () => {
-        clearImageMarkerSelection();
+        const { shiftImageGroup, clearImageMarkerSelection, expandedImageGroupId$, imageGroupOffset$, selectMapImageMarker } = new ImageMarkerOperator();
         selectMapImageMarker(0, 23, 0);
         imageGroupOffset$.next(3);
         const source = await getGroupedImageSource(

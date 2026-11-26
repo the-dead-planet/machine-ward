@@ -6,8 +6,7 @@ import {
     draggingImage$,
     highlightIdsBySourceId$,
     imageSourceIds,
-    selectedImageId$,
-    toggleImageMarkerGroup,
+    ImageMarkerOperator,
     formatImageMarkerCount,
     RouteStoryTranslationKey,
     sliderMarkerSpecification,
@@ -36,6 +35,7 @@ const styles = StyleSheet.create({
 });
 
 interface Props {
+    imageMarkerOperator: ImageMarkerOperator;
     imageId: number;
     imageIds: number[];
     gearId: string;
@@ -45,7 +45,8 @@ interface Props {
     drag: SliderMarkerGestureHandlers;
 }
 
-export const SliderMarker: FC<Props> = ({ imageId, imageIds, gearId, translationKey, percent, touchWidth, drag }) => {
+export const SliderMarker: FC<Props> = ({ imageId, imageIds, gearId, translationKey, percent, touchWidth, drag, imageMarkerOperator }) => {
+    const { selectedImageId$, toggleImageMarkerGroup } = imageMarkerOperator;
     const theme = useTheme();
     const [imageLabel] = useMultipleTranslations([{ n: gearId, t: translationKey.Image }]);
     const [selectedImageId] = useSubjectState(selectedImageId$);

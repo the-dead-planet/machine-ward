@@ -4,6 +4,7 @@ import { ParsingResultWithError } from "@tinker-chest";
 import { Icons, SliderRange } from "@ui";
 import { FileOperator } from "./file-operator";
 import { PlayerOperator } from "./player-operator";
+import type { ImageMarkerOperator } from "./image-marker-operator";
 import { Animatrix } from "./animatrix";
 import { RouteGeometryData } from "./tinkers";
 
@@ -119,7 +120,9 @@ export interface RouteStoryProps<TMap, TChronoLens extends ChronoLens, TFile ext
     progressMs$: BehaviorSubject<number>;
     viewportRanges$: Observable<SliderRange[]>;
     fileOperator: FileOperator<TMap, TChronoLens, TFile, TImageData>;
+    resetStory: () => Promise<void>;
     playerOperator: PlayerOperator<TMap, TChronoLens, TFile, TImageData>;
+    imageMarkerOperator: ImageMarkerOperator;
     fitBoundsHandler: (map: TMap, boundingBox?: GeoJSON.BBox) => void;
 }
 

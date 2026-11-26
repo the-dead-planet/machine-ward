@@ -13,8 +13,10 @@ import { MobileMarkerImageData } from "../../images/image-parser";
 import { MobileMap } from "@mobile-apparatus";
 import { MobilePlayerOperator } from "../../model";
 import { useSliderMarkerDrag } from "./slider-markers/useSliderMarkerDrag";
+import type { ImageMarkerOperator } from "@the-dead-planet/machine-ward-gears-route-story-common";
 
 interface Props {
+    imageMarkerOperator: ImageMarkerOperator;
     gearId: string;
     translationKey: typeof RouteStoryTranslationKey;
     map: MobileMap;
@@ -54,6 +56,7 @@ export const SliderWithMarkers: FC<Props> = ({
     progressMs$,
     viewportRanges$,
     playerOperator,
+    imageMarkerOperator,
     state$,
     animatrix,
     fitBoundsHandler,
@@ -66,7 +69,7 @@ export const SliderWithMarkers: FC<Props> = ({
     const [animationControls] = useSubjectState(animatrix.controls$);
     const [{ markerPlayerVisibility: showImageMarkers }] = useSubjectState(state$);
     const viewportRanges = useObservableState(viewportRanges$, []);
-    const markerDrag = useSliderMarkerDrag({ data$, routeGeometryData$, routeTimes$, images$, animatrix });
+    const markerDrag = useSliderMarkerDrag({ data$, routeGeometryData$, routeTimes$, images$, animatrix, imageMarkerOperator });
 
     const handleProgressChange = (value: number) => {
         const nextProgressMs = animationControls.playbackPacing === 'distance' && geojson && routeGeometryData && routeTimes
@@ -94,6 +97,7 @@ export const SliderWithMarkers: FC<Props> = ({
                     routeGeometryData$={routeGeometryData$}
                     routeTimes$={routeTimes$}
                     images$={images$}
+                    imageMarkerOperator={imageMarkerOperator}
                     animatrix={animatrix}
                     fitBoundsHandler={fitBoundsHandler}
                     drag={markerDrag}

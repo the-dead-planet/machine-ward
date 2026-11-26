@@ -10,7 +10,6 @@ import {
     imageSourceIds,
     layerOrder,
     highlightIdsBySourceId$,
-    selectedImageId$,
     useImageMarkerConnections,
     getImageSourceWithMarkerVisibility,
     getImageSourceWithAnchors,
@@ -38,6 +37,7 @@ export const ImagesLayer: FC<OverlayComponentProps<MapLibreMap> & WebRouteStoryP
     routeGeometryData$,
     images$,
     playerOperator,
+    imageMarkerOperator,
 }) => {
     const theme = useTheme();
     const {
@@ -53,7 +53,7 @@ export const ImagesLayer: FC<OverlayComponentProps<MapLibreMap> & WebRouteStoryP
     const [{ markerLayerVisibility }] = useSubjectState(state$);
     const loadedImages = useLoadedWebImages(images);
     const [highlightIdsBySourceId] = useSubjectState(highlightIdsBySourceId$);
-    const [selectedImageId] = useSubjectState(selectedImageId$);
+    const [selectedImageId] = useSubjectState(imageMarkerOperator.selectedImageId$);
 
     useImageLayerAssets(
         map,
@@ -67,7 +67,7 @@ export const ImagesLayer: FC<OverlayComponentProps<MapLibreMap> & WebRouteStoryP
         () => getImageSource(loadedImages, geojson, routeGeometryData),
         [loadedImages, geojson, routeGeometryData],
     );
-    const targetSource = useImageMarkerSource(map, sourceDataGeojson, displayImageId !== null);
+    const targetSource = useImageMarkerSource(map, sourceDataGeojson, displayImageId !== null, imageMarkerOperator);
     const reducedMotion = useReducedMotion();
     // Drag release clears selection; keyboard moves keep it.
     const groupedSource = useAnimatedImageMarkerSource(targetSource, reducedMotion, selectedImageId !== null);
@@ -83,8 +83,10 @@ export const ImagesLayer: FC<OverlayComponentProps<MapLibreMap> & WebRouteStoryP
             imageColor,
             imageHoverColor,
             imageActiveColor,
+            imageMarkerOperator,
         );
     const handlers = useMapImageInteraction({
+        imageMarkerOperator,
         map,
         sourceDataGeojson,
         loadedImages,
@@ -171,6 +173,7 @@ export const ImagesLayer: FC<OverlayComponentProps<MapLibreMap> & WebRouteStoryP
             />
             {markerLayerVisibility && groupedSource.pagination && (
                 <ImageGroupPager
+                    imageMarkerOperator={imageMarkerOperator}
                     map={map}
                     pagination={groupedSource.pagination}
                     gearId={gearId}

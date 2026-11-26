@@ -3,7 +3,7 @@ import { it } from "mocha";
 import { act, createElement } from "react";
 import { createRoot } from "test-renderer";
 import type { Map as MapLibreMap } from "maplibre-gl";
-import { imageLayerIds, ImagesLayers, selectedImageId$ } from "@the-dead-planet/machine-ward-gears-route-story-common";
+import { imageLayerIds, ImagesLayers, ImageMarkerOperator } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { useImageConnectionsLayer } from "../../src/images/useImageConnectionsLayer";
 
 it("retains the connection source and geometry when selection or theme changes its paint", async () => {
@@ -12,8 +12,8 @@ it("retains the connection source and geometry when selection or theme changes i
         value: true,
         configurable: true,
     });
-    const previousSelection = selectedImageId$.value;
-    selectedImageId$.next(null);
+    const imageMarkerOperator = new ImageMarkerOperator();
+    const { selectedImageId$ } = imageMarkerOperator;
     const connections: GeoJSON.FeatureCollection<GeoJSON.LineString> = {
         type: "FeatureCollection",
         features: [],
@@ -33,6 +33,7 @@ it("retains the connection source and geometry when selection or theme changes i
             color,
             "hover",
             "active",
+            imageMarkerOperator,
         );
         return null;
     };
@@ -60,7 +61,6 @@ it("retains the connection source and geometry when selection or theme changes i
         );
     } finally {
         await act(async () => root.unmount());
-        selectedImageId$.next(previousSelection);
         if (environment) {
             Object.defineProperty(globalThis, "IS_REACT_ACT_ENVIRONMENT", environment);
         } else {

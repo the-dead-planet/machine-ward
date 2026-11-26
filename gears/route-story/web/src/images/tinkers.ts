@@ -6,7 +6,6 @@ import {
     getMapImageThumbnailOffsetY,
     imageLayerIds,
     MAP_IMAGE_ANCHOR_SIDE,
-    selectedImageId$,
     THUMBNAIL_IMAGE_SIZE,
     updateImageDistanceFraction,
     RouteStoryTranslationKey,
@@ -15,13 +14,13 @@ import { WebRouteStoryProps } from "../model";
 import { getSliderStepDistanceFraction } from "../player/player-slider/slider-markers/tinkers";
 import { isLoadedWebImage } from "../hooks/useLoadedWebImages";
 
-type ImageMarkerShortcutContext = Pick<WebRouteStoryProps, "data$" | "routeTimes$" | "routeGeometryData$" | "images$" | "animatrix" | "state$"> & {
+type ImageMarkerShortcutContext = Pick<WebRouteStoryProps, "data$" | "routeTimes$" | "routeGeometryData$" | "images$" | "animatrix" | "state$" | "imageMarkerOperator"> & {
     isEngaged$: BehaviorSubject<boolean>;
 };
 
 export const registerImageMarkerShortcuts = (
     gearId: string,
-    { data$, routeTimes$, routeGeometryData$, images$, animatrix, state$, isEngaged$ }: ImageMarkerShortcutContext,
+    { data$, routeTimes$, routeGeometryData$, images$, animatrix, state$, isEngaged$, imageMarkerOperator }: ImageMarkerShortcutContext,
     keysmith: Keysmith,
     playerActive$: Observable<boolean>,
     isStyleLoaded$: BehaviorSubject<boolean>,
@@ -79,6 +78,7 @@ export const registerImageMarkerShortcuts = (
         distinctUntilChanged(),
     );
 
+    const { selectedImageId$ } = imageMarkerOperator;
     const availability$ = combineLatest([draggingImage$, images$, selectedImageId$]).pipe(
         map(([dragging, images, selectedId]) => dragging === null &&
             images.some((image) => image.id === selectedId && image.distanceFraction !== undefined),
@@ -98,10 +98,6 @@ export const registerImageMarkerShortcuts = (
             t: step === "percent" ? RouteStoryTranslationKey.MoveImageLargeStepDescription : RouteStoryTranslationKey.MoveImageStepDescription,
         },
         activationHint: { n: gearId, t: RouteStoryTranslationKey.MoveImageActivationHint },
-        hint: {
-            n: gearId,
-            t: RouteStoryTranslationKey.MoveImageHint,
-        },
         requirements: { n: gearId, t: RouteStoryTranslationKey.MoveImageMakeAvailable },
         makeUnavailableHint: { n: gearId, t: RouteStoryTranslationKey.MoveImageMakeUnavailable },
         binding,

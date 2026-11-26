@@ -13,6 +13,7 @@ export const RouteName: FC<TopToolsProps<maplibregl.Map> & WebRouteStoryProps> =
     map,
     data$,
     fileOperator,
+    resetStory,
     fitBoundsHandler,
 }) => {
     const [{ routeName, geojson }] = useSubjectState(data$);
@@ -64,7 +65,7 @@ export const RouteName: FC<TopToolsProps<maplibregl.Map> & WebRouteStoryProps> =
                 variant="ghost"
                 accept={[...parsers.keys(), "image/png", "image/jpeg", "image/jpg"].join(', ')}
                 onUpload={(files) => fileOperator.uploadFile(files, map)}
-                onPurge={() => fileOperator.resetStory()}
+                onPurge={resetStory}
                 purgeText={purgeStoryText}
                 actionButtons={[
                     {

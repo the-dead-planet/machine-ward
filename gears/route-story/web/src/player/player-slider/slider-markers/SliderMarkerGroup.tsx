@@ -13,7 +13,7 @@ import {
     draggingPlacement$,
     highlightIdsBySourceId$,
     imageSourceIds,
-    selectedImageId$,
+    ImageMarkerOperator,
     getRouteLngLatAtDistanceFraction,
 } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { Icons } from "@ui";
@@ -25,6 +25,7 @@ import { useSliderMarkerDrag } from "./useSliderMarkerDrag";
 import styles from "./slider-markers.module.css";
 
 interface Props {
+    imageMarkerOperator: ImageMarkerOperator;
     image: MarkerImage<WebMarkerImageData>;
     imageIds: number[];
     percent: number;
@@ -41,7 +42,7 @@ interface Props {
 
 export const SliderMarkerGroup: FC<Props> = (props) => {
     const { image, imageIds, percent, gearId, translationKey, map, data$, routeGeometryData$, routeTimes$, fitBoundsHandler } = props;
-    const [selectedImageId] = useSubjectState(selectedImageId$);
+    const [selectedImageId] = useSubjectState(props.imageMarkerOperator.selectedImageId$);
     const [draggingImage] = useSubjectState(draggingImage$);
     const [draggingPlacement] = useSubjectState(draggingPlacement$);
     const [label] = useMultipleTranslations([{ n: gearId, t: translationKey.PanToImage }]);
@@ -81,6 +82,7 @@ export const SliderMarkerGroup: FC<Props> = (props) => {
                 />
             </Tooltip>
             <SliderMarker
+                imageMarkerOperator={props.imageMarkerOperator}
                 imageId={image.id}
                 imageIds={imageIds}
                 gearId={gearId}

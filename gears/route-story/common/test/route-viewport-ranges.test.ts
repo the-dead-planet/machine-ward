@@ -19,6 +19,26 @@ class TestRouteStoryGear extends RouteStoryGear<unknown, ChronoLens, RouteStoryF
     public imagesLayerComponent = () => null;
 }
 
+it("clears marker selection when the story is reset and releases the loading flag if cleanup fails", async () => {
+    const cartomancer = new Cartomancer<unknown>();
+    const toolsStation = new ToolsStation<unknown>();
+    const gear = new TestRouteStoryGear({ cartomancer, toolsStation } as GearApparatus<unknown, ChronoLens>);
+    gear.imageMarkerOperator.toggleImageMarkerGroup([1, 2]);
+    gear.progressMs$.next(100);
+    const failure = new Error("Cleanup failed");
+    gear.onCleanupStory = async () => { throw failure; };
+    const result = await gear.resetStory().catch((error: unknown) => error);
+    expect(result).to.equal(failure);
+    expect(gear.fileOperator.isLoading$.value).to.equal(false);
+    expect(gear.imageMarkerOperator.selectedImageId$.value).to.equal(1);
+
+    gear.onCleanupStory = async () => {};
+    await gear.resetStory();
+    expect(gear.progressMs$.value).to.equal(0);
+    expect(gear.imageMarkerOperator.selectedImageId$.value).to.equal(null);
+    expect(gear.imageMarkerOperator.expandedImageGroupId$.value).to.equal(null);
+});
+
 it("shares viewport ranges lazily and stops calculation for hidden players and unrelated controls", () => {
     const cartomancer = new Cartomancer<unknown>();
     const toolsStation = new ToolsStation<unknown>();

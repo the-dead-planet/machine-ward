@@ -1,13 +1,14 @@
 import { RefObject, useRef } from "react";
 import { LayoutChangeEvent, LayoutRectangle, NativeSyntheticEvent } from "react-native";
 import { MarkerEvent } from "@maplibre/maplibre-react-native";
-import { ImageGroupPagination, shiftImageGroup } from "@the-dead-planet/machine-ward-gears-route-story-common";
+import { ImageGroupPagination, ImageMarkerOperator } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { ImageGroupPagerDimensions } from "./model";
 
 export const useImageGroupPagerInteraction = (
     pagination: ImageGroupPagination,
     position: RefObject<[number, number] | null>,
     dimensions: RefObject<ImageGroupPagerDimensions | null>,
+    shiftImageGroup: ImageMarkerOperator['shiftImageGroup'],
 ) => {
     const controls = useRef<LayoutRectangle | null>(null);
 

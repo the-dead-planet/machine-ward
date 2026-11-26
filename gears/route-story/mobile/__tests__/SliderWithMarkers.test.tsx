@@ -14,6 +14,7 @@ import {
 import { SliderWithMarkers } from "../src/player/player-slider/SliderWithMarkers";
 import { MobileMarkerImageData } from "../src/images/image-parser";
 import { MobilePlayerOperator } from "../src/model";
+import { ImageMarkerOperator } from "../../common/src/image-marker-operator";
 
 jest.mock("@apparatus", () => ({}));
 jest.mock("@mobile-apparatus", () => ({}));
@@ -48,6 +49,7 @@ test("keeps a native exclusion target around the player controls even when image
     const viewportRanges$ = new BehaviorSubject([{ start: 10, end: 30 }]);
     const screen = await render(
         <SliderWithMarkers
+            imageMarkerOperator={new ImageMarkerOperator()}
             gearId="route-story"
             translationKey={RouteStoryTranslationKey}
             map={{} as MobileMap}

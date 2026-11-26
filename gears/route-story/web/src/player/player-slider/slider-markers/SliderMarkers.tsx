@@ -13,7 +13,10 @@ import { DraggedSliderMarker } from "./DraggedSliderMarker";
 import { useSliderMarkerDrag } from "./useSliderMarkerDrag";
 import styles from "./slider-markers.module.css";
 
+import type { ImageMarkerOperator } from "@the-dead-planet/machine-ward-gears-route-story-common";
+
 interface Props {
+    imageMarkerOperator: ImageMarkerOperator;
     gearId: string;
     translationKey: typeof RouteStoryTranslationKey;
     map: maplibregl.Map;
