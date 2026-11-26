@@ -1,10 +1,9 @@
 import { FC, useState } from "react";
 import classNames from "classnames";
 import { DateTime } from "luxon";
-import { Button, Checkbox, Dialog, Dropdown, ThemeSelect } from "@web-ui";
-import { Individuator, IndividuatorSettings, Language, Translatron, useTranslate } from "@apparatus";
+import { Button, Checkbox, Dialog, Dropdown, Text, ThemeSelect } from "@web-ui";
+import { Individuator, IndividuatorSettings, IndividuatorTranslationKey, Language, MachineTranslationKey, Translatron, useTranslate } from "@apparatus";
 import { useWebMachineWard } from "@web-apparatus";
-import { T } from "@web-apparatus";
 import { DateFormat, DistanceUnit, TimeFormat, useSubjectState } from "@tinker-chest";
 import { Icons, useTheme } from "@ui";
 import { SettingsCheckbox } from "./SettingsCheckbox";
@@ -17,34 +16,59 @@ interface Props {
 }
 
 export const SettingsDialog: FC<Props> = ({ onClose, onOpenKeyboardShortcuts }) => {
-    const { isDev, namespace, translationKey, individuator } = useWebMachineWard();
-    const [, setSettings] = useSubjectState(individuator.settings$);
+    const { isDev, namespace, individuator } = useWebMachineWard();
+    const [savedSettings, setSettings] = useSubjectState(individuator.settings$);
     const [pendingSettings, setPendingSettings] = useState(individuator.settings$.value);
     const translate = useTranslate();
+    const translateIndividuator = (key: IndividuatorTranslationKey) => translate({ n: individuator.namespace, t: key });
+    const translateMachine = (key: MachineTranslationKey) => translate({ n: namespace, t: key });
     const theme = useTheme();
     const [media] = useSubjectState(theme.media$);
     const isWide = !media.isLessThanSm;
     const popoverClassName = isWide ? styles['skewed-popover'] : undefined;
     const shortcutsLabelId = "individuator-enable-keyboard-shortcuts-label";
-    const shortcutsLabel = <T n={individuator.namespace} t={individuator.translationKey.EnableKeyboardShortcuts} />;
+    const shortcutsLabel = translateIndividuator(IndividuatorTranslationKey.EnableKeyboardShortcuts);
+    const unsaved = translateIndividuator(IndividuatorTranslationKey.UnsavedChange);
+    const changed = {
+        language: pendingSettings.language !== savedSettings.language,
+        dateFormat: pendingSettings.dateFormat.value !== savedSettings.dateFormat.value ||
+            pendingSettings.dateFormat.short !== savedSettings.dateFormat.short,
+        timeFormat: pendingSettings.timeFormat !== savedSettings.timeFormat,
+        distanceUnit: pendingSettings.distanceUnit !== savedSettings.distanceUnit,
+        themeName: pendingSettings.themeName !== savedSettings.themeName,
+        confirmBeforeLeave: pendingSettings.confirmBeforeLeave !== savedSettings.confirmBeforeLeave,
+        enableKeyboardShortcuts: pendingSettings.enableKeyboardShortcuts !== savedSettings.enableKeyboardShortcuts,
+        debugMode: isDev && pendingSettings.debugMode !== savedSettings.debugMode,
+    };
+    const unsavedFor = (key: keyof typeof changed) => changed[key] ? unsaved : undefined;
+    const unsavedCount = Object.values(changed).filter(Boolean).length;
 
     return (
         <Dialog
             color="primary"
             variant="fill-translucent"
             placement="right-drawer"
-            header={translate({ n: individuator.namespace, t: individuator.translationKey.IndividuatorName })}
-            closeText={translate({ n: namespace, t: translationKey.Cancel })}
+            header={translateIndividuator(IndividuatorTranslationKey.IndividuatorName)}
+            closeText={translateMachine(MachineTranslationKey.Cancel)}
             onClose={onClose}
+            footerStart={(
+                <Text usage="caption" color="primary" role="status" className={styles['unsaved-count']}>
+                    {unsavedCount > 0 && translate({
+                        n: individuator.namespace,
+                        t: unsavedCount === 1 ? IndividuatorTranslationKey.UnsavedChangeCount : IndividuatorTranslationKey.UnsavedChangesCount,
+                        p: { count: unsavedCount },
+                    })}
+                </Text>
+            )}
             save={{
-                saveText: translate({ n: namespace, t: translationKey.Save }),
+                saveText: translateMachine(MachineTranslationKey.Save),
                 onSave: () => setSettings(pendingSettings),
             }}
         >
             <div className={classNames(styles['container'], { [styles['wide']]: isWide })}>
                 <div className={styles['field']}>
-                    <SettingsLabel id="individuator-language-label">
-                        <T n={individuator.namespace} t={individuator.translationKey.Language} />
+                    <SettingsLabel id="individuator-language-label" unsaved={unsavedFor('language')}>
+                        {translateIndividuator(IndividuatorTranslationKey.Language)}
                     </SettingsLabel>
                     <Dropdown<Language>
                         popoverClassName={popoverClassName}
@@ -68,8 +92,8 @@ export const SettingsDialog: FC<Props> = ({ onClose, onOpenKeyboardShortcuts }) 
                 </div>
 
                 <div className={styles['field']}>
-                    <SettingsLabel id="individuator-date-format-label">
-                        <T n={individuator.namespace} t={individuator.translationKey.DateFormat} />
+                    <SettingsLabel id="individuator-date-format-label" unsaved={unsavedFor('dateFormat')}>
+                        {translateIndividuator(IndividuatorTranslationKey.DateFormat)}
                     </SettingsLabel>
                     <Dropdown<DateFormat>
                         popoverClassName={popoverClassName}
@@ -103,8 +127,8 @@ export const SettingsDialog: FC<Props> = ({ onClose, onOpenKeyboardShortcuts }) 
                 </div>
 
                 <div className={styles['field']}>
-                    <SettingsLabel id="individuator-time-format-label">
-                        <T n={individuator.namespace} t={individuator.translationKey.TimeFormat} />
+                    <SettingsLabel id="individuator-time-format-label" unsaved={unsavedFor('timeFormat')}>
+                        {translateIndividuator(IndividuatorTranslationKey.TimeFormat)}
                     </SettingsLabel>
                     <Dropdown<TimeFormat>
                         popoverClassName={popoverClassName}
@@ -119,8 +143,8 @@ export const SettingsDialog: FC<Props> = ({ onClose, onOpenKeyboardShortcuts }) 
                 </div>
 
                 <div className={styles['field']}>
-                    <SettingsLabel id="individuator-distance-unit-label">
-                        <T n={individuator.namespace} t={individuator.translationKey.DistanceUnit} />
+                    <SettingsLabel id="individuator-distance-unit-label" unsaved={unsavedFor('distanceUnit')}>
+                        {translateIndividuator(IndividuatorTranslationKey.DistanceUnit)}
                     </SettingsLabel>
                     <Dropdown<DistanceUnit>
                         popoverClassName={popoverClassName}
@@ -131,15 +155,15 @@ export const SettingsDialog: FC<Props> = ({ onClose, onOpenKeyboardShortcuts }) 
                         value={pendingSettings.distanceUnit}
                         options={Individuator.distanceUnitOptions.map(({ value, translationKey }) => ({
                             value,
-                            label: translate({ n: individuator.namespace, t: translationKey }),
+                            label: translateIndividuator(translationKey),
                         }))}
                         onChange={(distanceUnit) => setPendingSettings((prev): IndividuatorSettings => ({ ...prev, distanceUnit }))}
                     />
                 </div>
 
                 <div className={styles['field']}>
-                    <SettingsLabel id="individuator-theme-label">
-                        <T n={individuator.namespace} t={individuator.translationKey.Theme} />
+                    <SettingsLabel id="individuator-theme-label" unsaved={unsavedFor('themeName')}>
+                        {translateIndividuator(IndividuatorTranslationKey.Theme)}
                     </SettingsLabel>
                     <ThemeSelect
                         mode={theme.mode}
@@ -157,11 +181,12 @@ export const SettingsDialog: FC<Props> = ({ onClose, onOpenKeyboardShortcuts }) 
                     wide={isWide}
                     id="individuator-confirm-before-leave-label"
                     checked={pendingSettings.confirmBeforeLeave}
+                    unsaved={unsavedFor('confirmBeforeLeave')}
                     onChange={(checked) => setPendingSettings((prev): IndividuatorSettings => ({ ...prev, confirmBeforeLeave: checked }))}
                 >
-                    <T n={individuator.namespace} t={individuator.translationKey.ConfirmBeforeLeave} />
+                    {translateIndividuator(IndividuatorTranslationKey.ConfirmBeforeLeave)}
                 </SettingsCheckbox>
-                {isWide && <SettingsLabel id={shortcutsLabelId}>{shortcutsLabel}</SettingsLabel>}
+                {isWide && <SettingsLabel id={shortcutsLabelId} unsaved={unsavedFor('enableKeyboardShortcuts')}>{shortcutsLabel}</SettingsLabel>}
                 <div className={styles['checkbox-actions']}>
                     <Checkbox
                         className={isWide ? undefined : styles['settings-checkbox']}
@@ -171,26 +196,25 @@ export const SettingsDialog: FC<Props> = ({ onClose, onOpenKeyboardShortcuts }) 
                         checked={pendingSettings.enableKeyboardShortcuts}
                         onChange={(checked) => setPendingSettings((prev) => ({ ...prev, enableKeyboardShortcuts: checked }))}
                     >
-                        {!isWide && <span id={shortcutsLabelId}>{shortcutsLabel}</span>}
+                        {!isWide && <SettingsLabel id={shortcutsLabelId} inline unsaved={unsavedFor('enableKeyboardShortcuts')}>{shortcutsLabel}</SettingsLabel>}
                     </Checkbox>
                     <Button
                         size="xs"
                         color="primary"
                         icon={Icons.NounProject.GoTo}
-                        aria-label={translate({ n: individuator.namespace, t: individuator.translationKey.GoToKeyboardShortcuts })}
+                        tooltip={translateIndividuator(IndividuatorTranslationKey.GoToKeysmith)}
                         onClick={onOpenKeyboardShortcuts}
-                    >
-                        <T n={individuator.namespace} t={individuator.translationKey.GoTo} />
-                    </Button>
+                    />
                 </div>
                 {isDev ? (
                     <SettingsCheckbox
                         wide={isWide}
                         id="individuator-debug-mode-label"
                         checked={pendingSettings.debugMode}
+                        unsaved={unsavedFor('debugMode')}
                         onChange={(checked) => setPendingSettings((prev): IndividuatorSettings => ({ ...prev, debugMode: checked }))}
                     >
-                        <T n={individuator.namespace} t={individuator.translationKey.DebugMode} />
+                        {translateIndividuator(IndividuatorTranslationKey.DebugMode)}
                     </SettingsCheckbox>
                 ) : null}
             </div>

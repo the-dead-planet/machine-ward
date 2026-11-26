@@ -9,19 +9,21 @@ interface Props {
     checked: boolean;
     onChange: (checked: boolean) => void;
     children: ReactNode;
+    unsaved?: string;
 }
 
-export const SettingsCheckbox: FC<Props> = ({ wide, id, checked, onChange, children }) => {
+export const SettingsCheckbox: FC<Props> = ({ wide, id, checked, onChange, children, unsaved }) => {
+    const label = <SettingsLabel id={id} inline={!wide} unsaved={unsaved}>{children}</SettingsLabel>;
     return (
         <div className={styles['field']}>
             {wide ? (
                 <>
-                    <SettingsLabel id={id}>{children}</SettingsLabel>
+                    {label}
                     <Checkbox labelledBy={id} size="xs" color="primary" checked={checked} onChange={onChange} />
                 </>
             ) : (
                 <Checkbox className={styles['settings-checkbox']} size="xs" color="primary" checked={checked} onChange={onChange}>
-                    {children}
+                    {label}
                 </Checkbox>
             )}
         </div>

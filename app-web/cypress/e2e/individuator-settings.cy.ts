@@ -77,7 +77,13 @@ describe('Individuator settings draft', () => {
         };
 
         openSettings().should('be.checked');
-        cy.get('[role="dialog"] input[type="checkbox"]').should('have.length', 3).each(($input) => {
+        cy.get('[role="dialog"] input[type="checkbox"]').should(($inputs) => {
+            const labelIds = $inputs.toArray().map((input) => input.getAttribute('aria-labelledby'));
+            expect(labelIds).to.include.members([
+                'individuator-confirm-before-leave-label',
+                'individuator-enable-keyboard-shortcuts-label',
+            ]);
+        }).each(($input) => {
             const input = $input[0] as HTMLInputElement;
             const label = input.ownerDocument.getElementById(input.getAttribute('aria-labelledby')!);
             expect(label?.textContent?.trim()).to.be.a('string').and.not.be.empty;
@@ -86,16 +92,22 @@ describe('Individuator settings draft', () => {
         cy.get('input[aria-labelledby="individuator-enable-keyboard-shortcuts-label"]')
             .click().should('not.be.checked');
         cy.document().then((document) => document.fonts.ready);
-        const shortcutsButton = () => cy.get('[role="dialog"] button[aria-label="Go to keyboard shortcuts"]');
-        for (const [width, wraps] of [[1100, false], [500, false], [280, true]] as const) {
+        const shortcutsButton = () => cy.get('[role="dialog"] button[aria-label="Go to keysmith"]');
+        for (const [width, wraps] of [[1100, false], [500, false], [280, false], [200, true]] as const) {
             cy.viewport(width, 844);
             shortcutsButton().should(($button) => {
-                expect($button.text().trim()).to.equal('Go to');
+                expect($button.text().trim()).to.equal('');
                 const document = $button[0].ownerDocument;
                 const label = document.getElementById('individuator-enable-keyboard-shortcuts-label')!;
                 const checkbox = document.querySelector('input[aria-labelledby="individuator-enable-keyboard-shortcuts-label"]')!.parentElement!.getBoundingClientRect();
                 const button = $button[0].getBoundingClientRect();
                 expect(document.defaultView!.getComputedStyle(label).textTransform).to.equal('uppercase');
+                expect(label.dataset.unsaved).to.equal('true');
+                const marker = document.defaultView!.getComputedStyle(label, '::before');
+                expect(marker.position).to.equal('absolute');
+                expect(marker.width).to.equal('4px');
+                expect(marker.height).to.equal('4px');
+                expect(marker.insetInlineStart).to.equal('-8px');
                 if (width === 1100) {
                     const confirmLabel = document.getElementById('individuator-confirm-before-leave-label')!;
                     expect(label.offsetLeft).to.equal(confirmLabel.offsetLeft);
@@ -110,6 +122,8 @@ describe('Individuator settings draft', () => {
             });
         }
         cy.viewport(1100, 844);
+        shortcutsButton().focus();
+        cy.contains('[role="tooltip"]', /^Go to keysmith$/).should('be.visible');
         shortcutsButton().click();
         cy.get('[role="dialog"]').should('have.length', 1).and('contain.text', 'Keyboard shortcuts');
         cy.contains('[role="dialog"] button', /^Close$/).click();
@@ -129,15 +143,36 @@ describe('Individuator settings draft', () => {
             cy.get('[role="menu"] [role^="menuitem"]').first().click();
             cy.get('[role="dialog"]').should('be.visible');
         };
-        const chooseGerman = () => {
+        const chooseLanguage = (label: string) => {
             cy.get(
                 'button[aria-labelledby="individuator-language-label"]',
             ).click();
-            cy.contains('[role="listbox"] [role="option"]', 'Deutsch').click();
+            cy.contains('[role="listbox"] [role="option"]', label).click();
         };
 
         openSettings();
-        chooseGerman();
+        const unsavedCount = '[role="dialog"] footer [role="status"]';
+        cy.get(unsavedCount).should('be.empty');
+        cy.get('[role="dialog"] [data-unsaved]').should('not.exist');
+        cy.get('#individuator-language-label').then(($label) => {
+            const originalLeft = $label[0].offsetLeft;
+            chooseLanguage('Deutsch');
+            cy.get('#individuator-language-label').should(($changedLabel) => {
+                expect($changedLabel[0].offsetLeft).to.equal(originalLeft);
+                expect($changedLabel).to.have.attr('data-unsaved', 'true');
+                expect($changedLabel).to.contain.text('Unsaved change');
+            });
+        });
+        cy.get('[role="dialog"] [data-unsaved]').should('have.length', 1);
+        cy.get(unsavedCount).should('have.text', '1 unsaved change');
+        const confirmBeforeLeave = 'input[aria-labelledby="individuator-confirm-before-leave-label"]';
+        cy.get(confirmBeforeLeave).click();
+        cy.get(unsavedCount).should('have.text', '2 unsaved changes');
+        cy.get(confirmBeforeLeave).click();
+        chooseLanguage('English');
+        cy.get('[role="dialog"] [data-unsaved]').should('not.exist');
+        cy.get(unsavedCount).should('be.empty');
+        chooseLanguage('Deutsch');
         cy.get('button[aria-label="Application menu"]').should('exist');
         cy.get('[role="dialog"]')
             .contains('button', /^Cancel$/)
@@ -150,7 +185,8 @@ describe('Individuator settings draft', () => {
             'contain.text',
             'English',
         );
-        chooseGerman();
+        cy.get('[role="dialog"] [data-unsaved]').should('not.exist');
+        chooseLanguage('Deutsch');
         cy.get('button[aria-label="Application menu"]').should('exist');
         cy.get('[role="dialog"]')
             .contains('button', /^Save$/)
