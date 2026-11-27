@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { describe, it } from "mocha";
-import { getNoticeCountKey, SignaliumBureau, Translatron } from "../../src";
+import { getNoticeCountKey, getNoticeTickerDuration, SignaliumBureau, Translatron } from "../../src";
 import { pl } from "../../src/machine-ward/translations";
 
 describe("Signalium Bureau hints", () => {
@@ -34,5 +34,12 @@ describe("Signalium Bureau notice counts", () => {
             .to.deep.equal(["1 informacja wywiadowcza", "2 informacje wywiadowcze", "5 informacji wywiadowczych"]);
         expect([1, 2, 5].map((count) => countLabel("secured", count)))
             .to.deep.equal(["1 potwierdzenie", "2 potwierdzenia", "5 potwierdzeń"]);
+    });
+});
+
+describe("Notice ticker", () => {
+    it("scrolls at 75 pixels per second", () => {
+        expect(getNoticeTickerDuration(75)).to.equal(1000);
+        expect(getNoticeTickerDuration(150)).to.equal(2000);
     });
 });
