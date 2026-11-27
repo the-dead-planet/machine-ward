@@ -2,7 +2,7 @@ import { FC } from "react";
 import { getKeyBindingLabels, ShortcutStatus, useTranslate } from "@apparatus";
 import { useWebMachineWard } from "@web-apparatus";
 import { Icons } from "@ui";
-import { Icon, Text, Tooltip } from "@web-ui";
+import { Icon, Keycap, Text, Tooltip } from "@web-ui";
 import styles from "./keyboard-shortcuts-dialog.module.css";
 
 interface Props {
@@ -19,6 +19,7 @@ export const KeyboardShortcutRow: FC<Props> = ({ shortcut, shortcutsEnabled }) =
     });
     const guidance = shortcut.present ? shortcut.makeUnavailableHint : shortcut.requirements;
     const tooltip = guidance ? `${availability} - ${translate(guidance)}` : availability;
+    const disabled = !shortcutsEnabled || !shortcut.present;
 
     return (
         <tr>
@@ -28,11 +29,13 @@ export const KeyboardShortcutRow: FC<Props> = ({ shortcut, shortcutsEnabled }) =
                 </Text>
             </th>
             <td>
-                <Text usage="caption" color="primary" disabled={!shortcutsEnabled || !shortcut.present} className={styles["key-combination"]}>
+                <span aria-disabled={disabled || undefined} className={styles["key-combination"]}>
                     {getKeyBindingLabels(shortcut.binding).map((label, index) => (
-                        <kbd key={index} className={styles["keys"]}>{label}</kbd>
+                        <Keycap key={index} color="primary" size="xs" variant="fill-inverse" disabled={disabled}>
+                            {label}
+                        </Keycap>
                     ))}
-                </Text>
+                </span>
             </td>
             <td className={styles["description"]}>
                 {shortcut.activationHint && (

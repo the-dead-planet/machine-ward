@@ -1,7 +1,7 @@
 import { FC } from "react";
-import { SignaliumNotice, useTranslation } from "@apparatus";
+import { getNoticeMessage, noticeStatuses, SignaliumNotice, useTranslation } from "@apparatus";
 import { useWebMachineWard } from "@web-apparatus";
-import { Button, P } from "@web-ui";
+import { Button, Icon, P } from "@web-ui";
 import { FontType, Icons } from "@ui";
 import styles from './notices.module.css';
 
@@ -14,10 +14,11 @@ export const Notice: FC<Props> = ({
     onRemove
 }) => {
     const { namespace, translationKey } = useWebMachineWard();
-    const close = useTranslation({ n: namespace, t: translationKey.Close });
+    const removeLabel = useTranslation({ n: namespace, t: translationKey.RemoveNotice });
 
     return (
         <div className={styles.notice}>
+            <Icon src={Icons.NounProject[noticeStatuses[notice.type].icon]} color={notice.type} glyphsShade={500} />
             <P
                 className={styles.message}
                 role={notice.type === 'glitch' ? 'alert' : 'status'}
@@ -25,13 +26,13 @@ export const Notice: FC<Props> = ({
                 variant="fill-translucent"
                 color={notice.type}
             >
-                {notice.text} {notice.type === 'glitch' ? notice.error.message : ''}
+                {getNoticeMessage(notice)}
             </P>
             <Button
                 size="xs"
                 color={notice.type}
-                icon={Icons.NounProject.Clear}
-                aria-label={close}
+                icon={Icons.NounProject.CloseCross}
+                tooltip={removeLabel}
                 onClick={() => onRemove(notice.id)}
             />
         </div>

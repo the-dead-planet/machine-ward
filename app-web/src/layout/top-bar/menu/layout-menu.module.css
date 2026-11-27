@@ -7,3 +7,10 @@
     padding: 4px 12px;
     font-size: var(--size-control-font-size);
 }
+
+.gear-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 8px;
+}

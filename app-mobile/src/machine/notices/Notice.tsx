@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { StyleSheet, View } from "react-native";
-import { Button, Text } from '@mobile-ui';
-import { SignaliumNotice, useTranslate } from "@apparatus";
+import { Button, Icon, Text } from '@mobile-ui';
+import { getNoticeMessage, noticeStatuses, SignaliumNotice, useTranslate } from "@apparatus";
 import { useMobileMachineWard } from "@mobile-apparatus";
 import { FontType, Icons } from "@ui";
 
@@ -25,19 +25,22 @@ export const Notice: FC<Props> = ({
 }) => {
     const { namespace, translationKey } = useMobileMachineWard();
     const translate = useTranslate();
+    const removeLabel = translate({ n: namespace, t: translationKey.RemoveNotice });
 
     return (
         <View style={styles.container}>
+            <Icon icon={Icons.NounProject[noticeStatuses[notice.type].icon]} color={notice.type} glyphsShade={500} />
             <View accessibilityLiveRegion={notice.type === 'glitch' ? 'assertive' : 'polite'}>
                 <Text fontType={FontType.NeonText} variant="fill-translucent" color={notice.type} nowrap>
-                    {notice.text} {notice.type === 'glitch' ? notice.error.message : ''}
+                    {getNoticeMessage(notice)}
                 </Text>
             </View>
             <Button
                 size="xs"
                 color={notice.type}
-                icon={Icons.NounProject.Clear}
-                accessibilityLabel={translate({ n: namespace, t: translationKey.Close })}
+                icon={Icons.NounProject.CloseCross}
+                accessibilityLabel={removeLabel}
+                tooltip={removeLabel}
                 onPress={() => onRemove(notice.id)}
             />
         </View>

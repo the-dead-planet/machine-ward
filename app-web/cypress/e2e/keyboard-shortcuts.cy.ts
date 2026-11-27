@@ -44,7 +44,7 @@ describe("Keyboard shortcut overview", () => {
             .and("have.text", "Available - To make this shortcut unavailable, hide image markers on both the map and the player.");
         cy.contains(shortcutRows, "Move image backward along the route")
             .within(() => {
-                cy.get("kbd").should("have.text", "←");
+                cy.get("kbd").should("have.text", "←").and("have.attr", "data-appearance-variant", "fill-inverse");
                 cy.contains("td", "1 metre").children().should(($lines) => {
                     expect($lines.eq(0)).to.have.text("Select a marker on the map or in the player");
                     expect($lines.eq(1)).to.contain.text("1 metre").and.to.contain.text("1 second");

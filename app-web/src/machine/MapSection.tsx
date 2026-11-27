@@ -5,7 +5,7 @@ import { useWebMachineWard } from "@web-apparatus";
 import { useSubjectState } from "@tinker-chest";
 import { MapCanvas } from "./map-canvas/MapCanvas";
 import { MapToolsGridAreas } from "./map-tools-grid/MapToolsGridAreas";
-import { NoticesTopToolbar } from "./NoticesTopToolbar";
+import { NoticesTopToolbar } from "./notices/NoticesTopToolbar";
 import { Popups } from "./Popups";
 import { createMap } from "./map";
 import { ErrorBoundary, ThemeContext } from "@ui";

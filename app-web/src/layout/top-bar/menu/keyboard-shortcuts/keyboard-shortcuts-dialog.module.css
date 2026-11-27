@@ -60,11 +60,3 @@
     display: inline-flex;
     gap: 4px;
 }
-
-.keys {
-    font: inherit;
-    border: 1px solid currentColor;
-    border-radius: 2px;
-    padding: 1px 4px;
-    white-space: nowrap;
-}

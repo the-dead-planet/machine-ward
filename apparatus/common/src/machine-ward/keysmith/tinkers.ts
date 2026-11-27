@@ -18,3 +18,4 @@ export const getKeyBindingLabels = (binding: KeyBinding): string[] => {
         arrows[binding.key] ?? (binding.key.length === 1 ? binding.key.toUpperCase() : binding.key),
     ].filter((label): label is string => typeof label === "string");
 };
+

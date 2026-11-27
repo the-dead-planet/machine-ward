@@ -7,7 +7,7 @@ import { useMobileMachineWard } from "@mobile-apparatus";
 import { useSubjectState } from "@tinker-chest";
 import { MobileMap } from "@mobile-apparatus";
 import { MapToolsGridAreas } from "./map-tools-grid/MapToolsGridAreas";
-import { NoticesTopToolbar } from "./NoticesTopToolbar";
+import { NoticesTopToolbar } from "./notices/NoticesTopToolbar";
 import { Popups } from "./Popups";
 import {
     MapCanvas,
