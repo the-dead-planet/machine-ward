@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { Animated, Easing, ScrollView, StyleSheet, View } from "react-native";
-import { useNoticeToolbarContent } from "@apparatus";
+import Svg, { Circle, Defs, Pattern, Rect } from "react-native-svg";
+import { getNoticeTickerDuration, useNoticeToolbarContent } from "@apparatus";
 import { useMobileMachineWard } from "@mobile-apparatus";
 import { Text, useReducedMotion } from "@mobile-ui";
 import { FontType, useTheme, withColorOpacity } from "@ui";
@@ -8,7 +9,6 @@ import { Notice } from "../notices/Notice";
 
 const styles = StyleSheet.create({
     toolbar: {
-        height: 40,
         borderBottomWidth: 1,
     },
     ticker: {
@@ -18,7 +18,6 @@ const styles = StyleSheet.create({
     },
     hint: {
         paddingHorizontal: 12,
-        paddingVertical: 5,
     },
 });
 
@@ -27,55 +26,87 @@ const useNoticeTicker = () => {
     const [width, setWidth] = useState(0);
     const [contentWidth, setContentWidth] = useState(0);
     const offset = useRef(new Animated.Value(0)).current;
-    const animation = useRef<Animated.CompositeAnimation | null>(null);
+    const resume = useRef<(() => void) | null>(null);
 
     useEffect(() => {
         offset.setValue(0);
 
-        if (reducedMotion || !width || contentWidth <= width) {
+        if (reducedMotion || !width || !contentWidth) {
             return;
         }
-        
-        const ticker = Animated.loop(Animated.timing(offset, {
-            toValue: width - contentWidth,
-            duration: 60000,
-            delay: 4800,
-            easing: Easing.linear,
-            useNativeDriver: true,
-            isInteraction: false,
-        }));
-        animation.current = ticker;
-        ticker.start();
+
+        let active = true;
+        const start = (from: number) => {
+            if (!active) {
+                return;
+            }
+            offset.setValue(from);
+            Animated.timing(offset, {
+                toValue: -contentWidth,
+                duration: getNoticeTickerDuration(from + contentWidth),
+                easing: Easing.linear,
+                useNativeDriver: true,
+                isInteraction: false,
+            }).start(({ finished }) => {
+                if (finished) {
+                    start(width);
+                }
+            });
+        };
+        resume.current = () => offset.stopAnimation((from) => start(from <= -contentWidth ? width : from));
+        start(width);
 
         return () => {
-            ticker.stop();
-            animation.current = null;
+            active = false;
+            resume.current = null;
+            offset.stopAnimation();
         };
     }, [contentWidth, offset, reducedMotion, width]);
 
-    return { setWidth, setContentWidth, offset, animation };
+    return { setWidth, setContentWidth, offset, resume };
 };
 
 export const NoticesTopToolbar = () => {
     const { notices, hints, onRemove } = useNoticeToolbarContent();
     const theme = useTheme();
+    const appearance = theme.resolveAppearance();
+    const lampPattern = useId();
     const { toolsStation } = useMobileMachineWard();
-    const { setWidth, setContentWidth, offset, animation } = useNoticeTicker();
+    const { setWidth, setContentWidth, offset, resume } = useNoticeTicker();
 
     return (
         <View
             ref={instance => { toolsStation.topToolbarSizeRef.current = instance; }}
             style={[styles.toolbar, {
-                backgroundColor: withColorOpacity(theme.resolveAppearance().surface, 0.87),
+                backgroundColor: withColorOpacity(appearance.surface, 0.87),
                 borderBottomColor: theme.color('secondary'),
             }]}
         >
+            <Svg
+                width="100%"
+                height="100%"
+                style={StyleSheet.absoluteFill}
+                pointerEvents="none"
+                accessibilityElementsHidden
+                importantForAccessibility="no-hide-descendants"
+            >
+                <Defs>
+                    <Pattern id={lampPattern} width={4} height={4} patternUnits="userSpaceOnUse">
+                        <Circle cx={2} cy={2} r={0.85} fill={appearance.glyphs} opacity={0.12} />
+                    </Pattern>
+                </Defs>
+                <Rect width="100%" height="100%" fill={`url(#${lampPattern})`} />
+            </Svg>
             <ScrollView
+                testID="notice-ticker"
                 horizontal
+                removeClippedSubviews={false}
                 showsHorizontalScrollIndicator={false}
                 onLayout={(event) => setWidth(event.nativeEvent.layout.width)}
                 onContentSizeChange={setContentWidth}
-                onTouchStart={() => animation.current?.stop()}
+                onTouchStart={() => offset.stopAnimation()}
+                onTouchEnd={() => resume.current?.()}
+                onTouchCancel={() => resume.current?.()}
                 onScrollBeginDrag={() => offset.setValue(0)}
             >
                 <Animated.View style={[styles.ticker, { transform: [{ translateX: offset }] }]}>

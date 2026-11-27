@@ -4,21 +4,26 @@
     width: max-content;
     height: 100%;
     white-space: nowrap;
-    animation: ticker 60s linear infinite;
+    animation: scroll-notices 0s linear infinite;
 }
 
 .ticker:hover,
+.ticker:active,
 .ticker:focus-within {
     animation-play-state: paused;
 }
 
-@keyframes ticker {
-    0%, 8% { transform: translateX(0); }
-    92%, 100% { transform: translateX(min(0px, calc(100cqw - 100%))); }
+.ticker:has(:focus-visible) {
+    animation-name: none;
+}
+
+@keyframes scroll-notices {
+    from { transform: translateX(100cqw); }
+    to { transform: translateX(-100%); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .ticker { animation: none; }
+    .ticker { animation-name: none; }
 }
 
 .notice {
@@ -26,7 +31,7 @@
     align-items: center;
     justify-content: space-between;
     gap: 8px;
-    padding: 4px 12px;
+    padding-inline: 12px;
 }
 
 .ticker .message {
@@ -34,5 +39,5 @@
 }
 
 .hint {
-    padding: 5px 12px;
+    padding-inline: 12px;
 }

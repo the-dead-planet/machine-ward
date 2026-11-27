@@ -1,4 +1,30 @@
 describe("Gears menu", () => {
+    it("enters from the right and exits on the left at a steady rate", () => {
+        cy.viewport(900, 700);
+        cy.visit("/");
+        cy.get('button[aria-label="Gears"]').closest("nav").next()
+            .children().first().children().first().children().first().as("ticker");
+        cy.get("@ticker").then(($ticker) => {
+            const ticker: HTMLElement = $ticker[0];
+            ticker.append(ticker.ownerDocument.createTextNode("Ticker test message"));
+        });
+        cy.get("@ticker").should(($ticker) => {
+            const ticker: HTMLElement = $ticker[0];
+            const viewport = ticker.parentElement!;
+            const [animation] = ticker.getAnimations();
+            const duration = Number(animation.effect!.getTiming().duration);
+            expect(duration / 1000).to.be.closeTo((viewport.clientWidth + ticker.offsetWidth) / 15, 0.1);
+            animation.pause();
+            animation.currentTime = 0;
+            const start = ticker.getBoundingClientRect().left;
+            expect(start).to.be.closeTo(viewport.getBoundingClientRect().right, 0.5);
+            animation.currentTime = 1000;
+            expect(start - ticker.getBoundingClientRect().left).to.be.closeTo(15, 0.5);
+            animation.currentTime = duration - 1;
+            expect(ticker.getBoundingClientRect().right).to.be.closeTo(viewport.getBoundingClientRect().left, 0.5);
+        });
+    });
+
     it("keeps the top chrome compact and toggles the named gear without closing the menu", () => {
         cy.viewport(600, 700);
         cy.visit("/");
@@ -32,11 +58,11 @@ describe("Gears menu", () => {
             });
         });
         cy.get(trigger).closest("nav").next().children().first().as("noticesToolbar");
-        cy.get("@noticesToolbar").should("have.css", "height", "40px");
+        cy.get("@noticesToolbar").should("have.css", "height", "30px");
         cy.get("@noticesToolbar").then(($toolbar) => {
             $toolbar[0].querySelectorAll("button").forEach((button: HTMLButtonElement) => button.click());
         });
-        cy.get("@noticesToolbar").should("have.css", "height", "40px")
+        cy.get("@noticesToolbar").should("have.css", "height", "30px")
             .children().first().should("have.css", "border-bottom-width", "1px");
         cy.get(trigger).should("have.attr", "data-appearance-color", "secondary");
         cy.get(trigger).click();
