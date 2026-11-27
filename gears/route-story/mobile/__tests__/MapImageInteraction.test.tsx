@@ -148,8 +148,15 @@ test("claims cached hits only after animation, leaves the pager active, and pres
     expect(draggingImage$.value?.id).toBe(1);
     expect(map.panResponderOffset).toEqual([0, 35]);
     expect(map.onPanResponderStartHandlers$.value.get(id)).toBe(startHandler);
-    await act(() => map.onPanResponderEndHandlers$.value.get(id)?.(touch(110, 65), false));
-    expect(unproject).toHaveBeenCalledWith([110, 100]);
+    unproject.mockClear();
+    jest.mocked(updateImageDistanceFraction).mockImplementationOnce(() => {
+        expect(draggingImage$.value?.id).toBe(1);
+        expect(draggingPlacement$.value?.distanceFraction).toBe(0.5);
+    });
+    await act(() => map.onPanResponderEndHandlers$.value.get(id)?.(touch(112, 65), false));
+    expect(unproject).not.toHaveBeenCalled();
+    expect(draggingImage$.value).toBeNull();
+    expect(draggingPlacement$.value).toBeNull();
     expect(updateImageDistanceFraction).toHaveBeenCalledWith(images, 1, 0.5);
     expect(map.dragPan$.value).toBe(true);
     await rerender({ markersReady: true });

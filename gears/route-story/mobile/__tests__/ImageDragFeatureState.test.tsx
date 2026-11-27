@@ -49,7 +49,7 @@ beforeEach(() => {
     jest.clearAllMocks();
 });
 
-test("updates only the dragged thumbnail and anchor, without repeating writes for the same image", async () => {
+test("keeps map drags opaque and dims only the player-dragged thumbnail and anchor", async () => {
     const source = createSource();
     let renderCount = 0;
     const hook = await renderHook(() => {
@@ -60,6 +60,8 @@ test("updates only the dragged thumbnail and anchor, without repeating writes fo
     });
     try {
         await act(() => draggingImage$.next({ id: 1, interaction: "map" }));
+        expect(source.setFeatureState).not.toHaveBeenCalled();
+        await act(() => draggingImage$.next({ id: 1, interaction: "player" }));
         expect(jest.mocked(source.setFeatureState).mock.calls).toEqual([
             [{ id: 3 }, { dragging: true }],
             [{ id: 4 }, { dragging: true }],
@@ -70,7 +72,7 @@ test("updates only the dragged thumbnail and anchor, without repeating writes fo
         expect(source.setFeatureState).toHaveBeenCalledTimes(2);
         expect(source.removeFeatureState).not.toHaveBeenCalled();
 
-        await act(() => draggingImage$.next({ id: 2, interaction: "map" }));
+        await act(() => draggingImage$.next({ id: 2, interaction: "player" }));
         expect(jest.mocked(source.removeFeatureState).mock.calls).toEqual([
             [{ id: 3 }, "dragging"],
             [{ id: 4 }, "dragging"],
@@ -95,7 +97,7 @@ test("updates only the dragged thumbnail and anchor, without repeating writes fo
 });
 
 test("cleans up the owned state and subscription, then restores the current drag on a new source", async () => {
-    draggingImage$.next({ id: 7, interaction: "map" });
+    draggingImage$.next({ id: 7, interaction: "player" });
     const source = createSource();
     const hook = await mountSource(source);
     expect(jest.mocked(source.setFeatureState).mock.calls).toEqual([
@@ -107,7 +109,7 @@ test("cleans up the owned state and subscription, then restores the current drag
         [{ id: 15 }, "dragging"],
         [{ id: 16 }, "dragging"],
     ]);
-    await act(() => draggingImage$.next({ id: 2, interaction: "map" }));
+    await act(() => draggingImage$.next({ id: 2, interaction: "player" }));
     expect(source.setFeatureState).toHaveBeenCalledTimes(2);
     const replacement = createSource();
     const replacementHook = await mountSource(replacement);
@@ -123,12 +125,12 @@ test("reports active native failures without stopping later drags and ignores de
     const source = createSource();
     jest.mocked(source.setFeatureState).mockRejectedValueOnce(error);
     const hook = await mountSource(source);
-    await act(() => draggingImage$.next({ id: 1, interaction: "map" }));
+    await act(() => draggingImage$.next({ id: 1, interaction: "player" }));
     expect(glitchmitter.transmit).toHaveBeenCalledWith(
         "Error updating map image drag state",
         error,
     );
-    await act(() => draggingImage$.next({ id: 2, interaction: "map" }));
+    await act(() => draggingImage$.next({ id: 2, interaction: "player" }));
     expect(source.setFeatureState).toHaveBeenCalledWith(
         { id: 5 },
         { dragging: true },
