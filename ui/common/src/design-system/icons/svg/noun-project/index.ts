@@ -72,6 +72,7 @@ export { default as RunSide02 } from './output/run-side-02.svg';
 export { default as RunWomanSide01 } from './output/run-woman-side-01.svg';
 export { default as ScooterFront01 } from './output/scooter-front-01.svg';
 export { default as ShareLink } from './output/share-link.svg';
+export { default as Secured } from './output/secured.svg';
 export { default as Show } from './output/show.svg';
 export { default as StopRecording } from './output/stop-recording.svg';
 export { default as SunSmile } from './output/sun-smile.svg';
