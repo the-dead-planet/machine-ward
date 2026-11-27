@@ -42,6 +42,7 @@ export const Popup: FC<Props> = ({
     position,
     triggerAnchor = 'top-left',
     popupAnchor = 'bottom-left',
+    slide = popupAnchor.startsWith('top') ? 'to-bottom' : 'to-top',
     dismissOnClickAway = true,
     visible,
     onClose,
@@ -71,7 +72,8 @@ export const Popup: FC<Props> = ({
         triggerAnchor,
         popupAnchor,
     });
-    const animatedStyle = usePopupTransition(visible, popupAnchor);
+    const positioned = popupPosition !== null || (!anchor && !position);
+    const animatedStyle = usePopupTransition(visible && positioned, slide);
     const overlayStyles: StyleProp<ViewStyle> = [
         styles.overlay,
         { zIndex: layer.zIndex },
@@ -80,6 +82,9 @@ export const Popup: FC<Props> = ({
     const popup = (
         <Animated.View
             onLayout={onLayout}
+            pointerEvents={positioned ? 'auto' : 'none'}
+            importantForAccessibility={positioned ? 'auto' : 'no-hide-descendants'}
+            accessibilityElementsHidden={!positioned}
             style={[
                 styles.popup,
                 layer,

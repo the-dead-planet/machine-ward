@@ -1,0 +1,19 @@
+.keycap {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    --keycap-side: calc(var(--size-control-height) - var(--keycap-height-inset));
+    min-width: var(--keycap-side);
+    min-height: var(--keycap-side);
+    padding: var(--size-control-padding-block) var(--size-control-icon-padding-inline);
+    border-radius: 2px;
+    font-size: var(--typography-caption-font-size);
+    line-height: var(--typography-caption-line-height);
+    white-space: nowrap;
+}
+
+.label {
+    color: inherit;
+    font-weight: inherit;
+}

@@ -1,4 +1,4 @@
-import { RefObject, useEffect, useRef, useState } from "react";
+import { RefObject, useLayoutEffect, useRef, useState } from "react";
 import {
     getIconAnchorPoint,
     MenuAnchor,
@@ -23,7 +23,7 @@ export const usePopupPosition = <Element extends HTMLElement = HTMLDivElement>({
     const containerRef = useRef<Element>(null);
     const [popupPosition, setPopupPosition] = useState<MenuPosition>({});
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (!visible) {
             return;
         }
