@@ -12,6 +12,7 @@ const ru: TranslationTable<IndividuatorTranslationKey>['ru'] = {
     theme: 'Тема',
     "confirm-before-leave": 'Подтверждение перед выходом',
     "enable-keyboard-shortcuts": 'Включить сочетания клавиш',
+    "show-guide-hints": 'Показывать подсказки',
     "go-to-keysmith": 'Перейти в кузницу клавиш',
     "go-to-individuator": 'Перейти к индивидуатору',
     "debug-mode": 'Режим отладки',

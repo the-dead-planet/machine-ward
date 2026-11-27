@@ -12,6 +12,7 @@ const de: TranslationTable<IndividuatorTranslationKey>['de'] = {
     theme: 'Thema',
     "confirm-before-leave": 'Bestätigen vor Verlassen',
     "enable-keyboard-shortcuts": 'Tastenkürzel aktivieren',
+    "show-guide-hints": 'Hinweise anzeigen',
     "go-to-keysmith": 'Tastenschmied öffnen',
     "go-to-individuator": 'Individuator öffnen',
     "debug-mode": 'Debug-Modus',

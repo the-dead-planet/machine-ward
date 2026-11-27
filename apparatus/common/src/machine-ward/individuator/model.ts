@@ -10,6 +10,7 @@ export interface IndividuatorSettings {
      */
     confirmBeforeLeave: boolean;
     enableKeyboardShortcuts: boolean;
+    showGuideHints: boolean;
     dateFormat: { value: DateFormat; short: DateFormat; };
     timeFormat: TimeFormat;
     locale: string;
@@ -32,6 +33,7 @@ export enum IndividuatorTranslationKey {
     Theme = 'theme',
     ConfirmBeforeLeave = 'confirm-before-leave',
     EnableKeyboardShortcuts = 'enable-keyboard-shortcuts',
+    ShowGuideHints = 'show-guide-hints',
     GoToKeysmith = 'go-to-keysmith',
     GoToIndividuator = 'go-to-individuator',
     DebugMode = 'debug-mode',
