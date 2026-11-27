@@ -96,13 +96,12 @@
 
 .toolbar.top .content {
     height: 40px;
+    box-sizing: border-box;
     border-bottom: 1px solid var(--color-secondary);
     box-shadow: var(--elevation-raised-down-shadow);
-}
-
-.toolbar.top .content.has-captions {
-    align-items: flex-start;
-    padding-top: 1px;
+    container-type: inline-size;
+    overflow: auto hidden;
+    scrollbar-width: none;
 }
 
 .toolbar.left .content,
@@ -204,8 +203,9 @@
 }
 
 .toolbar.bottom .component {
+    max-height: 30dvh;
     min-height: 0;
-    overflow: hidden;
+    overflow: auto;
 }
 
 .secondary-bottom-toolbar {
@@ -282,16 +282,6 @@
     align-items: flex-start;
 }
 
-.gears-heading {
-    font-size: 14px;
-    font-weight: 400;
-    height: 100%;
-    align-items: center;
-    display: flex;
-    gap: 10px;
-    padding: 0 15px;
-    border-right: 1px solid var(--appearance-default-border);
-}
 
 .spacer-line {
     width: 1px;

@@ -2,9 +2,10 @@ import { FC } from "react";
 import classNames from "classnames";
 import { MachineWardTopBarProps, useMultipleTranslations } from "@apparatus";
 import { useWebMachineWard } from "@web-apparatus";
-import { FontType } from "@ui";
+import { FontType, useTheme } from "@ui";
 import { H1, ThemeModeToggle } from "@web-ui";
 import { LayoutMenu } from "./menu/LayoutMenu";
+import { GearsMenu } from "./menu/GearsMenu";
 import { UnderConstructionChip } from "./UnderConstructionChip";
 import { useSubjectState } from "@tinker-chest";
 import styles from './top-bar.module.css';
@@ -14,6 +15,9 @@ export const TopBar: FC<MachineWardTopBarProps> = ({
     description,
 }) => {
     const { namespace, translationKey, individuator, toolsStation } = useWebMachineWard();
+    const [media] = useSubjectState(useTheme().media$);
+    const compact = media.isLessThanSm;
+    const controlSize = compact ? "sm" : "md";
     const [topBarTools] = useSubjectState(toolsStation.topBarTools$);
     const [lightModeTooltip, darkModeTooltip] = useMultipleTranslations([
         { n: namespace, t: translationKey.SwitchToLightMode },
@@ -26,10 +30,11 @@ export const TopBar: FC<MachineWardTopBarProps> = ({
             ref={(instance) => {
                 toolsStation.topBarSizeRef.current = instance;
             }}
-            className={styles["top-bar"]}
+            className={classNames(styles["top-bar"], compact && styles.compact)}
         >
             <div className={classNames(styles["section"], styles["left"])}>
-                <UnderConstructionChip />
+                <GearsMenu size={controlSize} />
+                <UnderConstructionChip size={controlSize} />
             </div>
             <H1 color="primary" shade={500} fontType={FontType.NeonHeader} title={description} className={styles['header']}>
                 {title.toLowerCase()}
@@ -39,10 +44,10 @@ export const TopBar: FC<MachineWardTopBarProps> = ({
                 <ThemeModeToggle
                     lightModeTooltip={lightModeTooltip}
                     darkModeTooltip={darkModeTooltip}
-                    size="md"
+                    size={controlSize}
                     onToggle={individuator.toggleMode}
                 />
-                <LayoutMenu />
+                <LayoutMenu size={controlSize} />
             </div>
         </nav>
     );

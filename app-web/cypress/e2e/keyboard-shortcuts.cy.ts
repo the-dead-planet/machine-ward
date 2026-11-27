@@ -202,16 +202,20 @@ describe("Keyboard shortcut overview", () => {
             cy.get('[role="dialog"]').should("not.exist");
             cy.get('button[aria-label="Show image markers"]').click();
             cy.get('span[role="button"][aria-pressed="true"]').should("exist");
-            cy.get('button[aria-label="Route Story"]').should("have.attr", "data-highlighted", "true");
-            cy.get('button[aria-label="Route Story"]').click();
-            cy.get('button[aria-label="Route Story"]').should("not.have.attr", "data-highlighted");
+            cy.get('button[aria-label="Gears"]').click();
+            cy.contains('[role="menu"] label', "Route Story").click()
+                .find('[role="menuitemcheckbox"]').should("not.be.checked");
+            cy.get('button[aria-label="Gears"]').click();
             cy.get('button[aria-label="Application menu"]').click();
             cy.contains('[role="menu"] [role^="menuitem"]', "Keyboard shortcuts").click();
             cy.get(shortcutRows).should("not.exist");
             cy.get('[role="dialog"] [role="status"]').should("have.text", "No keyboard shortcuts are currently registered.");
             cy.contains('[role="dialog"] button', /^Close$/).click();
             cy.get('[role="dialog"]').should("not.exist");
-            cy.get('button[aria-label="Route Story"]').click();
+            cy.get('button[aria-label="Gears"]').click();
+            cy.contains('[role="menu"] label', "Route Story").click()
+                .find('[role="menuitemcheckbox"]').should("be.checked");
+            cy.get('button[aria-label="Gears"]').click();
             cy.get('span[role="button"][aria-label*="Image"]').should("exist");
             cy.get('span[role="button"][aria-pressed="true"]').should("not.exist");
             cy.get('button[aria-label="Application menu"]').click();

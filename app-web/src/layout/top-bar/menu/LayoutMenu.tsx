@@ -3,11 +3,12 @@ import { Menu, MenuItem } from '@web-ui';
 import { getMachineMenuLinks, useTranslation } from '@apparatus';
 import { useWebMachineWard } from '@web-apparatus';
 import { T } from '@web-apparatus';
+import type { SizeVariant } from '@ui';
 import { SettingsDialog } from './settings/SettingsDialog';
 import { KeyboardShortcutsDialog } from './keyboard-shortcuts/KeyboardShortcutsDialog';
 import styles from './layout-menu.module.css';
 
-export const LayoutMenu: FC = () => {
+export const LayoutMenu: FC<{ size: SizeVariant }> = ({ size }) => {
     const { namespace, translationKey, individuator } = useWebMachineWard();
     const [openDialog, setOpenDialog] = useState<'individuator' | 'keyboard-shortcuts' | null>(null);
     const tooltip = useTranslation({ n: namespace, t: translationKey.Menu });
@@ -19,7 +20,7 @@ export const LayoutMenu: FC = () => {
                 aria-label={tooltip}
                 tooltip={tooltip}
                 iconActiveColor="secondary"
-                size="md"
+                size={size}
                 tooltipPlacement="bottom"
                 placement="bottom-right"
                 menuListClassName={styles['menu']}

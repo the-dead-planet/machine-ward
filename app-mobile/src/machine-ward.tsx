@@ -4,7 +4,6 @@ import { MachineGear, MachineWard, MachineWardComponents } from "@apparatus";
 import { Layout, TopBar } from "./layout";
 import { Machine } from "./machine/Machine";
 import { ErrorFallback } from "./ErrorFallback";
-import { NoticesList } from "./notices/NoticesList";
 import { MobileMap } from "@mobile-apparatus";
 import { MobileChronoLens } from "@mobile-apparatus";
 import { navigationRef, RootStackParamList } from "./navigation";
@@ -60,7 +59,6 @@ export class MobileMachineWard extends MachineWard<MobileMap, MobileChronoLens, 
         layoutComponent: Layout,
         topBarComponent: TopBar,
         machineComponent: Machine,
-        noticesComponent: NoticesList,
     };
 
     public navigate = (path: keyof RootStackParamList) => {

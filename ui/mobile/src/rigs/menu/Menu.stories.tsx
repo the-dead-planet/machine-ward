@@ -11,7 +11,7 @@ import { VariantGallery } from '../../storybook/VariantGallery';
 import { MobileStoryDefinition } from '../../storybook/model';
 
 const story: MobileStoryDefinition<ComponentProps<typeof Menu>> = {
-    args: menuStoryArgs,
+    args: { ...menuStoryArgs, icon: undefined },
     controls: menuStoryControls,
     galleryEditableControls: [
         'placement',

@@ -1,3 +1,9 @@
 .menu {
     min-width: 160px;
 }
+.gear-switches {
+    display: grid;
+    gap: 8px;
+    padding: 4px 12px;
+    font-size: var(--size-control-font-size);
+}

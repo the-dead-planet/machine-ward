@@ -5,7 +5,7 @@ import { useWebMachineWard } from "@web-apparatus";
 import { useSubjectState } from "@tinker-chest";
 import { MapCanvas } from "./map-canvas/MapCanvas";
 import { MapToolsGridAreas } from "./map-tools-grid/MapToolsGridAreas";
-import { GearsTopToolbar } from "./GearsTopToolbar";
+import { NoticesTopToolbar } from "./NoticesTopToolbar";
 import { Popups } from "./Popups";
 import { createMap } from "./map";
 import { ErrorBoundary, ThemeContext } from "@ui";
@@ -32,7 +32,7 @@ export const MapSection: FC = () => {
 
     return (
         <div className={styles.machine}>
-            <GearsTopToolbar />
+            <NoticesTopToolbar />
             {map ? (
                 <ErrorBoundary onError={handleError}>
                     <ThemeContext.Provider value={selectedStyleTheme}>

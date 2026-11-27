@@ -1,5 +1,5 @@
 import { FC, useState } from "react";
-import { Animated, StyleSheet, View } from "react-native";
+import { Animated, ScrollView, StyleSheet, useWindowDimensions, View } from "react-native";
 import { assignBottomToolPanelRef, useBottomToolPanel } from "@apparatus";
 import { useMobileMachineWard } from "@mobile-apparatus";
 import { BottomToolPanelHeader } from "./BottomToolPanelHeader";
@@ -12,12 +12,6 @@ const styles = StyleSheet.create({
     componentHeader: {
         flexDirection: 'row',
         paddingHorizontal: 8,
-    },
-    measuredContent: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
     },
 });
 
@@ -37,9 +31,11 @@ export const BottomToolPanel: FC<Props> = ({
     const theme = useTheme();
     const { toolsStation } = useMobileMachineWard();
     const { show, toolPanel } = useBottomToolPanel(activeId);
+    const { height: windowHeight } = useWindowDimensions();
 
     const [naturalHeight, setNaturalHeight] = useState(0);
-    const animatedHeight = useAnimatedSize(toolPanel !== undefined ? naturalHeight : 0);
+    const maxHeight = windowHeight * 0.30;
+    const animatedHeight = useAnimatedSize(toolPanel ? Math.min(naturalHeight, maxHeight) : 0);
 
     if (!show) {
         return null;
@@ -64,11 +60,12 @@ export const BottomToolPanel: FC<Props> = ({
                     joinHeaderButtons={joinHeaderButtons}
                 />
                 <Animated.View style={{ height: animatedHeight, overflow: 'hidden' }}>
-                    <View
-                        style={styles.measuredContent}
-                        onLayout={(event) => {
+                    <ScrollView
+                        style={StyleSheet.absoluteFill}
+                        scrollEnabled={naturalHeight > maxHeight}
+                        onContentSizeChange={(_width, height) => {
                             if (toolPanel) {
-                                setNaturalHeight(event.nativeEvent.layout.height);
+                                setNaturalHeight(height);
                             }
                         }}
                     >
@@ -84,7 +81,7 @@ export const BottomToolPanel: FC<Props> = ({
                                 </View>
                             </>
                         ) : null}
-                    </View>
+                    </ScrollView>
                 </Animated.View>
             </View>
         </View>

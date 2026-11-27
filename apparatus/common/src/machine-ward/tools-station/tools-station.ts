@@ -78,7 +78,7 @@ export class ToolsStation<TMap> {
 
     /**
      * Vertical space occupied by the toolbars that frame the map area
-     * (top bar, gears toolbar and bottom tool panel).
+     * (top bar, notice toolbar and bottom tool panel).
      */
     public getReservedToolbarHeight = (): number =>
         (this.topBarSizeRef.current?.clientHeight ?? 0)

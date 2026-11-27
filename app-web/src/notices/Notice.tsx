@@ -1,30 +1,39 @@
-import { CSSProperties, FC } from "react";
-import classNames from 'classnames';
-import { SignaliumNotice } from "@apparatus";
+import { FC } from "react";
+import { SignaliumNotice, useTranslation } from "@apparatus";
+import { useWebMachineWard } from "@web-apparatus";
+import { Button, P } from "@web-ui";
+import { FontType, Icons } from "@ui";
 import styles from './notices.module.css';
 
 interface Props {
-    index: number;
     notice: SignaliumNotice;
     onRemove: (id: string) => void;
 }
 export const Notice: FC<Props> = ({
-    index,
     notice,
     onRemove
 }) => {
+    const { namespace, translationKey } = useWebMachineWard();
+    const close = useTranslation({ n: namespace, t: translationKey.Close });
+
     return (
-        <dialog
-            open
-            className={classNames(styles['notice'], styles[notice.type])}
-            style={{ '--index': index } as CSSProperties}
-        >
-            <p>{notice.text} {notice.type === 'glitch' ? notice.error.message || '' : ''}</p>
-            <form method="dialog" className={styles['footer']}>
-                <button onClick={() => onRemove(notice.id)}>
-                    Close
-                </button>
-            </form>
-        </dialog>
+        <div className={styles.notice}>
+            <P
+                className={styles.message}
+                role={notice.type === 'glitch' ? 'alert' : 'status'}
+                fontType={FontType.NeonText}
+                variant="fill-translucent"
+                color={notice.type}
+            >
+                {notice.text} {notice.type === 'glitch' ? notice.error.message : ''}
+            </P>
+            <Button
+                size="xs"
+                color={notice.type}
+                icon={Icons.NounProject.Clear}
+                aria-label={close}
+                onClick={() => onRemove(notice.id)}
+            />
+        </div>
     );
 };

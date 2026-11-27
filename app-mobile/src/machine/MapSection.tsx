@@ -7,7 +7,7 @@ import { useMobileMachineWard } from "@mobile-apparatus";
 import { useSubjectState } from "@tinker-chest";
 import { MobileMap } from "@mobile-apparatus";
 import { MapToolsGridAreas } from "./map-tools-grid/MapToolsGridAreas";
-import { GearsTopToolbar } from "./GearsTopToolbar";
+import { NoticesTopToolbar } from "./NoticesTopToolbar";
 import { Popups } from "./Popups";
 import {
     MapCanvas,
@@ -79,7 +79,7 @@ export const MapSection: FC = () => {
                     </ErrorBoundary>
                 </ThemeContext.Provider>
             </ErrorBoundary>
-            <GearsTopToolbar />
+            <NoticesTopToolbar />
             <MapToolsGridAreas map={map} selectedStyleTheme={selectedStyleTheme} />
         </View>
     );

@@ -172,6 +172,13 @@ export const SettingsDialog: FC<Props> = ({ onClose }) => {
                 >
                     <T n={individuator.namespace} t={individuator.translationKey.ConfirmBeforeLeave} />
                 </SettingsCheckbox>
+                <SettingsCheckbox
+                    wide={isWide}
+                    checked={pendingSettings.showGuideHints}
+                    onChange={(showGuideHints) => setPendingSettings((previous) => ({ ...previous, showGuideHints }))}
+                >
+                    <T n={individuator.namespace} t={individuator.translationKey.ShowGuideHints} />
+                </SettingsCheckbox>
                 {isDev ? (
                     <SettingsCheckbox
                         wide={isWide}

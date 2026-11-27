@@ -19,6 +19,10 @@ export const toggleSwitchStoryControls: StoryControls<ToggleSwitchProps> = {
     children: {
         control: 'text',
     },
+    labelPlacement: {
+        control: 'select',
+        options: ['before', 'after'],
+    },
     checked: {
         control: 'boolean'
     },
