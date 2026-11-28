@@ -14,8 +14,6 @@ import {
     RouteStoryTranslationKey,
     RouteTimes,
     RouteStoryState,
-    selectedImageId$,
-    toggleImageMarkerGroup,
     updateImageDistanceFraction,
 } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { SliderWithMarkers } from "../src/player/player-slider/SliderWithMarkers";
@@ -24,6 +22,7 @@ import { SliderMarkerGroups } from "../src/player/player-slider/slider-markers/S
 import { SliderMarkerPanToWholeRoute } from "../src/player/player-slider/slider-markers/SliderMarkerPanToWholeRoute";
 import { MobileMarkerImageData } from "../src/images/image-parser";
 import { MobilePlayerOperator } from "../src/model";
+import { ImageMarkerOperator } from "../../common/src/image-marker-operator";
 
 let mockMeasurementY = 989;
 let mockDeferMeasurement = false;
@@ -80,7 +79,7 @@ jest.mock("@mobile-ui", () => {
 });
 jest.mock("../../common/src/layer-specification/images/images-layers", () => {
     const { BehaviorSubject } = jest.requireActual<typeof import("rxjs")>("rxjs");
-    return { selectedImageId$: new BehaviorSubject(null), draggingPlacement$: new BehaviorSubject(null) };
+    return { draggingPlacement$: new BehaviorSubject(null) };
 });
 jest.mock("@the-dead-planet/machine-ward-gears-route-story-common", () => {
     const { BehaviorSubject } = jest.requireActual<typeof import("rxjs")>("rxjs");
@@ -99,11 +98,13 @@ jest.mock("@the-dead-planet/machine-ward-gears-route-story-common", () => {
         getDistanceFractionPercent: (fraction: number) => fraction * 100,
         getRoutePlacementAtPercent: (percent: number) => ({ distanceFraction: percent / 100 }),
         getRouteLngLatAtDistanceFraction: () => ({ lng: 2, lat: 3 }),
-        clearImageMarkerSelection: jest.fn(),
-        toggleImageMarkerGroup: jest.fn(),
         updateImageDistanceFraction: jest.fn(),
     };
 });
+
+const imageMarkerOperator = new ImageMarkerOperator();
+const { selectedImageId$ } = imageMarkerOperator;
+const toggleImageMarkerGroup = jest.spyOn(imageMarkerOperator, 'toggleImageMarkerGroup').mockImplementation(() => undefined);
 
 test("slider diamond taps never enter drag state; movement commits on release but not cancellation", async () => {
     draggingImage$.next(null);
@@ -118,6 +119,7 @@ test("slider diamond taps never enter drag state; movement commits on release bu
     const routeTimes$ = new BehaviorSubject<RouteTimes | null>({ startTimeEpoch: 0, duration: 1000 } as RouteTimes);
     const screen = await render(
         <SliderWithMarkers
+            imageMarkerOperator={imageMarkerOperator}
             gearId="route-story"
             translationKey={RouteStoryTranslationKey}
             map={{} as MobileMap}
@@ -249,6 +251,7 @@ test("nearby slider markers keep separate touch areas even when photos arrive ou
     ];
     const screen = await render(
         <SliderMarkerGroups
+            imageMarkerOperator={imageMarkerOperator}
             gearId="route-story"
             translationKey={RouteStoryTranslationKey}
             map={{} as MobileMap}
@@ -303,6 +306,7 @@ test("extracted markers retain group accessibility, selection, and both pan acti
     const screen = await render(
         <>
             <SliderMarkerGroup
+                imageMarkerOperator={imageMarkerOperator}
                 image={{ id: 1, name: "photo.jpg", progress: 100, distanceFraction: 0.5 }}
                 imageIds={[1, 2]}
                 percent={50}

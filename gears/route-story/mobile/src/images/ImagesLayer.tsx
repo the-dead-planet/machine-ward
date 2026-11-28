@@ -5,15 +5,15 @@ import { OverlayComponentProps } from "@apparatus";
 import { useSubjectState } from "@tinker-chest";
 import {
     getIconImageId,
+    getImageMarkerThumbnailId,
+    getImageMarkerOutlineId,
     getImageSource,
     getImageSourceWithMarkerVisibility,
     getImageSourceWithAnchors,
     IMAGE_MARKER_ANCHOR_ID,
     IMAGE_MARKER_ANCHOR_SDF_URI,
-    IMAGE_MARKER_OUTLINE_ID,
-    IMAGE_MARKER_OUTLINE_SDF_URI,
+    IMAGE_MARKER_OUTLINE_SDF_URIS,
     useImageMarkerConnections,
-    selectedImageId$,
     highlightIdsBySourceId$,
     ImagesLayers,
     routeLayerIds,
@@ -29,11 +29,12 @@ import { useImageMarkerSource } from "./useImageMarkerSource";
 import { useMapImageInteraction } from "./useMapImageInteraction";
 import { ImageDragPreview } from "./ImageDragPreview";
 import { MobileRouteStoryProps } from "../model";
-import { CircularMapThumbnail } from "./CircularMapThumbnail";
+import { MapThumbnail } from "./MapThumbnail";
 import { ImageCountBadges } from './ImageCountBadges';
 import { ImageGroupPager } from "./ImageGroupPager";
 import { ImageGroupPagerDimensions } from "./model";
 import { useImageDragFeatureState } from "./useImageDragFeatureState";
+import { useMapImageDragSource } from "./useMapImageDragSource";
 
 export const ImagesLayer: FC<OverlayComponentProps<MobileMap> & MobileRouteStoryProps> = ({
     map,
@@ -44,6 +45,7 @@ export const ImagesLayer: FC<OverlayComponentProps<MobileMap> & MobileRouteStory
     routeGeometryData$,
     images$,
     playerOperator,
+    imageMarkerOperator,
 }) => {
     const theme = useTheme();
     const { defaultColor: imageColor, hoverColor: imageHoverColor, activeColor: imageActiveColor } = resolveMapImageMarkerColors(theme);
@@ -52,25 +54,31 @@ export const ImagesLayer: FC<OverlayComponentProps<MobileMap> & MobileRouteStory
     const [{ geojson }] = useSubjectState(data$);
     const [routeGeometryData] = useSubjectState(routeGeometryData$);
     const [images] = useSubjectState(images$);
-    const [{ markerLayerVisibility }] = useSubjectState(state$);
+    const [{ markerLayerVisibility, imageMarkerStyle }] = useSubjectState(state$);
     const thumbnailsSourceRef = useImageDragFeatureState();
-    const [selectedImageId] = useSubjectState(selectedImageId$);
+    const [selectedImageId] = useSubjectState(imageMarkerOperator.selectedImageId$);
     const [highlightIdsBySourceId] = useSubjectState(highlightIdsBySourceId$);
     const loadedImages = useLoadedMobileImages(images);
     const originalSource = useMemo(
-        () => getImageSource(loadedImages, geojson, routeGeometryData),
-        [loadedImages, geojson, routeGeometryData],
+        () => getImageSource(loadedImages, geojson, routeGeometryData, imageMarkerStyle),
+        [loadedImages, geojson, routeGeometryData, imageMarkerStyle],
     );
-    const { groupedSource: targetSource, hitTargets, paginationTarget } = useImageMarkerSource(map, originalSource, displayImageId !== null);
+    const { groupedSource: targetSource, hitTargets, paginationTarget } = useImageMarkerSource(map, originalSource, displayImageId !== null, imageMarkerOperator);
     const reducedMotion = useReducedMotion();
     const paginationDimensions = useRef<ImageGroupPagerDimensions | null>(null);
-    const groupedSource = useAnimatedImageMarkerSource(targetSource, reducedMotion);
+    const { dragSource, dragOrigin } = useMapImageDragSource(targetSource, originalSource, routeGeometryData);
+    const groupedSource = useAnimatedImageMarkerSource(dragSource, reducedMotion);
     const visibleSource = useMemo(() => getImageSourceWithMarkerVisibility(groupedSource, markerLayerVisibility), [groupedSource, markerLayerVisibility]);
     const connections = useImageMarkerConnections(originalSource, visibleSource);
-    useMapImageInteraction(map, images$, geojson, routeGeometryData, markerLayerVisibility, hitTargets, paginationTarget, paginationDimensions, groupedSource === targetSource);
+    useMapImageInteraction(map, images$, geojson, routeGeometryData, markerLayerVisibility, hitTargets, paginationTarget, paginationDimensions, groupedSource === targetSource, imageMarkerOperator);
     const renderedSource = useMemo(
-        () => getImageSourceWithAnchors(originalSource, visibleSource, highlightIdsBySourceId.get(imageSourceIds.thumbnails)),
-        [originalSource, visibleSource, highlightIdsBySourceId],
+        () => {
+            const source = getImageSourceWithAnchors(originalSource, visibleSource, highlightIdsBySourceId.get(imageSourceIds.thumbnails));
+            return markerLayerVisibility && dragOrigin.length > 0
+                ? { ...source, features: [...dragOrigin, ...source.features] }
+                : source;
+        },
+        [originalSource, visibleSource, highlightIdsBySourceId, markerLayerVisibility, dragOrigin],
     );
 
     const imageSources: Record<string, ImageEntry> = Object.fromEntries(
@@ -88,10 +96,9 @@ export const ImagesLayer: FC<OverlayComponentProps<MobileMap> & MobileRouteStory
         source: { uri: IMAGE_MARKER_ANCHOR_SDF_URI, scale: 4 },
         sdf: true,
     };
-    imageSources[IMAGE_MARKER_OUTLINE_ID] = {
-        source: { uri: IMAGE_MARKER_OUTLINE_SDF_URI },
-        sdf: true,
-    };
+    for (const [shape, uri] of Object.entries(IMAGE_MARKER_OUTLINE_SDF_URIS)) {
+        imageSources[getImageMarkerOutlineId(shape)] = { source: { uri }, sdf: true };
+    }
     const imageInDisplayIconSize = useImageInDisplay(map, animatrix, playerOperator);
 
     return (
@@ -102,9 +109,10 @@ export const ImagesLayer: FC<OverlayComponentProps<MobileMap> & MobileRouteStory
                 textColor={badgeAppearance.glyphs}
             />
             {loadedImages.map((image) => (
-                <CircularMapThumbnail
+                <MapThumbnail
                     key={`${image.id}:${image.data.thumbnail}`}
-                    imageId={getIconImageId(image, { thumbnail: true })}
+                    imageId={getImageMarkerThumbnailId(image, imageMarkerStyle.shape)}
+                    shape={imageMarkerStyle.shape}
                     uri={image.data.thumbnail}
                     outlineColors={[imageColor, imageHoverColor]}
                 />
@@ -202,6 +210,7 @@ export const ImagesLayer: FC<OverlayComponentProps<MobileMap> & MobileRouteStory
             />
             {markerLayerVisibility && groupedSource.pagination && (
                 <ImageGroupPager
+                    imageMarkerOperator={imageMarkerOperator}
                     pagination={groupedSource.pagination}
                     gearId={gearId}
                     dimensions={paginationDimensions}

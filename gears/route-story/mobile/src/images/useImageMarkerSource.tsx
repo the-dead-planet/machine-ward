@@ -1,38 +1,53 @@
 import { useEffect, useRef, useState } from "react";
-import { auditTime, debounceTime, combineLatest, tap } from "rxjs";
+import { auditTime, BehaviorSubject, debounceTime, combineLatest, map as mapValue, of, switchMap, tap, timer } from "rxjs";
 import { useMobileMachineWard, MobileMap } from "@mobile-apparatus";
 import {
-    expandedImageGroupId$,
+    ImageMarkerOperator,
+    ImageMarkerSource,
     getImageMarkerGroups,
     getImageMarkerSourceFromGroups,
-    getImageSource,
     getImageSourceWithAnchors,
-    selectedImageId$,
-    imageGroupOffset$,
 } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { MapImageHitTarget } from "./model";
 
 interface ImageProjectionCache {
+    source: ImageMarkerSource;
     groups: ReturnType<typeof getImageMarkerGroups>;
     positions: Map<string, [number, number]>;
     coordinates: Map<string, Promise<[number, number]>>;
 }
 
+const hasSameImagePositions = (previous: ImageMarkerSource, next: ImageMarkerSource): boolean =>
+    previous === next || (previous.features.length === next.features.length && previous.features.every((feature, index) => {
+        const nextFeature = next.features[index];
+        return feature.properties.imageId === nextFeature.properties.imageId &&
+            feature.geometry.coordinates[0] === nextFeature.geometry.coordinates[0] &&
+            feature.geometry.coordinates[1] === nextFeature.geometry.coordinates[1];
+    }));
+
 export const useImageMarkerSource = (
     map: MobileMap,
-    source: ReturnType<typeof getImageSource>,
+    source: ImageMarkerSource,
     isDisplayingImage: boolean,
+    { selectedImageId$, expandedImageGroupId$, imageGroupOffset$ }: ImageMarkerOperator,
 ) => {
     const { cartomancer } = useMobileMachineWard();
     const [grouping, setGrouping] = useState({ source, groupedSource: source });
+    const [input$] = useState(() => new BehaviorSubject({ source, isDisplayingImage }));
     const hitTargets = useRef<MapImageHitTarget[]>([]);
     const paginationTarget = useRef<[number, number] | null>(null);
+
+    useEffect(() => {
+        input$.next({ source, isDisplayingImage });
+    }, [input$, source, isDisplayingImage]);
 
     useEffect(() => {
         let active = true;
         let revision = 0;
         let cameraReady = false;
         let cache: ImageProjectionCache | null = null;
+        let sourceReady = true;
+        let previousSource = input$.value.source;
         const cameraUpdates = combineLatest([
             map.map$,
             map.mapSize$,
@@ -60,25 +75,47 @@ export const useImageMarkerSource = (
             expandedImageGroupId$,
             imageGroupOffset$,
         ]).pipe(auditTime(0));
-        const subscription = combineLatest([cameraUpdates, selectionUpdates])
-            .subscribe(async ([_camera, [selectedImageId, expandedImageGroupId, offset]]) => {
+        const sourceUpdates = input$.pipe(switchMap((input) => {
+            revision++;
+            if (!hasSameImagePositions(previousSource, input.source)) {
+                sourceReady = false;
+                cache = null;
+                hitTargets.current = [];
+            }
+            previousSource = input.source;
+            return sourceReady ? of(input) : timer(100).pipe(
+                tap(() => { sourceReady = true; }),
+                mapValue(() => input),
+            );
+        }));
+        const subscription = combineLatest([cameraUpdates, selectionUpdates, sourceUpdates])
+            .subscribe(async ([_camera, [selectedImageId, expandedImageGroupId, offset], { source, isDisplayingImage }]) => {
                 const mapRef = map.map$.value;
-                if (!mapRef || !cameraReady || map.cameraMoving$.value) {
+                if (!mapRef || !cameraReady || !sourceReady || map.cameraMoving$.value) {
                     return;
                 }
                 const currentRevision = ++revision;
                 let current = cache;
                 try {
-                    if (!current) {
-                        const positions = new Map<string, [number, number]>();
+                    if (current?.source !== source) {
+                        const previousGroups = current?.groups;
+                        const positions = current?.positions ?? new Map<string, [number, number]>();
                         current = {
+                            source,
                             groups: getImageMarkerGroups(source, async (coordinate) => {
+                                if (previousGroups) {
+                                    await previousGroups;
+                                    const cachedPosition = positions.get(coordinate.join(","));
+                                    if (cachedPosition) {
+                                        return cachedPosition;
+                                    }
+                                }
                                 const point = await mapRef.project(coordinate);
                                 positions.set(coordinate.join(","), point);
                                 return point;
                             }),
                             positions,
-                            coordinates: new Map(),
+                            coordinates: current?.coordinates ?? new Map(),
                         };
                         cache = current;
                     }
@@ -134,10 +171,10 @@ export const useImageMarkerSource = (
             hitTargets.current = [];
             subscription.unsubscribe();
         };
-    }, [map, source, cartomancer, isDisplayingImage]);
+    }, [map, input$, cartomancer, selectedImageId$, expandedImageGroupId$, imageGroupOffset$]);
 
     return {
-        groupedSource: grouping.source === source ? grouping.groupedSource : source,
+        groupedSource: hasSameImagePositions(grouping.source, source) ? grouping.groupedSource : source,
         hitTargets,
         paginationTarget,
     };

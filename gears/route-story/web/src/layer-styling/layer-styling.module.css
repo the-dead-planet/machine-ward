@@ -1,13 +1,63 @@
 .popup {
     max-height: 100dvh;
     overflow: hidden;
-    width: min(360px, 100dvw);
+    width: min(480px, 100dvw);
 }
 
 .content {
-    max-height: calc(100dvh - 100px);
+    max-height: calc(100dvh - 110px);
     overflow-y: auto;
     display: grid;
     padding-top: 8px;
     row-gap: 10px;
+}
+
+.demo-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 68px;
+    align-items: center;
+    padding: 0 8px;
+    gap: 8px;
+}
+
+.image-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 24px;
+}
+
+.image-field {
+    flex: none;
+    min-width: 0;
+    padding: 0;
+    margin: 0;
+    border: 0;
+}
+
+.image-field-label {
+    padding: 0;
+    margin-bottom: 4px;
+}
+
+.image-options {
+    display: flex;
+    gap: 4px;
+}
+
+.image-option {
+    position: relative;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+}
+
+.image-option:has(.image-radio:focus-visible) {
+    outline: 2px solid currentColor;
+}
+
+.image-radio {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
 }

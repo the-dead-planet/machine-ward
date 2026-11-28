@@ -1,12 +1,12 @@
 import { StrictMode, useEffect, useMemo } from "react";
 import { ErrorBoundary, MediaSubscriptionDefinition, Theme, ThemeContext, themeSpecifications } from "@ui";
-import { MachineWardNotices } from "./MachineWardNotices";
 import { AttributionVault, Cartomancer, ChronoLens, Engine, SignaliumBureau, ToolsStation, Translatron } from "..";
 import { Individuator } from "./individuator";
 import { StorageKeeper } from "./storage-keeper";
 import { MachineWardContext } from "./MachineWardContext";
 import { useSubjectState } from "@tinker-chest";
 import { MachineTranslationKey, MachineWardComponents } from "./model";
+import { Keysmith } from "./keysmith";
 
 interface MachineWardProps<TMap, TChronoLens extends ChronoLens, TNavigationPath extends string> {
     isDev: boolean;
@@ -22,6 +22,7 @@ interface MachineWardProps<TMap, TChronoLens extends ChronoLens, TNavigationPath
     cartomancer: Cartomancer<TMap>;
     chronoLens: TChronoLens;
     toolsStation: ToolsStation<TMap>;
+    keysmith: Keysmith;
     translatron: Translatron;
     engine: Engine<TMap, TChronoLens>
     components: MachineWardComponents<TNavigationPath>;
@@ -44,6 +45,7 @@ export function MachineWardApp<TMap, TChronoLens extends ChronoLens, TNavigation
     cartomancer,
     chronoLens,
     toolsStation,
+    keysmith,
     signaliumBureau,
     translatron,
     engine,
@@ -90,6 +92,7 @@ export function MachineWardApp<TMap, TChronoLens extends ChronoLens, TNavigation
                         cartomancer: cartomancer as Cartomancer<unknown>,
                         chronoLens,
                         toolsStation: toolsStation as ToolsStation<unknown>,
+                        keysmith,
                         signaliumBureau,
                         translatron,
                         engine: engine as unknown as Engine<unknown, ChronoLens>,
@@ -97,7 +100,6 @@ export function MachineWardApp<TMap, TChronoLens extends ChronoLens, TNavigation
                         <components.layoutComponent>
                             <components.topBarComponent title={title} description={description} onNavigate={onNavigate} onNavigateBack={onNavigateBack} />
                             <components.machineComponent onNavigate={onNavigate} onNavigateBack={onNavigateBack} />
-                            <MachineWardNotices noticesComponent={components.noticesComponent} />
                         </components.layoutComponent>
                     </MachineWardContext.Provider>
                 </ErrorBoundary>

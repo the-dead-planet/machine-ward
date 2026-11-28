@@ -2,10 +2,16 @@ import { GeoJson } from "@tinker-chest";
 import {
     getDistanceFractionPercent,
     getRoutePlacementAtPercent,
+    getPlayerSliderStep,
     PlaybackPacing,
     RouteGeometryData,
     RouteTimes,
 } from "@the-dead-planet/machine-ward-gears-route-story-common";
+
+export const getMarkerSliderMax = (routeTimes: RouteTimes, geometry: RouteGeometryData, pacing: PlaybackPacing): number | null => {
+    const maximum = pacing === "distance" ? Math.max(geometry.totalDistanceMeters, 1) : routeTimes.duration;
+    return Number.isFinite(maximum) && maximum > 0 ? maximum : null;
+};
 
 export const getSliderStepDistanceFraction = (
     distanceFraction: number,
@@ -19,14 +25,14 @@ export const getSliderStepDistanceFraction = (
     if (!geojson || !routeTimes || !routeGeometryData) {
         return null;
     }
-    const sliderMax = playbackPacing === "distance" ? Math.max(routeGeometryData.totalDistanceMeters, 1) : routeTimes.duration;
+    const sliderMax = getMarkerSliderMax(routeTimes, routeGeometryData, playbackPacing);
 
-    if (sliderMax <= 0) {
+    if (sliderMax === null) {
         return null;
     }
     
     const percent = getDistanceFractionPercent(distanceFraction, geojson, routeGeometryData, routeTimes.startTimeEpoch, routeTimes.duration, playbackPacing);
-    const stepSize = playbackPacing === "distance" ? 1 : 1000;
+    const stepSize = getPlayerSliderStep(playbackPacing);
     const delta = step === "percent" ? 1 : stepSize * 100 / sliderMax;
     const nextPercent = Math.min(Math.max(percent + direction * delta, 0), 100);
 

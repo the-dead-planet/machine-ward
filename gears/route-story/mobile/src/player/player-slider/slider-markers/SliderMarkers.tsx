@@ -21,7 +21,10 @@ const styles = StyleSheet.create({
     },
 });
 
+import type { ImageMarkerOperator } from "@the-dead-planet/machine-ward-gears-route-story-common";
+
 interface Props {
+    imageMarkerOperator: ImageMarkerOperator;
     gearId: string;
     translationKey: typeof RouteStoryTranslationKey;
     map: MobileMap;

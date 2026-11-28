@@ -4,6 +4,7 @@ import { ChronoLens } from "../chrono-lens";
 import { Individuator } from "../individuator";
 import { SignaliumBureau } from "../signalium-bureau";
 import { StorageKeeper } from "../storage-keeper";
+import { Keysmith } from "../keysmith";
 import { ToolsStation } from "../tools-station";
 import { Translatron, TranslationTable } from "../translatron";
 
@@ -15,6 +16,7 @@ export interface GearApparatus<TMap, TChronoLens extends ChronoLens> {
     chronoLens: TChronoLens;
     cartomancer: Cartomancer<TMap>;
     toolsStation: ToolsStation<TMap>;
+    keysmith: Keysmith;
     translatron: Translatron;
 }
 

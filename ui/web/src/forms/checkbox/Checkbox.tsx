@@ -9,7 +9,8 @@ import {
     useTheme,
 } from "@ui";
 import { HexagonSurface } from "../../hud/hexagon/HexagonSurface";
-import { Label } from "../../design-system/typography";
+import { TypographyElement } from "../../design-system/typography/TypographyElement";
+import typographyStyles from "../../design-system/typography/typography.module.css";
 import styles from "./checkbox.module.css";
 
 interface Props {
@@ -43,6 +44,7 @@ export const Checkbox: FC<
     const generatedId = useId();
     const effectiveId = id || generatedId;
     const theme = useTheme();
+    const hasInlineLabel = Boolean(children);
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         onChange(e.target.checked);
@@ -57,7 +59,9 @@ export const Checkbox: FC<
     };
 
     return (
-        <Label
+        <TypographyElement
+            as={hasInlineLabel ? "label" : "span"}
+            baseClassName={typographyStyles.label}
             color={color}
             highlightColor={highlightColor}
             shade={glyphsShade}
@@ -65,7 +69,7 @@ export const Checkbox: FC<
             highlighted={highlighted}
             disabled={disabled}
             onKeyDown={handleKeyDown}
-            htmlFor={effectiveId}
+            htmlFor={hasInlineLabel ? effectiveId : undefined}
             data-disabled={disabled}
             data-size={size}
             className={classNames(styles["checkbox"], className)}
@@ -75,7 +79,7 @@ export const Checkbox: FC<
             <input
                 id={effectiveId}
                 type="checkbox"
-                className={styles["input"]}
+                className={classNames(styles["input"], !hasInlineLabel && styles["input-overlay"])}
                 checked={checked}
                 onChange={handleChange}
                 disabled={disabled}
@@ -112,9 +116,9 @@ export const Checkbox: FC<
                     </svg>
                 ) : null}
             </span>
-            {children ? (
+            {hasInlineLabel ? (
                 <span className={styles["label"]}>{children}</span>
             ) : null}
-        </Label>
+        </TypographyElement>
     );
 };

@@ -1,4 +1,4 @@
-import { ComponentProps, FC, useId } from 'react';
+import { ComponentProps, FC, ReactNode, useId } from 'react';
 import { createPortal } from 'react-dom';
 import classNames from 'classnames';
 import {
@@ -20,7 +20,12 @@ import { Transition } from '../../motion/transition';
 import styles from './dialog.module.css';
 import { useDialog } from './useDialog';
 
-export const Dialog: FC<DialogProps & ComponentProps<'div'>> = ({
+type Props = DialogProps & ComponentProps<'div'> & {
+    headerEnd?: ReactNode;
+    footerStart?: ReactNode;
+};
+
+export const Dialog: FC<Props> = ({
     backdrop = true,
     header,
     color = DEFAULT_COLOR,
@@ -29,11 +34,13 @@ export const Dialog: FC<DialogProps & ComponentProps<'div'>> = ({
     closeText,
     onClose,
     save,
+    headerEnd,
+    footerStart,
     className,
     children,
     ...props
 }) => {
-    const { render, close, dialogRef, onKeyDown } = useDialog();
+    const { render, close, dialogRef, onKeyDown } = useDialog(Boolean(headerEnd));
     const headerId = useId();
     const theme = useTheme();
     const [media] = useSubjectState(theme.media$);
@@ -50,6 +57,7 @@ export const Dialog: FC<DialogProps & ComponentProps<'div'>> = ({
             role="dialog"
             aria-modal="true"
             aria-labelledby={headerId}
+            tabIndex={headerEnd ? -1 : undefined}
             className={styles['overlay']}
             data-appearance-mode={theme.mode}
             data-backdrop={(backdrop && render) || undefined}
@@ -79,27 +87,30 @@ export const Dialog: FC<DialogProps & ComponentProps<'div'>> = ({
                             styles['dialog'],
                         )}
                     >
-                        <H3
-                            id={headerId}
-                            fontType={FontType.NeonText}
-                            uppercase
-                            fontWeight={500}
-                            color={color}
-                            shadow={
-                                variant === 'fill-translucent' &&
-                                theme.mode === 'dark'
-                            }
-                            className={styles['header']}
-                        >
-                            {header}
-                        </H3>
+                        <header className={styles['header']}>
+                            <H3
+                                id={headerId}
+                                fontType={FontType.NeonText}
+                                uppercase
+                                fontWeight={500}
+                                color={color}
+                                shadow={
+                                    variant === 'fill-translucent' &&
+                                    theme.mode === 'dark'
+                                }
+                            >
+                                {header}
+                            </H3>
+                            {headerEnd && <div className={styles['header-end']}>{headerEnd}</div>}
+                        </header>
                         <div
                             className={styles['content']}
                             data-appearance-mode={theme.mode}
                         >
                             {children}
                         </div>
-                        <div className={styles['footer']}>
+                        <footer className={styles['footer']}>
+                            {footerStart && <div className={styles['footer-start']}>{footerStart}</div>}
                             <Button
                                 variant={actionButtonVariants[variant].inactive}
                                 color={color}
@@ -121,7 +132,7 @@ export const Dialog: FC<DialogProps & ComponentProps<'div'>> = ({
                                     {save.saveText}
                                 </Button>
                             ) : null}
-                        </div>
+                        </footer>
                     </HudSurface>
                 </div>
             </Transition>

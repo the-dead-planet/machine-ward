@@ -14,6 +14,7 @@ import { getAutoTooltipPlacement, TooltipPlacement, TooltipProps } from "@ui";
 
 interface ChildProps {
     "aria-describedby"?: string;
+    "aria-haspopup"?: string;
     ref?: unknown;
     onClick?: (event: MouseEvent) => void;
     onMouseEnter?: (event: MouseEvent) => void;
@@ -165,6 +166,7 @@ export const useTooltip = ({
     } | null>(null);
     const hoveredRef = useRef(false);
     const focusedRef = useRef(false);
+    const pointerInputRef = useRef(false);
     const longPressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
         null,
     );
@@ -259,6 +261,27 @@ export const useTooltip = ({
 
     const child = Children.only(children) as ReactElement<ChildProps>;
     const childProps = child.props;
+    const isMenuTrigger = childProps["aria-haspopup"] === "menu";
+
+    useEffect(() => {
+        if (!isMenuTrigger) {
+            return;
+        }
+
+        const pointerInput = () => {
+            pointerInputRef.current = true;
+        };
+        const keyboardInput = () => {
+            pointerInputRef.current = false;
+        };
+        document.addEventListener("pointerdown", pointerInput, true);
+        document.addEventListener("keydown", keyboardInput, true);
+        
+        return () => {
+            document.removeEventListener("pointerdown", pointerInput, true);
+            document.removeEventListener("keydown", keyboardInput, true);
+        };
+    }, [isMenuTrigger]);
 
     const trigger = cloneElement(child, {
         "aria-describedby": visible
@@ -282,6 +305,9 @@ export const useTooltip = ({
             }
         },
         onClick: (event: MouseEvent) => {
+            if (isMenuTrigger) {
+                hoveredRef.current = false;
+            }
             focusedRef.current = false;
             setVisible(false);
             if (longPressRecognizedRef.current) {
@@ -305,8 +331,12 @@ export const useTooltip = ({
             childProps.onMouseLeave?.(event);
         },
         onFocus: (event: FocusEvent) => {
-            focusedRef.current = true;
-            setVisible(true);
+            const target = event.currentTarget;
+            // Menu and dialog dismissal can return focus to a menu button after a pointer action.
+            focusedRef.current = !isMenuTrigger || (!pointerInputRef.current && target.matches(":focus-visible"));
+            if (focusedRef.current) {
+                setVisible(true);
+            }
             childProps.onFocus?.(event);
         },
         onBlur: (event: FocusEvent) => {

@@ -8,12 +8,10 @@ import {
     defaultRouteStoryState,
     draggingImage$,
     draggingPlacement$,
-    expandedImageGroupId$,
+    ImageMarkerOperator,
     highlightIdsBySourceId$,
-    imageGroupOffset$,
     imageLayerIds,
     imageSourceIds,
-    selectedImageId$,
 } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { useMapImageInteraction } from "../../src/images/useMapImageInteraction";
 import { WebRouteStoryProps } from "../../src/model";
@@ -24,16 +22,14 @@ it("keeps handlers stable, distinguishes taps from drags, preserves grab offsets
         value: true,
         configurable: true,
     });
+    const imageMarkerOperator = new ImageMarkerOperator();
+    const { selectedImageId$ } = imageMarkerOperator;
     const previous = {
-        selected: selectedImageId$.value,
-        expanded: expandedImageGroupId$.value,
-        offset: imageGroupOffset$.value,
         dragging: draggingImage$.value,
         placement: draggingPlacement$.value,
         highlights: highlightIdsBySourceId$.value,
     };
     draggingImage$.next(null);
-    selectedImageId$.next(null);
     const listeners = new Map<string, Set<(event: MapMouseEvent) => void>>();
     const canvas = { style: { cursor: "" } };
     let panning = true;
@@ -64,6 +60,7 @@ it("keeps handlers stable, distinguishes taps from drags, preserves grab offsets
         off: (event: string, handler: (event: MapMouseEvent) => void) => listeners.get(event)?.delete(handler),
     } as unknown as MapLibreMap;
     const options: Parameters<typeof useMapImageInteraction>[0] = {
+        imageMarkerOperator,
         map,
         images$: new BehaviorSubject<WebRouteStoryProps["images$"]["value"]>([]),
         state$: new BehaviorSubject(defaultRouteStoryState),
@@ -153,9 +150,6 @@ it("keeps handlers stable, distinguishes taps from drags, preserves grab offsets
         expect(draggingPlacement$.value).to.equal(null);
     } finally {
         await act(async () => root.unmount());
-        selectedImageId$.next(previous.selected);
-        expandedImageGroupId$.next(previous.expanded);
-        imageGroupOffset$.next(previous.offset);
         draggingImage$.next(previous.dragging);
         draggingPlacement$.next(previous.placement);
         highlightIdsBySourceId$.next(previous.highlights);

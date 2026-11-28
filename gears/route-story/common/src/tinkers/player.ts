@@ -3,6 +3,8 @@ import { PlaybackPacing } from "../animatrix";
 import { RouteTimes } from "../model";
 import { getRouteLngLatAtDistanceFraction, RouteGeometryData, RoutePlacement } from "./source-layers";
 
+export const getPlayerSliderStep = (playbackPacing: PlaybackPacing): number => playbackPacing === 'distance' ? 1 : 1000;
+
 /**
  * Current progress as percentage of total duration.
  * @returns Value between 0 and 100.

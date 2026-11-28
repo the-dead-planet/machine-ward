@@ -60,7 +60,7 @@ test.each([false, true])(
         const screen = await render(
             <View>
                 <Machine onNavigate={jest.fn()} onNavigateBack={jest.fn()} />
-                <LayoutMenu onNavigate={jest.fn()} />
+                <LayoutMenu onNavigate={jest.fn()} size="sm" />
             </View>,
         );
         expect(!!screen.queryByText("Files")).toBe(isDev);

@@ -6,8 +6,7 @@ import {
     draggingImage$,
     highlightIdsBySourceId$,
     imageSourceIds,
-    selectedImageId$,
-    toggleImageMarkerGroup,
+    ImageMarkerOperator,
     formatImageMarkerCount,
     RouteStoryTranslationKey,
 } from "@the-dead-planet/machine-ward-gears-route-story-common";
@@ -16,6 +15,7 @@ import { useSliderMarkerDrag } from "./useSliderMarkerDrag";
 import styles from "./slider-markers.module.css";
 
 interface Props {
+    imageMarkerOperator: ImageMarkerOperator;
     imageId: number;
     imageIds: number[];
     gearId: string;
@@ -26,6 +26,7 @@ interface Props {
 
 export const SliderMarker: FC<Props> = (props) => {
     const { imageId, imageIds, gearId, translationKey, drag, readout } = props;
+    const { selectedImageId$, toggleImageMarkerGroup } = props.imageMarkerOperator;
     const [hovered, setHovered] = useState(false);
     const [focused, setFocused] = useState(false);
     const [imageLabel] = useMultipleTranslations([{ n: gearId, t: translationKey.Image }]);

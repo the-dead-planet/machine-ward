@@ -24,7 +24,7 @@ export enum FontType {
     NeonText = 'neon-text',
 }
 
-export type TextUsage = 'header' | 'body' | 'caption';
+export type TextUsage = 'header' | 'body' | 'label' | 'caption';
 
 export type NumericFontWeight = 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900;
 

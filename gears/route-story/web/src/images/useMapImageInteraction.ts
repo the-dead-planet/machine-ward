@@ -3,7 +3,6 @@ import type * as maplibregl from "maplibre-gl";
 import { GeoJson, useSubjectState } from "@tinker-chest";
 import { MapDataHandlers } from "@web-apparatus";
 import {
-    clearImageMarkerSelection,
     draggingImage$,
     draggingPlacement$,
     DRAGGED_IMAGE_ID,
@@ -12,7 +11,6 @@ import {
     ImageMarkerSource,
     imageSourceIds,
     RouteGeometryData,
-    selectMapImageMarker,
     updateImageDistanceFraction,
 } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { useLoadedWebImages } from "../hooks/useLoadedWebImages";
@@ -20,7 +18,7 @@ import { WebRouteStoryProps } from "../model";
 import { findMapImageFeature } from "./tinkers";
 import { useImageDragFeatureState } from "./useImageDragFeatureState";
 
-interface Options extends Pick<WebRouteStoryProps, "images$" | "state$"> {
+interface Options extends Pick<WebRouteStoryProps, "images$" | "state$" | "imageMarkerOperator"> {
     map: maplibregl.Map;
     sourceDataGeojson: ImageMarkerSource;
     loadedImages: ReturnType<typeof useLoadedWebImages>;
@@ -36,7 +34,9 @@ export const useMapImageInteraction = ({
     routeGeometryData,
     images$,
     state$,
+    imageMarkerOperator,
 }: Options): MapDataHandlers => {
+    const { clearImageMarkerSelection, selectMapImageMarker } = imageMarkerOperator;
     const [draggingImage] = useSubjectState(draggingImage$);
     const dragStartPoint = useRef<{ x: number; y: number } | null>(null);
     const dragAnchorOffset = useRef({ x: 0, y: 0 });
@@ -137,7 +137,7 @@ export const useMapImageInteraction = ({
                 );
             },
         }),
-        [map, state$],
+        [map, state$, selectMapImageMarker, clearImageMarkerSelection],
     );
 
     useImageDragFeatureState(map);
@@ -208,7 +208,7 @@ export const useMapImageInteraction = ({
             map.off("touchmove", handleDrag);
             map.off("touchend", handleDragEnd);
         };
-    }, [map, draggingImage, loadedImages, geojson, routeGeometryData, images$]);
+    }, [map, draggingImage, loadedImages, geojson, routeGeometryData, images$, clearImageMarkerSelection]);
 
     return handlers;
 };

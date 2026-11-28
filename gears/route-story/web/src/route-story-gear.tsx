@@ -14,6 +14,7 @@ import { AnimationControlsSearch } from './animation-controls/AnimationControlsS
 import { WebChronoLens } from '@web-apparatus';
 import { RecChip } from './top-bar/RecChip';
 import { LayerStylingPopup } from './layer-styling/LayerStylingPopup';
+import { registerImageMarkerShortcuts } from './images/tinkers';
 
 const SAMPLE_IMAGE_NAMES = [
    'IMG20260403173904.jpg',
@@ -34,6 +35,12 @@ export class WebRouteStoryGear extends RouteStoryGear<maplibregl.Map, WebChronoL
    public imagesLayerComponent = ImagesLayer;
    public topBarChipComponent = RecChip;
    public layerStylingComponent = LayerStylingPopup;
+   private unregisterImageMarkerShortcuts?: () => void;
+
+   public override cleanup(): void {
+      this.unregisterImageMarkerShortcuts?.();
+      super.cleanup();
+   }
 
    public constructor(apparatus: GearApparatus<maplibregl.Map, WebChronoLens>) {
       super(apparatus);
@@ -67,14 +74,14 @@ export class WebRouteStoryGear extends RouteStoryGear<maplibregl.Map, WebChronoL
    };
 
    public fitBounds = (map: maplibregl.Map, sw: [number, number], ne: [number, number]) => {
-      const { topToolbarSizeRef, rightToolPanelSizeRef, leftToolPanelSizeRef, bottomToolPanelSizeRef, bottomSecondaryToolPanelSizeRef } = this.apparatus.toolsStation;
+      const { measuredToolbarHeights$, rightToolPanelSizeRef, leftToolPanelSizeRef, bottomSecondaryToolPanelSizeRef } = this.apparatus.toolsStation;
       const offset = 50;
 
       map.fitBounds([sw, ne], {
          animate: true, padding: {
-            top: (topToolbarSizeRef.current?.clientHeight ?? 0) + offset,
+            top: measuredToolbarHeights$.value.notices + offset,
             right: (rightToolPanelSizeRef.current?.clientWidth ?? 0) + offset,
-            bottom: (bottomToolPanelSizeRef.current?.clientHeight ?? 0) + (bottomSecondaryToolPanelSizeRef.current?.clientHeight ?? 0) + offset,
+            bottom: measuredToolbarHeights$.value.bottomPanel + (bottomSecondaryToolPanelSizeRef.current?.clientHeight ?? 0) + offset,
             left: (leftToolPanelSizeRef.current?.clientWidth ?? 0) + offset,
          }
       });
@@ -94,7 +101,7 @@ export class WebRouteStoryGear extends RouteStoryGear<maplibregl.Map, WebChronoL
       };
 
       reader.onload = async (e) => {
-         const { data, bitmap, thumbnailBitmap, lngLat, exif, error } = await parseImage(e, file, { shape: 'circle' });
+         const { data, bitmap, thumbnailBitmap, lngLat, exif, error } = await parseImage(e, file);
 
          const nextImages = this.images$.value.slice();
          const index = this.images$.value.findIndex((el) => el.name === file.name);
@@ -127,9 +134,16 @@ export class WebRouteStoryGear extends RouteStoryGear<maplibregl.Map, WebChronoL
 
    public engageRouteStory = () => {
       this.confirmBeforeLeaveSubscription = this.subscribeConfirmBeforeLeave();
+      this.unregisterImageMarkerShortcuts?.();
+      const { keysmith, cartomancer } = this.apparatus;
+      this.unregisterImageMarkerShortcuts = registerImageMarkerShortcuts(
+         this.id, this, keysmith, this.playerActive$, cartomancer.isStyleLoaded$,
+      );
    };
 
    public disengageRouteStory = () => {
+      this.unregisterImageMarkerShortcuts?.();
+      this.unregisterImageMarkerShortcuts = undefined;
       this.confirmBeforeLeaveSubscription?.unsubscribe();
    };
 

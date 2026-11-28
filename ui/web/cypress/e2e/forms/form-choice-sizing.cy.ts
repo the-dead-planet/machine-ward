@@ -17,12 +17,13 @@ describe("Form choice row sizing", () => {
                                 storyId,
                                 updatedArgs: { size, corners, children, checked: false },
                             });
-                        cy.get(input).should("not.be.checked").closest("label").should("have.attr", "data-size", size);
+                        cy.get(input).should("not.be.checked");
                         cy.get(input)
-                            .closest("label")
+                            .closest("[data-size]")
                             .should(($label) => {
                                 const label = $label[0];
                                 const box = label.querySelector('[aria-hidden="true"]')!;
+                                expect(label.getAttribute("data-size")).to.equal(size);
                                 expect(label.textContent).to.equal(children);
                                 expect(box.querySelector("svg") !== null).to.equal(corners === "hexagon");
                                 expect(label.ownerDocument.defaultView!.getComputedStyle(box).borderRadius).to.equal(
@@ -32,7 +33,7 @@ describe("Form choice row sizing", () => {
                             });
                         cy.document().then((document) => document.fonts.ready);
                         cy.get(input)
-                            .closest("label")
+                            .closest("[data-size]")
                             .then(($label) => {
                                 const label = $label[0];
                                 const box = label.querySelector<HTMLElement>('[aria-hidden="true"]')!;

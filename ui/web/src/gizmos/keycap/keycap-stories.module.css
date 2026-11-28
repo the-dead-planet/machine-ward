@@ -1,0 +1,12 @@
+.cellButton {
+    border: 0;
+    background: transparent;
+    padding: 0;
+    cursor: pointer;
+    font: inherit;
+}
+
+.cellButton:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+}

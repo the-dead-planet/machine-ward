@@ -47,65 +47,19 @@ export const draggingImage$ = new BehaviorSubject<{
     id: number;
 } | null>(null);
 export const draggingPlacement$ = new BehaviorSubject<RoutePlacement | null>(null);
-export const selectedImageId$ = new BehaviorSubject<number | null>(null);
 export const IMAGE_MARKER_ANCHOR_ID = "route-story-image-anchor-hexagon";
-export const IMAGE_MARKER_OUTLINE_ID = "route-story-image-outline-circle";
+const imageMarkerOutlinePrefix = "route-story-image-outline-";
+export const getImageMarkerOutlineId = (shape: string) => `${imageMarkerOutlinePrefix}${shape}`;
 const thumbnailTranslate: [number, number] = [0, 0];
-const dragThumbnailTranslate: [number, number] = [
-    0,
-    MAP_IMAGE_MARKER_OFFSET_Y - (THUMBNAIL_IMAGE_SIZE * 0.1) / 2,
-];
+const outlineIconImage = [
+    "concat", imageMarkerOutlinePrefix, ["coalesce", ["get", "markerShape"], "circle"],
+] satisfies ExpressionSpecification;
 const countText = [
     "case",
     [">", ["get", "markerCount"], 9],
     "9+",
     ["to-string", ["get", "markerCount"]],
 ] satisfies ExpressionSpecification;
-export const expandedImageGroupId$ = new BehaviorSubject<number | null>(null);
-export const imageGroupOffset$ = new BehaviorSubject(0);
-
-export const shiftImageGroup = (
-    pagination: ImageGroupPagination,
-    direction: number,
-): void => {
-    imageGroupOffset$.next(
-        (((imageGroupOffset$.value - direction) % pagination.totalCount) +
-            pagination.totalCount) %
-            pagination.totalCount,
-    );
-};
-
-export const clearImageMarkerSelection = (): void => {
-    selectedImageId$.next(null);
-    expandedImageGroupId$.next(null);
-    imageGroupOffset$.next(0);
-};
-
-export const toggleImageMarkerGroup = (imageIds: number[]) => {
-    if (!imageIds.length) {
-        return;
-    }
-    if (imageIds.some((id) => id === selectedImageId$.value)) {
-        clearImageMarkerSelection();
-        return;
-    }
-    const imageId = imageIds[0];
-    imageGroupOffset$.next(0);
-    selectedImageId$.next(imageId);
-    expandedImageGroupId$.next(imageId);
-};
-
-export const selectMapImageMarker = (
-    imageId: number,
-    groupSize: number,
-    groupId = imageId,
-) => {
-    if (expandedImageGroupId$.value !== groupId || groupSize <= 1) {
-        imageGroupOffset$.next(0);
-    }
-    selectedImageId$.next(groupSize > 1 || selectedImageId$.value !== imageId ? imageId : null);
-    expandedImageGroupId$.next(groupSize > 1 ? groupId : null);
-};
 
 const thumbnailsFilter = [
     "all",
@@ -120,8 +74,10 @@ const groupFilter = [
 ] satisfies FilterSpecification;
 const thumbnailIconImage: GetProperty = ["get", IMAGE_THUMBNAIL_PROPERTY];
 const thumbnailIconSize: number = getImageIconSize(MAP_THUMBNAIL_SIZE, THUMBNAIL_IMAGE_SIZE);
+const markerSizeScale = ["coalesce", ["get", "markerSizeScale"], 1] satisfies ExpressionSpecification;
 const thumbnailScale = [
     "*",
+    markerSizeScale,
     ["coalesce", ["get", "markerScale"], 1],
     ["coalesce", ["get", "markerRevealScale"], 1],
 ] satisfies ExpressionSpecification;
@@ -146,15 +102,20 @@ const thumbnailOutlineDiameter = [
     thumbnailDiameter,
     ["*", thumbnailBorderDiameter, ["coalesce", ["get", "markerRevealScale"], 1]],
 ] satisfies ExpressionSpecification;
+const markerOffset = ["coalesce", ["get", "markerOffsetY"], MAP_IMAGE_MARKER_OFFSET_Y] satisfies ExpressionSpecification;
+const stackDiameter = ["*", THUMBNAIL_IMAGE_SIZE, markerSizeScale] satisfies ExpressionSpecification;
+const dragDiameter = ["*", THUMBNAIL_IMAGE_SIZE * 1.1, markerSizeScale] satisfies ExpressionSpecification;
+const dragOutlineDiameter = ["+", dragDiameter, 4] satisfies ExpressionSpecification;
 const thumbnailOffset = (
-    diameter: typeof thumbnailDiameter | typeof thumbnailOutlineDiameter,
+    diameter: typeof thumbnailDiameter | typeof thumbnailOutlineDiameter | typeof stackDiameter | typeof dragDiameter | typeof dragOutlineDiameter,
     baseDiameter: number | ["+", number, typeof thumbnailBorderDiameter],
+    offset: number | typeof markerOffset = markerOffset,
 ) => [
     "interpolate",
     ["linear"],
     [
         "/",
-        ["+", ["coalesce", ["get", "markerOffsetY"], MAP_IMAGE_MARKER_OFFSET_Y], ["case", ["==", ["get", "markerGroupSize"], 1], ["/", ["-", baseDiameter, diameter], 2], 0]],
+        ["case", ["==", offset, 0], 0, ["+", offset, ["/", ["-", baseDiameter, diameter], 2]]],
         ["max", diameter, 0.00001],
     ],
     -1,
@@ -162,7 +123,7 @@ const thumbnailOffset = (
     1,
     ["literal", [0, MAP_THUMBNAIL_SIZE]],
 ] satisfies ExpressionSpecification;
-const dragOpacity = 0.4;
+export const IMAGE_DRAG_ORIGIN_OPACITY = 0.4;
 const thumbnailDraggingOpacity = [
     "*",
     ["coalesce", ["get", "markerOpacity"], 1],
@@ -173,7 +134,7 @@ const thumbnailDraggingOpacity = [
             ["==", ["feature-state", FeatureStateProps.Dragging], true],
             ["==", ["get", FeatureStateProps.Dragging], true],
         ],
-        dragOpacity,
+        IMAGE_DRAG_ORIGIN_OPACITY,
         1,
     ],
 ] satisfies ExpressionSpecification;
@@ -211,8 +172,8 @@ const thumbnailsStackBack = {
     filter: groupFilter,
     layout: {
         "icon-image": thumbnailIconImage,
-        "icon-size": thumbnailIconSize,
-        "icon-offset": [0, MAP_IMAGE_MARKER_OFFSET_Y / thumbnailIconSize],
+        "icon-size": ["*", thumbnailIconSize, markerSizeScale],
+        "icon-offset": thumbnailOffset(stackDiameter, THUMBNAIL_IMAGE_SIZE),
         "icon-allow-overlap": true,
     },
     paint: {
@@ -251,7 +212,7 @@ const thumbnailViewportLayout =
 const thumbnailOutlineLayout =
     {
         ...thumbnailViewportLayout,
-        "icon-image": IMAGE_MARKER_OUTLINE_ID,
+        "icon-image": outlineIconImage,
         "icon-size": ["/", thumbnailOutlineDiameter, MAP_THUMBNAIL_SIZE],
         "icon-offset": thumbnailOffset(thumbnailOutlineDiameter, [
             "+",
@@ -392,15 +353,14 @@ export default {
         filter: thumbnailsHighlightFilter,
         layout: {
             ...thumbnailViewportLayout,
-            "icon-image": IMAGE_MARKER_OUTLINE_ID,
-            "icon-size": (THUMBNAIL_IMAGE_SIZE * 1.1 + 4) / MAP_THUMBNAIL_SIZE,
+            "icon-image": outlineIconImage,
+            "icon-size": ["/", dragOutlineDiameter, MAP_THUMBNAIL_SIZE] satisfies ExpressionSpecification,
+            "icon-offset": thumbnailOffset(dragOutlineDiameter, THUMBNAIL_IMAGE_SIZE + 4, MAP_IMAGE_MARKER_OFFSET_Y),
         },
         getPaint: (
             highlightColor: string,
         ) => ({
             "icon-color": highlightColor,
-            "icon-translate": dragThumbnailTranslate,
-            "icon-translate-anchor": "viewport",
         } satisfies NonNullable<SymbolLayerSpecification["paint"]>),
     },
     thumbnailsHighlight: {
@@ -408,13 +368,13 @@ export default {
         layout: {
             ...thumbnailViewportLayout,
             "icon-image": thumbnailIconImage,
-            "icon-size": thumbnailIconSize * 1.1,
+            "icon-size": ["/", dragDiameter, MAP_THUMBNAIL_SIZE] satisfies ExpressionSpecification,
+            "icon-offset": thumbnailOffset(dragDiameter, THUMBNAIL_IMAGE_SIZE, MAP_IMAGE_MARKER_OFFSET_Y),
             "icon-allow-overlap": true,
         },
         paint: {
             ...thumbnailPaint,
             "icon-opacity": 1,
-            "icon-translate": dragThumbnailTranslate,
         },
     },
     countBadge: {
@@ -430,7 +390,11 @@ export default {
                 countText,
             ],
             "icon-size": 1,
-            "icon-offset": [MAP_IMAGE_COUNT_BADGE_OFFSET[0], MAP_IMAGE_MARKER_OFFSET_Y + MAP_IMAGE_COUNT_BADGE_OFFSET[1]],
+            "icon-offset": [
+                "interpolate", ["linear"], markerSizeScale,
+                0, ["literal", [0, MAP_IMAGE_MARKER_OFFSET_Y + THUMBNAIL_IMAGE_SIZE / 2]],
+                2, ["literal", [2 * MAP_IMAGE_COUNT_BADGE_OFFSET[0], MAP_IMAGE_MARKER_OFFSET_Y - THUMBNAIL_IMAGE_SIZE / 2 + 2 * MAP_IMAGE_COUNT_BADGE_OFFSET[1]]],
+            ],
             "icon-allow-overlap": true,
         } satisfies NonNullable<SymbolLayerSpecification["layout"]>),
         paint: countBadgePaint,

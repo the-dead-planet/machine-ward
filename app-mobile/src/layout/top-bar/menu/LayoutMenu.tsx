@@ -3,6 +3,7 @@ import { Linking } from "react-native";
 import { Menu, MenuItem } from "@mobile-ui";
 import { getMachineMenuLinks, useTranslation } from "@apparatus";
 import { T, useMobileMachineWard } from "@mobile-apparatus";
+import type { SizeVariant } from "@ui";
 import { RootStackParamList } from "../../../navigation";
 import { SettingsDialog } from "./settings/SettingsDialog";
 
@@ -12,9 +13,10 @@ const openLink = (href: string) => {
 
 interface Props {
     onNavigate: (path: keyof RootStackParamList) => void;
+    size: SizeVariant;
 }
 
-export const LayoutMenu: FC<Props> = ({ onNavigate }) => {
+export const LayoutMenu: FC<Props> = ({ onNavigate, size }) => {
     const { isDev, namespace, translationKey, individuator } =
         useMobileMachineWard();
     const [showIndividuatorDialog, setShowIndividuatorDialog] = useState(false);
@@ -27,7 +29,7 @@ export const LayoutMenu: FC<Props> = ({ onNavigate }) => {
                 triggerAccessibilityLabel={tooltip}
                 tooltip={tooltip}
                 iconActiveColor="secondary"
-                size="md"
+                size={size}
                 tooltipPlacement="bottom"
                 placement="bottom-right"
             >

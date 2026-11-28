@@ -3,7 +3,6 @@ import { MachineGear, MachineWard, MachineWardComponents } from "@apparatus";
 import { ErrorFallbackPage } from "./pages";
 import { Layout, TopBar } from "./layout";
 import { Machine } from "./machine/Machine";
-import { Notices } from "./notices/Notices";
 import { WebChronoLens } from "@web-apparatus";
 import { Media, MediaSubscriptionDefinition, Orientation } from "@ui";
 
@@ -49,7 +48,6 @@ export class WebMachineWard extends MachineWard<maplibregl.Map, WebChronoLens> {
         layoutComponent: Layout,
         topBarComponent: TopBar,
         machineComponent: Machine,
-        noticesComponent: Notices,
     };
 
     public navigate = (_path: string) => {

@@ -3,7 +3,6 @@ import { parsers, FileToGeoJSONParser, ChronoLens } from "@apparatus";
 import { GeoJson, getNext } from "@tinker-chest";
 import { RouteStoryGear } from "./route-story-gear";
 import { RouteStoryFile } from "./model";
-import { clearImageMarkerSelection } from "./layer-specification/images/images-layers";
 
 export class FileOperator<TMap, TChronoLens extends ChronoLens, TFile extends RouteStoryFile, TImageData> {
     private gear: RouteStoryGear<TMap, TChronoLens, TFile, TImageData>;
@@ -14,17 +13,6 @@ export class FileOperator<TMap, TChronoLens extends ChronoLens, TFile extends Ro
     ) {
         this.gear = gear;
     }
-
-    public resetStory = async (): Promise<void> => {
-        this.isLoading$.next(true);
-        await this.gear.onCleanupStory(this.gear.data$.value, this.gear.images$.value);
-        this.gear.progressMs$.next(0);
-        this.gear.data$.next({});
-        this.gear.images$.next([]);
-        clearImageMarkerSelection();
-        this.gear.routeTimes$.next(null);
-        this.gear.fileOperator.isLoading$.next(false);
-    };
 
     public onError = (error: Error) => {
         const id = 'file-upload';

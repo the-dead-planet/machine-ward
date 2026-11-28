@@ -1,7 +1,10 @@
 import { fireEvent, render } from "@testing-library/react-native";
 import { PropsWithChildren } from "react";
 import { PressableProps } from "react-native";
-import { shiftImageGroup, ImageGroupPagination } from "@the-dead-planet/machine-ward-gears-route-story-common";
+import { ImageGroupPagination } from "@the-dead-planet/machine-ward-gears-route-story-common";
+import { ImageMarkerOperator } from "../../common/src/image-marker-operator";
+const imageMarkerOperator = new ImageMarkerOperator();
+const shiftImageGroup = jest.spyOn(imageMarkerOperator, 'shiftImageGroup');
 import { ImageGroupPager } from "../src/images/ImageGroupPager";
 import { ImageGroupPagerDimensions } from "../src/images/model";
 
@@ -9,7 +12,6 @@ jest.mock("@apparatus", () => ({
     useMultipleTranslations: () => ["Previous images", "Next images"],
 }));
 jest.mock("@the-dead-planet/machine-ward-gears-route-story-common", () => ({
-    shiftImageGroup: jest.fn(),
     RouteStoryTranslationKey: {},
 }));
 jest.mock("@ui", () => ({
@@ -46,7 +48,7 @@ test("shows the hidden count, reports touch bounds and pages using the latest gr
     };
     const pressEvent = { stopPropagation: jest.fn() };
     const screen = await render(
-        <ImageGroupPager pagination={pagination} gearId="route-story" dimensions={dimensions} position={position} />,
+        <ImageGroupPager pagination={pagination} gearId="route-story" dimensions={dimensions} position={position} imageMarkerOperator={imageMarkerOperator} />,
     );
     expect(screen.getByText("+10")).toBeTruthy();
     const boundsOwner = screen.container.queryAll((node) => typeof node.props.onLayout === "function")[0];
@@ -62,7 +64,7 @@ test("shows the hidden count, reports touch bounds and pages using the latest gr
         ...pagination,
         offset: 14,
     };
-    await screen.rerender(<ImageGroupPager pagination={lastPage} gearId="route-story" dimensions={dimensions} position={position} />);
+    await screen.rerender(<ImageGroupPager pagination={lastPage} gearId="route-story" dimensions={dimensions} position={position} imageMarkerOperator={imageMarkerOperator} />);
     expect(screen.getByText("+10")).toBeTruthy();
     await fireEvent.press(screen.getByLabelText("Next images"), pressEvent);
     expect(shiftImageGroup).toHaveBeenLastCalledWith(lastPage, 1);

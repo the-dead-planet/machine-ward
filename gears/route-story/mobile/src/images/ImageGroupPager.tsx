@@ -4,7 +4,7 @@ import { Marker } from "@maplibre/maplibre-react-native";
 import { useMultipleTranslations } from "@apparatus";
 import { Button, Chip } from "@mobile-ui";
 import { FontType, Icons } from "@ui";
-import { shiftImageGroup, ImageGroupPagination, RouteStoryTranslationKey } from "@the-dead-planet/machine-ward-gears-route-story-common";
+import { ImageMarkerOperator, ImageGroupPagination, RouteStoryTranslationKey } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { ImageGroupPagerDimensions } from "./model";
 import { useImageGroupPagerInteraction } from "./useImageGroupPagerInteraction";
 
@@ -33,14 +33,16 @@ const styles = StyleSheet.create({
 });
 
 interface Props {
+    imageMarkerOperator: ImageMarkerOperator;
     pagination: ImageGroupPagination;
     gearId: string;
     dimensions: RefObject<ImageGroupPagerDimensions | null>;
     position: RefObject<[number, number] | null>;
 }
 
-export const ImageGroupPager = ({ pagination, gearId, dimensions, position }: Props) => {
-    const { onControlsLayout, onPress } = useImageGroupPagerInteraction(pagination, position, dimensions);
+export const ImageGroupPager = ({ pagination, gearId, dimensions, position, imageMarkerOperator }: Props) => {
+    const { shiftImageGroup } = imageMarkerOperator;
+    const { onControlsLayout, onPress } = useImageGroupPagerInteraction(pagination, position, dimensions, shiftImageGroup);
     const [previousLabel, nextLabel] = useMultipleTranslations([
         { n: gearId, t: RouteStoryTranslationKey.PreviousImages },
         { n: gearId, t: RouteStoryTranslationKey.NextImages },

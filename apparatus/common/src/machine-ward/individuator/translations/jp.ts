@@ -11,7 +11,15 @@ const jp: TranslationTable<IndividuatorTranslationKey>['jp'] = {
     imperial: 'ヤード・ポンド法 (mi)',
     theme: 'テーマ',
     "confirm-before-leave": 'ページを離れる前に確認',
+    "enable-keyboard-shortcuts": 'キーボードショートカットを有効にする',
+    "show-guide-hints": 'ガイドのヒントを表示する',
+    "go-to-keysmith": 'キー工房を表示',
+    "go-to-individuator": 'インディヴィデュエーターを開く',
     "debug-mode": 'デバッグモード',
+    "unsaved-change": '未保存の変更',
+    "unsaved-change-count": '未保存の変更：{{count}}件',
+    "unsaved-changes-count": '未保存の変更：{{count}}件',
+    "unsaved-changes-many-count": '未保存の変更：{{count}}件',
 };
 
 export default jp;

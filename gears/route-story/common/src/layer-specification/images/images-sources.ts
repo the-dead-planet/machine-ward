@@ -1,6 +1,8 @@
 import { FeatureStateProps, LoadedImageData } from "@apparatus";
 import { GeoJson } from "@tinker-chest";
 import { getIconImageId, getRouteLngLatAtDistanceFraction, RouteGeometryData, RoutePlacement } from "../../tinkers";
+import { imageMarkerSizeScale } from "../../tinkers/images";
+import type { ImageMarkerShape, ImageMarkerStyle } from "../../model";
 
 export const IMAGE_ANIMATION_DURATION = 250;
 export const IMAGE_PROPERTY = "iconImageId";
@@ -16,6 +18,8 @@ export interface ImageFeatureProperties {
     markerGroupSize?: number;
     markerOpacity?: number;
     markerScale?: number;
+    markerSizeScale?: number;
+    markerShape?: ImageMarkerShape;
     markerRevealScale?: number;
     markerCenter?: [number, number];
     markerOffsetY?: number;
@@ -42,10 +46,16 @@ export interface ImageMarkerSource
     pagination?: ImageGroupPagination;
 }
 
+export const getImageMarkerThumbnailId = <TImageData>(image: LoadedImageData<TImageData>, shape: ImageMarkerShape) => {
+    const thumbnailId = getIconImageId(image, { thumbnail: true });
+    return shape === 'circle' ? thumbnailId : `${thumbnailId}:${shape}`;
+};
+
 export function getImageSource<TImageData>(
     loadedImages: LoadedImageData<TImageData>[],
     geojson?: GeoJson,
     routeGeometryData?: RouteGeometryData | null,
+    imageMarkerStyle?: ImageMarkerStyle,
 ): ImageMarkerSource {
     if (!geojson || !routeGeometryData) {
         return {
@@ -75,9 +85,9 @@ export function getImageSource<TImageData>(
                     markerCount: 1,
                     markerOpacity: 1,
                     [IMAGE_PROPERTY]: getIconImageId(image),
-                    [IMAGE_THUMBNAIL_PROPERTY]: getIconImageId(image, {
-                        thumbnail: true,
-                    }),
+                    markerSizeScale: imageMarkerStyle ? imageMarkerSizeScale[imageMarkerStyle.size] : undefined,
+                    markerShape: imageMarkerStyle?.shape,
+                    [IMAGE_THUMBNAIL_PROPERTY]: getImageMarkerThumbnailId(image, imageMarkerStyle?.shape ?? 'circle'),
                 },
             };
         }),

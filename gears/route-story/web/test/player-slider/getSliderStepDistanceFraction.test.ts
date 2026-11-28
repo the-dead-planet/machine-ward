@@ -1,8 +1,12 @@
 import { expect } from "chai";
 import { describe, it } from "mocha";
 import { GeoJson } from "@tinker-chest";
-import { getRouteGeometryData, RouteTimes } from "@the-dead-planet/machine-ward-gears-route-story-common";
+import { BehaviorSubject } from "rxjs";
+import { Keysmith } from "@apparatus";
+import { Animatrix, defaultRouteStoryState, getRouteGeometryData, ImageMarkerOperator, RouteTimes } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { getSliderStepDistanceFraction } from "../../src/player/player-slider/slider-markers/tinkers";
+import { registerImageMarkerShortcuts } from "../../src/images/tinkers";
+import type { WebRouteStoryProps } from "../../src/model";
 
 const geojson: GeoJson = {
     type: "FeatureCollection",
@@ -29,6 +33,38 @@ const routeTimes: RouteTimes = {
 const routeGeometryData = getRouteGeometryData(geojson);
 
 describe("Slider marker keyboard step", () => {
+    it("leaves arrows unhandled for an invalid timeline and resumes on a usable route or pacing", () => {
+        const animatrix = new Animatrix();
+        const imageMarkerOperator = new ImageMarkerOperator();
+        imageMarkerOperator.toggleImageMarkerGroup([1]);
+        const times = new BehaviorSubject<RouteTimes | null>({ ...routeTimes, duration: 0 });
+        const keysmith = new Keysmith();
+        const unregister = registerImageMarkerShortcuts("route-story", {
+            animatrix,
+            imageMarkerOperator,
+            data$: new BehaviorSubject<WebRouteStoryProps["data$"]["value"]>({ geojson }),
+            routeTimes$: times,
+            routeGeometryData$: new BehaviorSubject<WebRouteStoryProps["routeGeometryData$"]["value"]>(routeGeometryData),
+            images$: new BehaviorSubject<WebRouteStoryProps["images$"]["value"]>([{ id: 1, name: "marker.jpg", progress: 100, distanceFraction: 0.5 }]),
+            state$: new BehaviorSubject<WebRouteStoryProps["state$"]["value"]>({ ...defaultRouteStoryState, markerPlayerVisibility: true }),
+            isEngaged$: new BehaviorSubject(true),
+        }, keysmith, new BehaviorSubject(true), new BehaviorSubject(false));
+        try {
+            animatrix.controls$.next({ ...animatrix.controls$.value, playbackPacing: "timeline" });
+            for (const duration of [0, Number.NaN, Number.POSITIVE_INFINITY]) {
+                times.next({ ...routeTimes, duration });
+                expect(keysmith.handleKey({ key: "ArrowRight" })).to.equal(false);
+            }
+            times.next(routeTimes);
+            expect(keysmith.handleKey({ key: "ArrowRight" })).to.equal(true);
+            times.next({ ...routeTimes, duration: 0 });
+            animatrix.controls$.next({ ...animatrix.controls$.value, playbackPacing: "distance" });
+            expect(keysmith.handleKey({ key: "ArrowLeft" })).to.equal(true);
+        } finally {
+            unregister();
+        }
+    });
+
     it("moves one meter with distance pacing", () => {
         const next = getSliderStepDistanceFraction(0.5, 1, geojson, routeTimes, routeGeometryData, "distance", "slider");
 

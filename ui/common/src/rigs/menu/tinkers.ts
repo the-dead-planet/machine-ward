@@ -39,6 +39,7 @@ export const menuStoryControls: StoryControls<MenuProps> = {
     size: { control: 'select', options: sizeOptions },
     placement: { control: 'select', options: menuAnchorOptions },
     highlightColor: buttonStoryControls.highlightColor,
+    iconColor: buttonStoryControls.highlightColor,
     iconActiveColor: buttonStoryControls.highlightColor,
     glyphsShade: buttonStoryControls.glyphsShade,
     highlightGlyphsShade: buttonStoryControls.highlightGlyphsShade,

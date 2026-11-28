@@ -3,7 +3,7 @@ import { useObservableState } from "@tinker-chest";
 import { useTheme } from "@ui";
 import { useMachineWard } from "../../useMachineWard";
 import { BottomSecondaryDragState } from "../model";
-import { LAYOUT_MINS } from "../tinkers";
+import { clampBottomSecondaryHeight, LAYOUT_MINS } from "../tinkers";
 
 export const useBottomSecondaryToolPanelResizeHandle = (
     onDraggingChange?: (isDragging: boolean) => void
@@ -20,10 +20,9 @@ export const useBottomSecondaryToolPanelResizeHandle = (
         onDraggingChange?.(true);
         const activeBottomSecondaryId = toolsStation.activeBottomSecondaryPanelToolId$.value;
         const isCollapsed = activeBottomSecondaryId === null;
-        const storedHeight = isCollapsed ? LAYOUT_MINS.panels.bottomSecondary : toolsStation.panelWidths$.value.bottomSecondaryHeight;
+        const storedHeight = isCollapsed ? LAYOUT_MINS.panels.bottomSecondary : toolsStation.panelLayout$.value.bottomSecondaryHeight;
         const heightClampMin = LAYOUT_MINS.panels.bottomSecondary;
-        const heightClampMax = theme.media$.value.windowHeight - LAYOUT_MINS.remainingArea.height;
-        const clampedStored = Math.min(Math.max(storedHeight, heightClampMin), heightClampMax);
+        const clampedStored = clampBottomSecondaryHeight(storedHeight, theme.media$.value.windowHeight, toolsStation.getReservedToolbarHeight());
         bottomSecondaryDragStateRef.current = {
             startY: clientY,
             currentY: clientY,
@@ -40,7 +39,7 @@ export const useBottomSecondaryToolPanelResizeHandle = (
 
         ds.currentY += delta;
         const totalDelta = ds.currentY - ds.startY;
-        const newHeight = Math.max(Math.min(ds.startHeight - totalDelta, theme.media$.value.windowHeight - LAYOUT_MINS.remainingArea.height - toolsStation.getReservedToolbarHeight()), ds.panelMin);
+        const newHeight = clampBottomSecondaryHeight(ds.startHeight - totalDelta, theme.media$.value.windowHeight, toolsStation.getReservedToolbarHeight());
 
         const activeBottomSecondaryId = toolsStation.activeBottomSecondaryPanelToolId$.value;
         const isCollapsed = activeBottomSecondaryId === null;
@@ -49,11 +48,11 @@ export const useBottomSecondaryToolPanelResizeHandle = (
         const willExpand = isCollapsed && newHeight > ds.panelMin && effectivePanels.length > 0;
 
         if (!willCollapse) {
-            const currentStored = toolsStation.panelWidths$.value.bottomSecondaryHeight;
+            const currentStored = toolsStation.panelLayout$.value.bottomSecondaryHeight;
 
             if (newHeight !== currentStored) {
-                toolsStation.panelWidths$.next({
-                    ...toolsStation.panelWidths$.value,
+                toolsStation.panelLayout$.next({
+                    ...toolsStation.panelLayout$.value,
                     bottomSecondaryHeight: newHeight,
                 });
             }
@@ -62,8 +61,8 @@ export const useBottomSecondaryToolPanelResizeHandle = (
         if (willExpand) {
             toolsStation.activeBottomSecondaryPanelToolId$.next(effectivePanels[0].id);
         } else if (willCollapse) {
-            toolsStation.panelWidths$.next({
-                ...toolsStation.panelWidths$.value,
+            toolsStation.panelLayout$.next({
+                ...toolsStation.panelLayout$.value,
                 bottomSecondaryHeight: ds.startHeight,
             });
             toolsStation.activeBottomSecondaryPanelToolId$.next(null);

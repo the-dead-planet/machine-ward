@@ -1,10 +1,10 @@
 import { useEffect, useRef } from 'react';
 import { Animated } from 'react-native';
-import { MenuAnchor } from '@ui';
+import type { PopupProps } from '@ui';
 
 export const usePopupTransition = (
     visible: boolean,
-    popupAnchor: MenuAnchor,
+    slide: NonNullable<PopupProps['slide']>,
 ) => {
     const progress = useRef(new Animated.Value(0)).current;
     useEffect(() => {
@@ -17,17 +17,15 @@ export const usePopupTransition = (
         return () => animation.stop();
     }, [visible, progress]);
 
+    const offset = progress.interpolate({
+        inputRange: [0, 1],
+        outputRange: [slide === 'to-right' || slide === 'to-bottom' ? -100 : 100, 0],
+    });
+
     return {
         opacity: progress,
-        transform: [
-            {
-                translateY: progress.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: popupAnchor.startsWith('top')
-                        ? [-100, 0]
-                        : [100, 0],
-                }),
-            },
-        ],
+        transform: [slide === 'to-left' || slide === 'to-right'
+            ? { translateX: offset }
+            : { translateY: offset }],
     };
 };

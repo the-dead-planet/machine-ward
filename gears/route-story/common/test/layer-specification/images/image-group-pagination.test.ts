@@ -2,13 +2,8 @@ import { expect } from "chai";
 import { describe, it } from "mocha";
 import { getGroupedImageSource, getImageMarkerConnections } from "../../../src/layer-specification/images/grouped-image-source";
 import { ImageMarkerSource, getImageSourceWithAnchors } from "../../../src/layer-specification/images/images-sources";
-import ImagesLayers, {
-    shiftImageGroup,
-    clearImageMarkerSelection,
-    expandedImageGroupId$,
-    imageGroupOffset$,
-    selectMapImageMarker,
-} from "../../../src/layer-specification/images/images-layers";
+import ImagesLayers from "../../../src/layer-specification/images/images-layers";
+import { ImageMarkerOperator } from "../../../src/image-marker-operator";
 import { getImageMarkerTransition, IMAGE_GROUP_PAGING_DURATION } from "../../../src/layer-specification/images/image-marker-transition";
 import { MAP_IMAGE_GROUP_RING_RADIUS } from "../../../src/tinkers/images";
 import { createExpression } from "@maplibre/maplibre-gl-style-spec";
@@ -215,6 +210,19 @@ describe("Expanded map image groups", () => {
         expect(Math.hypot(centers[0][0] - centers[1][0], centers[0][1] - centers[1][1])).to.be.closeTo(58, 0.00001);
     });
 
+    it("leaves room for the corners of large square thumbnails in an expanded group", async () => {
+        const source = sourceFor(6);
+        for (const { properties } of source.features) {
+            properties.markerShape = "square";
+            properties.markerSizeScale = 1.2;
+        }
+        const expanded = await getGroupedImageSource(source, identity, identity, 0, 0);
+        expect(visibleIds(expanded)).to.have.length(6);
+        const [first, second] = expanded.features.map(({ geometry }) => geometry.coordinates);
+        const centerSpacing = Math.hypot(first[0] - second[0], first[1] - second[1]);
+        expect(centerSpacing).to.be.greaterThan(60 * Math.SQRT2);
+    });
+
     it("shifts a five-image window one image at a time and wraps in both directions", async () => {
         const source = sourceFor(23);
         for (const [offset, ids] of [
@@ -376,7 +384,7 @@ describe("Expanded map image groups", () => {
     });
 
     it("preserves the window when picking a group member and resets it on dismissal or a different group", async () => {
-        clearImageMarkerSelection();
+        const { shiftImageGroup, clearImageMarkerSelection, expandedImageGroupId$, imageGroupOffset$, selectMapImageMarker } = new ImageMarkerOperator();
         selectMapImageMarker(0, 23, 0);
         imageGroupOffset$.next(3);
         const source = await getGroupedImageSource(

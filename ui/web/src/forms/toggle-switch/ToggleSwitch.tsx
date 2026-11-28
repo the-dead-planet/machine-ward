@@ -6,13 +6,16 @@ import { Lamp } from "./Lamp";
 
 interface Props extends ToggleSwitchProps {
     labelledBy?: string;
+    inputRole?: 'menuitemcheckbox';
 }
 
 export const ToggleSwitch: FC<Omit<ComponentProps<'label'>, 'onChange'> & Props> = ({
     id,
     label,
+    labelPlacement = 'before',
     ariaLabel,
     labelledBy,
+    inputRole,
     color = DEFAULT_COLOR,
     glyphsShade,
     highlightColor = color,
@@ -57,6 +60,7 @@ export const ToggleSwitch: FC<Omit<ComponentProps<'label'>, 'onChange'> & Props>
                     [styles['disabled']]: disabled,
                     [styles['checked']]: checked,
                     [styles['highlighted']]: highlighted && !disabled,
+                    [styles['label-after']]: labelPlacement === 'after',
                 },
                 className
             )}
@@ -78,6 +82,9 @@ export const ToggleSwitch: FC<Omit<ComponentProps<'label'>, 'onChange'> & Props>
             <input
                 id={effectiveId}
                 type="checkbox"
+                role={inputRole}
+                aria-checked={inputRole ? checked : undefined}
+                aria-disabled={inputRole && disabled ? true : undefined}
                 aria-label={ariaLabel}
                 className={styles['input']}
                 checked={checked}

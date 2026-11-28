@@ -25,6 +25,7 @@ export const RouteName: FC<TopToolsProps<MobileMap> & MobileRouteStoryProps> = (
     map,
     data$,
     fileOperator,
+    resetStory,
     fitBoundsHandler,
 }) => {
     const [{ routeName, geojson }] = useSubjectState(data$);
@@ -77,7 +78,7 @@ export const RouteName: FC<TopToolsProps<MobileMap> & MobileRouteStoryProps> = (
                 type={acceptedFileTypes}
                 purgeText={purgeStoryText}
                 onUpload={(files) => fileOperator.uploadFile(files, map)}
-                onPurge={() => fileOperator.resetStory()}
+                onPurge={resetStory}
                 actionButtons={[
                     {
                         id: 'fit-bounds',

@@ -10,11 +10,12 @@ import {
     draggingPlacement$,
     updateImageDistanceFraction,
     getRoutePlacementAtPercent,
-    clearImageMarkerSelection,
+    ImageMarkerOperator,
 } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { WebMarkerImageData } from "../../../images/image-parser";
 
 interface Props {
+    imageMarkerOperator: ImageMarkerOperator;
     containerRef: RefObject<HTMLDivElement | null>;
     data$: BehaviorSubject<ParsingResultWithError>;
     routeGeometryData$: BehaviorSubject<RouteGeometryData | null>;
@@ -23,7 +24,8 @@ interface Props {
     animatrix: Animatrix;
 }
 
-export const useSliderMarkerDrag = ({ containerRef, data$, routeGeometryData$, routeTimes$, images$, animatrix }: Props) => {
+export const useSliderMarkerDrag = ({ containerRef, data$, routeGeometryData$, routeTimes$, images$, animatrix, imageMarkerOperator }: Props) => {
+    const { clearImageMarkerSelection } = imageMarkerOperator;
     const [draggingImage] = useSubjectState(draggingImage$);
     const [{ geojson }] = useSubjectState(data$);
     const [routeGeometryData] = useSubjectState(routeGeometryData$);
@@ -73,7 +75,7 @@ export const useSliderMarkerDrag = ({ containerRef, data$, routeGeometryData$, r
             window.removeEventListener("pointerup", pointerUpHandler);
             window.removeEventListener("pointercancel", pointerCancelHandler);
         };
-    }, [draggingImage, containerRef, images$, geojson, routeTimes, animationControls.playbackPacing, routeGeometryData]);
+    }, [draggingImage, containerRef, images$, geojson, routeTimes, animationControls.playbackPacing, routeGeometryData, clearImageMarkerSelection]);
 
     const beginDrag = (imageId: number, clientX: number) => {
         dragStartX.current = clientX;

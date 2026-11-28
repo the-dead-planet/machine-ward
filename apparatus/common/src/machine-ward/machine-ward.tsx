@@ -1,15 +1,17 @@
 import { ReactElement } from "react";
-import { pairwise, Subscription } from "rxjs";
+import { map, pairwise, Subscription } from "rxjs";
 import { MachineWardApp } from "./MachineWardApp";
 import { Individuator } from "./individuator";
 import { ChronoLens } from "./chrono-lens";
-import { AttributionVault, Cartomancer, SignaliumBureau, ToolsStation, Translatron } from "..";
+import { AttributionVault, Cartomancer, getActiveShortcutHints, SignaliumBureau, ToolsStation, Translatron } from "..";
 import { Engine } from "./engine";
 import { Gear } from "./gears";
 import { StorageKeeper } from "./storage-keeper";
 import { MachineGear, MachineTranslationKey, MachineWardComponents } from "./model";
 import { TranslationTable } from "./translatron";
 import { MediaSubscriptionDefinition } from "@ui";
+import { Keysmith } from "./keysmith";
+import type { SignaliumHint } from "./signalium-bureau/model";
 import * as Translations from "./translations";
 
 /**
@@ -35,6 +37,7 @@ export abstract class MachineWard<TMap = unknown, TChronoLens extends ChronoLens
     public readonly cartomancer: Cartomancer<TMap>;
     public readonly chronoLens: TChronoLens;
     public readonly toolsStation = new ToolsStation<TMap>();
+    public readonly keysmith = new Keysmith();
 
     private attributionVaultSubscription: Subscription | null = null;
     private readonly supportsBackdropBlur: boolean;
@@ -67,6 +70,7 @@ export abstract class MachineWard<TMap = unknown, TChronoLens extends ChronoLens
                         chronoLens: this.chronoLens,
                         cartomancer: this.cartomancer,
                         toolsStation: this.toolsStation,
+                        keysmith: this.keysmith,
                         translatron: this.translatron,
                     }));
                 }
@@ -75,7 +79,9 @@ export abstract class MachineWard<TMap = unknown, TChronoLens extends ChronoLens
         );
     }
 
-    private gearsSubscription: Subscription | null = null
+    private gearsSubscription: Subscription | null = null;
+    private keysmithHintsSubscription: Subscription | null = null;
+    private keysmithHintIds = new Set<string>();
 
     private initializeValves = () => {
         this.engine.openValves(this.engine.gears$.value);
@@ -92,6 +98,9 @@ export abstract class MachineWard<TMap = unknown, TChronoLens extends ChronoLens
         this.attributionVaultSubscription = this.subscribeAttributionVault();
         this.cartomancer.initialize(this.storageKeeper, this.translatron, this.toolsStation);
         this.initializeValves();
+        this.keysmithHintsSubscription = this.keysmith.shortcuts$
+            .pipe(map(getActiveShortcutHints))
+            .subscribe((hints) => this.publishKeysmithHints(hints));
     };
 
     public unmount = () => {
@@ -100,6 +109,23 @@ export abstract class MachineWard<TMap = unknown, TChronoLens extends ChronoLens
         this.attributionVaultSubscription?.unsubscribe();
         this.individuator.cleanUp();
         this.toolsStation.cleanUp();
+        this.keysmith.cleanUp();
+        this.keysmithHintsSubscription?.unsubscribe();
+        this.keysmithHintsSubscription = null;
+        this.keysmithHintIds.clear();
+    };
+
+    private publishKeysmithHints = (hints: ReadonlyMap<string, SignaliumHint>) => {
+        for (const id of this.keysmithHintIds) {
+            if (!hints.has(id)) {
+                this.signaliumBureau.setHint(id, null);
+            }
+        }
+
+        for (const [id, hint] of hints) {
+            this.signaliumBureau.setHint(id, hint);
+        }
+        this.keysmithHintIds = new Set(hints.keys());
     };
 
     private subscribeAttributionVault = (): Subscription => {
@@ -149,6 +175,7 @@ export abstract class MachineWard<TMap = unknown, TChronoLens extends ChronoLens
                 cartomancer={this.cartomancer}
                 chronoLens={this.chronoLens}
                 toolsStation={this.toolsStation}
+                keysmith={this.keysmith}
                 translatron={this.translatron}
                 engine={this.engine}
                 components={this.components}

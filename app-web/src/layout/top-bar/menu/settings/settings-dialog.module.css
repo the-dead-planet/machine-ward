@@ -19,9 +19,46 @@
     width: 100%;
 }
 
+.label {
+    position: relative;
+}
+
+.label[data-unsaved='true']::before,
+.inline-label[data-unsaved='true']::before {
+    content: '';
+    position: absolute;
+    inset-inline-start: -8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 4px;
+    background-color: var(--color-hazard);
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+.unsaved-count {
+    display: block;
+    padding-inline: 20px 8px;
+    overflow-wrap: anywhere;
+}
+
 .settings-checkbox {
-    width: 100%;
     text-transform: uppercase;
+}
+
+.checkbox-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
 }
 
 .option {

@@ -5,6 +5,7 @@ export * from './cartomancer';
 export * from './chrono-lens';
 export * from './tools-station';
 export * from './signalium-bureau';
+export * from './keysmith';
 export * from './translatron';
 export * from './engine';
 export * from './gears';

@@ -11,7 +11,15 @@ const fr: TranslationTable<IndividuatorTranslationKey>['fr'] = {
     imperial: 'Impérial (mi)',
     theme: 'Thème',
     "confirm-before-leave": 'Confirmer avant de quitter',
+    "enable-keyboard-shortcuts": 'Activer les raccourcis clavier',
+    "show-guide-hints": 'Afficher les conseils d’utilisation',
+    "go-to-keysmith": 'Ouvrir la forge des touches',
+    "go-to-individuator": 'Ouvrir l’individuateur',
     "debug-mode": 'Mode debug',
+    "unsaved-change": 'Modification non enregistrée',
+    "unsaved-change-count": '{{count}} modification non enregistrée',
+    "unsaved-changes-count": '{{count}} modifications non enregistrées',
+    "unsaved-changes-many-count": '{{count}} modifications non enregistrées',
 };
 
 export default fr;

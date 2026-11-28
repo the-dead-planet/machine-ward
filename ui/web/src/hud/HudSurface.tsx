@@ -11,7 +11,7 @@ import {
 } from "@ui";
 import surface from "./surface.module.css";
 
-type Props<Element extends "div" | "button" | "a" | "span" | "ul" | "li"> =
+type Props<Element extends "div" | "button" | "a" | "span" | "ul" | "li" | "kbd"> =
     Omit<AppearancePropsBase<SurfaceVariant>, "variant"> &
         Omit<
             ComponentProps<Element>,
@@ -26,7 +26,7 @@ type Props<Element extends "div" | "button" | "a" | "span" | "ul" | "li"> =
         };
 
 export const HudSurface = <
-    Element extends "div" | "button" | "a" | "span" | "ul" | "li",
+    Element extends "div" | "button" | "a" | "span" | "ul" | "li" | "kbd",
 >({
     as,
     variant,

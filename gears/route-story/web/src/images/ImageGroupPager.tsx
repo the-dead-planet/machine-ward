@@ -5,10 +5,11 @@ import classNames from "classnames";
 import { useMultipleTranslations } from "@apparatus";
 import { Button, Chip } from "@web-ui";
 import { FontType, Icons } from "@ui";
-import { shiftImageGroup, ImageGroupPagination, RouteStoryTranslationKey } from "@the-dead-planet/machine-ward-gears-route-story-common";
+import { ImageMarkerOperator, ImageGroupPagination, RouteStoryTranslationKey } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import styles from "./image-group-pager.module.css";
 
 interface Props {
+    imageMarkerOperator: ImageMarkerOperator;
     map: Map;
     pagination: ImageGroupPagination;
     gearId: string;
@@ -39,7 +40,8 @@ const usePagerMarker = (map: Map, lngLat: [number, number]) => {
     return element;
 };
 
-export const ImageGroupPager = ({ map, pagination, gearId }: Props) => {
+export const ImageGroupPager = ({ map, pagination, gearId, imageMarkerOperator }: Props) => {
+    const { shiftImageGroup } = imageMarkerOperator;
     const element = usePagerMarker(map, pagination.lngLat);
     const [previousLabel, nextLabel] = useMultipleTranslations([
         { n: gearId, t: RouteStoryTranslationKey.PreviousImages },

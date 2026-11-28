@@ -11,7 +11,15 @@ const ru: TranslationTable<IndividuatorTranslationKey>['ru'] = {
     imperial: 'Имперские (мили)',
     theme: 'Тема',
     "confirm-before-leave": 'Подтверждение перед выходом',
+    "enable-keyboard-shortcuts": 'Включить сочетания клавиш',
+    "show-guide-hints": 'Показывать подсказки',
+    "go-to-keysmith": 'Перейти в кузницу клавиш',
+    "go-to-individuator": 'Перейти к индивидуатору',
     "debug-mode": 'Режим отладки',
+    "unsaved-change": 'Несохранённое изменение',
+    "unsaved-change-count": '{{count}} несохранённое изменение',
+    "unsaved-changes-count": '{{count}} несохранённых изменения',
+    "unsaved-changes-many-count": '{{count}} несохранённых изменений',
 };
 
 export default ru;

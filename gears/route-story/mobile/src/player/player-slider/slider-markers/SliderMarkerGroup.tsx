@@ -8,7 +8,7 @@ import {
     draggingImage$,
     highlightIdsBySourceId$,
     imageSourceIds,
-    selectedImageId$,
+    ImageMarkerOperator,
     getRouteLngLatAtDistanceFraction,
     RouteGeometryData,
     RouteStoryTranslationKey,
@@ -30,6 +30,7 @@ const styles = StyleSheet.create({
 });
 
 interface Props {
+    imageMarkerOperator: ImageMarkerOperator;
     image: MarkerImage<MobileMarkerImageData>;
     imageIds: number[];
     percent: number;
@@ -42,8 +43,8 @@ interface Props {
     drag: SliderMarkerGestureHandlers;
 }
 
-export const SliderMarkerGroup: FC<Props> = ({ image, imageIds, percent, touchWidth, gearId, translationKey, map, data$, routeGeometryData$, drag }) => {
-    const [selectedImageId] = useSubjectState(selectedImageId$);
+export const SliderMarkerGroup: FC<Props> = ({ image, imageIds, percent, touchWidth, gearId, translationKey, map, data$, routeGeometryData$, drag, imageMarkerOperator }) => {
+    const [selectedImageId] = useSubjectState(imageMarkerOperator.selectedImageId$);
     const [draggingImage] = useSubjectState(draggingImage$);
     const [label] = useMultipleTranslations([{ n: gearId, t: translationKey.PanToImage }]);
     const isDragged = draggingImage?.id === image.id && draggingImage.interaction === "player";
@@ -81,6 +82,7 @@ export const SliderMarkerGroup: FC<Props> = ({ image, imageIds, percent, touchWi
                 />
             </Tooltip>
             <SliderMarker
+                imageMarkerOperator={imageMarkerOperator}
                 imageId={image.id}
                 imageIds={imageIds}
                 percent={percent}

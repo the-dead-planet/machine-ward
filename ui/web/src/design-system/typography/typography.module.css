@@ -68,7 +68,7 @@
 }
 
 .label {
-    font-size: 12px;
+    font-size: var(--typography-label-font-size);
 }
 
 .p {
@@ -113,6 +113,12 @@
 .usage-body {
     font-size: var(--typography-body-font-size);
     line-height: var(--typography-body-line-height);
+}
+
+.usage-label {
+    font-size: var(--typography-label-font-size);
+    line-height: var(--typography-label-line-height);
+    --typography-default-font-weight: var(--typography-label-font-weight);
 }
 
 .usage-caption {

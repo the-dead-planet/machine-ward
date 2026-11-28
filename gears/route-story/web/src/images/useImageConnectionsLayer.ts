@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { Map } from "maplibre-gl";
 import { useSubjectState } from "@tinker-chest";
 import { MapLayerData } from "@web-apparatus";
-import { imageLayerIds, ImagesLayers, imageSourceIds, selectedImageId$ } from "@the-dead-planet/machine-ward-gears-route-story-common";
+import { imageLayerIds, ImagesLayers, imageSourceIds, ImageMarkerOperator } from "@the-dead-planet/machine-ward-gears-route-story-common";
 
 export const useImageConnectionsLayer = (
     map: Map,
@@ -10,6 +10,7 @@ export const useImageConnectionsLayer = (
     imageColor: string,
     imageHoverColor: string,
     imageActiveColor: string,
+    { selectedImageId$ }: ImageMarkerOperator,
 ) => {
     const [selectedImageId] = useSubjectState(selectedImageId$);
     const updatedData = useMemo(

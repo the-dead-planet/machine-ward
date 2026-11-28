@@ -8,6 +8,7 @@ export const defaultRouteStoryState: RouteStoryState = {
     viewportRangePlayerVisibility: true,
     markerPlayerVisibility: true,
     markerLayerVisibility: true,
+    imageMarkerStyle: { shape: 'circle', size: 'medium' },
     routeStyleActive: {
         showRouteLine: true,
         showRoutePoints: false,
@@ -56,6 +57,7 @@ export const getDefaultRouteStoryState = (theme: Theme): RouteStoryState => {
         viewportRangePlayerVisibility: defaultRouteStoryState.viewportRangePlayerVisibility,
         markerPlayerVisibility: defaultRouteStoryState.markerPlayerVisibility,
         markerLayerVisibility: defaultRouteStoryState.markerLayerVisibility,
+        imageMarkerStyle: defaultRouteStoryState.imageMarkerStyle,
         routeStyleActive: {
             showRouteLine: true,
             showRoutePoints: false,

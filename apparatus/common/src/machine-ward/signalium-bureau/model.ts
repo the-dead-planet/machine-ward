@@ -1,4 +1,11 @@
-export type SignaliumNotice = GlitchSignaliumNotice | HazardSignaliumNotice | IntelSignaliumNotice;
+import type { TranslationId } from "../translatron";
+
+export type SignaliumNotice = GlitchSignaliumNotice | HazardSignaliumNotice | IntelSignaliumNotice | SecuredSignaliumNotice;
+
+export interface SignaliumHint {
+    text: TranslationId;
+    keys?: string[];
+}
 
 export interface BaseSignaliumNotice {
     id: string;
@@ -16,4 +23,8 @@ export interface HazardSignaliumNotice extends BaseSignaliumNotice {
 
 export interface IntelSignaliumNotice extends BaseSignaliumNotice {
     type: 'intel';
+}
+
+export interface SecuredSignaliumNotice extends BaseSignaliumNotice {
+    type: 'secured';
 }

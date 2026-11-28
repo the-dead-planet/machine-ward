@@ -3,12 +3,14 @@ import { Menu, MenuItem } from '@web-ui';
 import { getMachineMenuLinks, useTranslation } from '@apparatus';
 import { useWebMachineWard } from '@web-apparatus';
 import { T } from '@web-apparatus';
+import type { SizeVariant } from '@ui';
 import { SettingsDialog } from './settings/SettingsDialog';
+import { KeyboardShortcutsDialog } from './keyboard-shortcuts/KeyboardShortcutsDialog';
 import styles from './layout-menu.module.css';
 
-export const LayoutMenu: FC = () => {
+export const LayoutMenu: FC<{ size: SizeVariant }> = ({ size }) => {
     const { namespace, translationKey, individuator } = useWebMachineWard();
-    const [showIndividuatorDialog, setShowIndividuatorDialog] = useState(false);
+    const [openDialog, setOpenDialog] = useState<'individuator' | 'keyboard-shortcuts' | null>(null);
     const tooltip = useTranslation({ n: namespace, t: translationKey.Menu });
     const links = getMachineMenuLinks(window.location.hostname);
 
@@ -18,7 +20,7 @@ export const LayoutMenu: FC = () => {
                 aria-label={tooltip}
                 tooltip={tooltip}
                 iconActiveColor="secondary"
-                size="md"
+                size={size}
                 tooltipPlacement="bottom"
                 placement="bottom-right"
                 menuListClassName={styles['menu']}
@@ -28,12 +30,20 @@ export const LayoutMenu: FC = () => {
                     isFirst
                     type="button"
                     closeOnPress
-                    onClick={() => setShowIndividuatorDialog(true)}
+                    onClick={() => setOpenDialog('individuator')}
                 >
                     <T
                         n={individuator.namespace}
                         t={individuator.translationKey.IndividuatorName}
                     />
+                </MenuItem>
+                <MenuItem
+                    key="keyboard-shortcuts"
+                    type="button"
+                    closeOnPress
+                    onClick={() => setOpenDialog('keyboard-shortcuts')}
+                >
+                    <T n={namespace} t={translationKey.KeyboardShortcuts} />
                 </MenuItem>
                 <MenuItem
                     key="component-library"
@@ -74,9 +84,16 @@ export const LayoutMenu: FC = () => {
                     <T n={namespace} t={translationKey.Privacy} />
                 </MenuItem>
             </Menu>
-            {showIndividuatorDialog ? (
+            {openDialog === 'individuator' ? (
                 <SettingsDialog
-                    onClose={() => setShowIndividuatorDialog(false)}
+                    onClose={() => setOpenDialog(null)}
+                    onOpenKeyboardShortcuts={() => setOpenDialog('keyboard-shortcuts')}
+                />
+            ) : null}
+            {openDialog === 'keyboard-shortcuts' ? (
+                <KeyboardShortcutsDialog
+                    onClose={() => setOpenDialog(null)}
+                    onOpenIndividuator={() => setOpenDialog('individuator')}
                 />
             ) : null}
         </>

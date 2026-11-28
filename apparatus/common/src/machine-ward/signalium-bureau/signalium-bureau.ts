@@ -1,5 +1,5 @@
 import { BehaviorSubject } from "rxjs";
-import { SignaliumNotice } from "./model";
+import { SignaliumHint, SignaliumNotice } from "./model";
 
 /**
  * Manages notices displayed to user.
@@ -12,9 +12,20 @@ export class SignaliumBureau {
      */
     private defaultExpirationTime = 10000;
     public notices$ = new BehaviorSubject<SignaliumNotice[]>([]);
+    public readonly hints$ = new BehaviorSubject<ReadonlyMap<string, SignaliumHint>>(new Map());
     private expirationTimeouts = new Map<string, Timer>();
 
-    public constructor() { }
+    public constructor() {}
+
+    public setHint = (id: string, hint: SignaliumHint | null) => {
+        const hints = new Map(this.hints$.value);
+        if (hint === null) {
+            hints.delete(id);
+        } else {
+            hints.set(id, hint);
+        }
+        this.hints$.next(hints);
+    };
 
     /**
      * If `notice.id` is not unique, will replace existing one.

@@ -25,7 +25,7 @@ export const ImageDragPreview = ({
     return (
         <GeoJSONSource
             id={imageSourceIds.dragPreview}
-            data={getImageDragPreviewSource(source, image?.id ?? null, visible ? placement : null)}
+            data={getImageDragPreviewSource(source, image?.interaction === "player" ? image.id : null, visible ? placement : null)}
         >
             <Layer
                 type="symbol"
