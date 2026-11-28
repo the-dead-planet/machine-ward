@@ -1,10 +1,9 @@
 import { useEffect, useEffectEvent, useMemo, useState } from "react";
-import { GeoJson, useSubjectState } from "@tinker-chest";
+import { useSubjectState } from "@tinker-chest";
 import {
     draggingImage$,
     draggingPlacement$,
     getImageSourceWithAnchors,
-    getRouteLngLatAtDistanceFraction,
     IMAGE_DRAG_ORIGIN_OPACITY,
     ImageFeature,
     ImageMarkerSource,
@@ -14,7 +13,7 @@ import {
 const DRAG_ORIGIN_IMAGE_ID = -2;
 const emptyOrigin: ImageFeature[] = [];
 
-export const useMapImageDragSource = (source: ImageMarkerSource, originalSource: ImageMarkerSource, geojson: GeoJson | undefined, route: RouteGeometryData | null) => {
+export const useMapImageDragSource = (source: ImageMarkerSource, originalSource: ImageMarkerSource, route: RouteGeometryData | null) => {
     const [image] = useSubjectState(draggingImage$);
     const [placement] = useSubjectState(draggingPlacement$);
     const imageId = image?.interaction === "map" ? image.id : null;
@@ -51,16 +50,15 @@ export const useMapImageDragSource = (source: ImageMarkerSource, originalSource:
 
     // Keep the same feature and layer when switching from the drag size to the saved size.
     const dragSource = useMemo((): ImageMarkerSource => {
-        if (imageId === null || !placement || !geojson || !route) {
+        if (imageId === null || !placement || !route) {
             return source;
         }
-        const { distanceFraction } = placement;
-        const { lng, lat } = getRouteLngLatAtDistanceFraction(geojson, route, distanceFraction);
+        const { distanceFraction, lngLat } = placement;
         return {
             ...source,
             features: source.features.map((feature) => feature.properties.imageId !== imageId ? feature : {
                 ...feature,
-                geometry: { type: "Point", coordinates: [lng, lat] },
+                geometry: { type: "Point", coordinates: [lngLat.lng, lngLat.lat] },
                 properties: {
                     ...feature.properties,
                     distanceFromStartMeters: distanceFraction * route.totalDistanceMeters,
@@ -77,7 +75,7 @@ export const useMapImageDragSource = (source: ImageMarkerSource, originalSource:
                 },
             }),
         };
-    }, [source, imageId, placement, geojson, route]);
+    }, [source, imageId, placement, route]);
 
     return { dragSource, dragOrigin: dragSource === source ? emptyOrigin : origin };
 };

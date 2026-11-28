@@ -66,7 +66,7 @@ export const ImagesLayer: FC<OverlayComponentProps<MobileMap> & MobileRouteStory
     const { groupedSource: targetSource, hitTargets, paginationTarget } = useImageMarkerSource(map, originalSource, displayImageId !== null, imageMarkerOperator);
     const reducedMotion = useReducedMotion();
     const paginationDimensions = useRef<ImageGroupPagerDimensions | null>(null);
-    const { dragSource, dragOrigin } = useMapImageDragSource(targetSource, originalSource, geojson, routeGeometryData);
+    const { dragSource, dragOrigin } = useMapImageDragSource(targetSource, originalSource, routeGeometryData);
     const groupedSource = useAnimatedImageMarkerSource(dragSource, reducedMotion);
     const visibleSource = useMemo(() => getImageSourceWithMarkerVisibility(groupedSource, markerLayerVisibility), [groupedSource, markerLayerVisibility]);
     const connections = useImageMarkerConnections(originalSource, visibleSource);

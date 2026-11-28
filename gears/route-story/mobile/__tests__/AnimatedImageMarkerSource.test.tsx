@@ -1,17 +1,10 @@
 import { act, renderHook } from "@testing-library/react-native";
-import type { GeoJson } from "@tinker-chest";
 import type { RouteGeometryData } from "@the-dead-planet/machine-ward-gears-route-story-common";
 import { ImageMarkerSource } from "@the-dead-planet/machine-ward-gears-route-story-common/src/layer-specification/images/images-sources";
 import { useAnimatedImageMarkerSource } from "@the-dead-planet/machine-ward-gears-route-story-common/src/layer-specification/images/useAnimatedImageMarkerSource";
 import { getGroupedImageSource, getImageMarkerConnections } from "@the-dead-planet/machine-ward-gears-route-story-common/src/layer-specification/images/grouped-image-source";
 import { draggingImage$, draggingPlacement$ } from "@the-dead-planet/machine-ward-gears-route-story-common/src/layer-specification/images/images-layers";
 import { useMapImageDragSource } from "../src/images/useMapImageDragSource";
-
-jest.mock("@the-dead-planet/machine-ward-gears-route-story-common", () => ({
-    ...jest.requireActual("../../common/src/layer-specification/images/images-layers"),
-    ...jest.requireActual("../../common/src/layer-specification/images/images-sources"),
-    getRouteLngLatAtDistanceFraction: () => ({ lng: 10, lat: 10 }),
-}));
 
 test("animates paging, reverses from the displayed frame, and skips paging motion when reduced", async () => {
     jest.useFakeTimers();
@@ -191,7 +184,6 @@ test("commits a drag release immediately when placement animation is disabled, w
 
 test("shrinks the dropped marker in place without fading it", async () => {
     jest.useFakeTimers();
-    const geojson: GeoJson = { type: "FeatureCollection", features: [] };
     const route: RouteGeometryData = {
         spline: { type: "Feature", geometry: { type: "LineString", coordinates: [] }, properties: {} },
         lookup: [],
@@ -216,10 +208,11 @@ test("shrinks the dropped marker in place without fading it", async () => {
     draggingImage$.next({ id: 1, interaction: "map" });
     draggingPlacement$.next({ distanceFraction: 0.5, lngLat: { lng: 10, lat: 10 } });
     const hook = await renderHook(({ source }: { source: ImageMarkerSource }) => {
-        const { dragSource, dragOrigin } = useMapImageDragSource(source, source, geojson, route);
+        const { dragSource, dragOrigin } = useMapImageDragSource(source, source, route);
         return { marker: useAnimatedImageMarkerSource(dragSource, false).features[0], dragOrigin };
     }, { initialProps: { source: sourceAt(0, 0) } });
     try {
+        expect(hook.result.current.marker.geometry.coordinates).toEqual([10, 10]);
         expect(hook.result.current.marker.properties.markerScale).toBe(1.1);
         expect(hook.result.current.dragOrigin).toEqual([
             expect.objectContaining({ geometry: { type: "Point", coordinates: [0, 0] }, properties: expect.objectContaining({ markerOpacity: 0.4 }) }),

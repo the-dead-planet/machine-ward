@@ -18,7 +18,8 @@ export const NoticesTopToolbar: FC = () => {
     const popupId = useId();
     const title = translate({ n: namespace, t: translationKey.Notices });
     const hasNotices = notices.length > 0;
-    const { toolbarRef, bodyRef, height } = useToolbarHeight(hasNotices);
+    const showNoticeRow = hasNotices || reader.snapshot !== null;
+    const { toolbarRef, bodyRef, height } = useToolbarHeight(showNoticeRow);
 
     return (
         <>
@@ -33,7 +34,7 @@ export const NoticesTopToolbar: FC = () => {
             >
                 <div className={machineStyles.content}>
                     <div data-testid="notices-body" ref={bodyRef}>
-                        {hasNotices ? (
+                        {showNoticeRow ? (
                             <div className={styles["notice-row"]}>
                                 <NoticeTicker notices={notices} onRemove={onRemove} />
                                 <NoticeSummary

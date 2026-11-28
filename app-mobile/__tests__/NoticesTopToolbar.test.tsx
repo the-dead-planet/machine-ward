@@ -76,7 +76,7 @@ test("counts present notice types and keeps opened messages after expiration", a
 
     mockNotices = [];
     await screen.rerender(<NoticesTopToolbar />);
-    expect(screen.queryByRole("button", { name: /Notices/ })).toBeNull();
+    expect(screen.getByRole("button", { name: /Notices/ })).toBeVisible();
     expect(within(screen.getByTestId("notice-popup")).getByText("Copied")).toBeVisible();
     expect(within(screen.getByTestId("notice-popup")).getByText("Map failed No tiles")).toBeVisible();
     expect(within(screen.getByTestId("notice-popup")).getByText("Saved successfully")).toBeVisible();

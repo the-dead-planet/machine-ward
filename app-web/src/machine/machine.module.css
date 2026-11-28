@@ -100,6 +100,12 @@
     transition: height 0.25s ease;
 }
 
+@media (prefers-reduced-motion: reduce) {
+    .toolbar.top {
+        transition: none;
+    }
+}
+
 .toolbar.top .content {
     box-sizing: border-box;
     container-type: inline-size;

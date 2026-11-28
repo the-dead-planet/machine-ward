@@ -38,7 +38,8 @@ export const NoticesTopToolbar: FC = () => {
     const secondary = theme.color('secondary');
     const reducedMotion = useReducedMotion();
     const hasNotices = notices.length > 0;
-    const { height, setContentHeight } = useToolbarHeight(hasNotices, reducedMotion);
+    const showNoticeRow = hasNotices || reader.snapshot !== null;
+    const { height, setContentHeight } = useToolbarHeight(showNoticeRow, reducedMotion);
 
     return (
         <>
@@ -52,7 +53,7 @@ export const NoticesTopToolbar: FC = () => {
                     style={[styles.toolbar, { backgroundColor: withColorOpacity(appearance.surface, 0.87) }]}
                     onLayout={(event) => setContentHeight(event.nativeEvent.layout.height)}
                 >
-                    {hasNotices ? (
+                    {showNoticeRow ? (
                         <View style={styles.noticeRow}>
                             <NoticeTicker glyphs={appearance.glyphs} notices={notices} onRemove={onRemove} />
                             <NoticeSummary
@@ -61,7 +62,7 @@ export const NoticesTopToolbar: FC = () => {
                                 expanded={reader.snapshot !== null}
                                 secondary={secondary}
                                 title={title}
-                                onPress={reader.open}
+                                onPress={reader.snapshot ? reader.close : reader.open}
                             />
                         </View>
                     ) : null}
