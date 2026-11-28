@@ -61,7 +61,7 @@ test("shrinks a maximized secondary panel when notices or bottom content take mo
     await fireEvent(screen.getByTestId('notices'), 'layout', { nativeEvent: { layout: { height: 0 } } });
     expect(mockToolsStation.panelLayout$.value.bottomSecondaryHeight).toBe(370);
     await screen.unmount();
-    expect(mockToolsStation.toolbarHeights$.value).toEqual({ topBar: 40, notices: 0, bottomPanel: 0 });
+    expect(mockToolsStation.measuredToolbarHeights$.value).toEqual({ topBar: 40, notices: 0, bottomPanel: 0 });
 });
 
 test("preserves the collapsed panel preference and clamps it when reopened", async () => {

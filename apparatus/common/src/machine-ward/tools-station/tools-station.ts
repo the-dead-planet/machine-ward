@@ -64,7 +64,7 @@ export class ToolsStation<TMap> {
     public activeBottomPanelToolId$ = new BehaviorSubject<string | null>(null);
     public activeBottomSecondaryPanelToolId$ = new BehaviorSubject<string | null>(null);
 
-    public readonly toolbarHeights$ = new BehaviorSubject<Record<ReservedToolbar, number>>({
+    public readonly measuredToolbarHeights$ = new BehaviorSubject<Record<ReservedToolbar, number>>({
         topBar: 0,
         notices: 0,
         bottomPanel: 0,
@@ -84,11 +84,11 @@ export class ToolsStation<TMap> {
      * (top bar, notice toolbar and bottom tool panel).
      */
     public getReservedToolbarHeight = (): number =>
-        Object.values(this.toolbarHeights$.value).reduce((total, height) => total + height, 0);
+        Object.values(this.measuredToolbarHeights$.value).reduce((total, height) => total + height, 0);
 
     public setToolbarHeight = (toolbar: ReservedToolbar, height: number): void => {
-        if (this.toolbarHeights$.value[toolbar] !== height) {
-            this.toolbarHeights$.next({ ...this.toolbarHeights$.value, [toolbar]: height });
+        if (this.measuredToolbarHeights$.value[toolbar] !== height) {
+            this.measuredToolbarHeights$.next({ ...this.measuredToolbarHeights$.value, [toolbar]: height });
         }
     };
 
