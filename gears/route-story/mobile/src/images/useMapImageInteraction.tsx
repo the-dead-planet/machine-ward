@@ -214,15 +214,14 @@ export const useMapImageInteraction = (
                     selectMapImageMarker(gesture.imageId, gesture.groupSize, gesture.groupId);
                     return;
                 }
-                let placement = gesture.placement;
-                if (!placement && geojson && map.map$.value) {
+                if (geojson && map.map$.value) {
                     const { locationX, locationY } = event.nativeEvent;
                     const [offsetX, offsetY] = map.panResponderOffset;
                     const coordinate = await map.map$.value.unproject([locationX + offsetX, locationY + offsetY]);
-                    placement = getRoutePlacement({ lng: coordinate[0], lat: coordinate[1] }, geojson, routeGeometryData) ?? undefined;
-                }
-                if (placement && gestureRef.current === gesture) {
-                    updateImageDistanceFraction(images$, gesture.imageId, placement.distanceFraction);
+                    const placement = getRoutePlacement({ lng: coordinate[0], lat: coordinate[1] }, geojson, routeGeometryData);
+                    if (placement && gestureRef.current === gesture) {
+                        updateImageDistanceFraction(images$, gesture.imageId, placement.distanceFraction);
+                    }
                 }
             } finally {
                 if (gestureRef.current === gesture) {
