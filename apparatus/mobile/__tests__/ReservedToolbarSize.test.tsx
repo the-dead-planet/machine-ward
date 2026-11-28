@@ -38,10 +38,11 @@ beforeEach(() => {
         placement: 'left',
         title: { n: 'test', t: 'controls' },
         contentComponent: () => null,
+        icon: '',
     });
     mockToolsStation.activeLeftPanelToolId$.next(null);
     mockToolsStation.activeBottomSecondaryPanelToolId$.next('controls');
-    mockToolsStation.panelWidths$.next({ leftWidth: 100, rightWidth: 100, bottomSecondaryHeight: 500 });
+    mockToolsStation.panelLayout$.next({ leftWidth: 100, rightWidth: 100, bottomSecondaryHeight: 500 });
 });
 
 afterAll(() => mockToolsStation.cleanUp());
@@ -49,16 +50,16 @@ afterAll(() => mockToolsStation.cleanUp());
 test("shrinks a maximized secondary panel when notices or bottom content take more room", async () => {
     const screen = await render(<ToolbarLayout />);
     await fireEvent(screen.getByTestId('bottom'), 'layout', { nativeEvent: { layout: { height: 60 } } });
-    expect(mockToolsStation.panelWidths$.value.bottomSecondaryHeight).toBe(500);
+    expect(mockToolsStation.panelLayout$.value.bottomSecondaryHeight).toBe(500);
 
     await fireEvent(screen.getByTestId('notices'), 'layout', { nativeEvent: { layout: { height: 30 } } });
-    expect(mockToolsStation.panelWidths$.value.bottomSecondaryHeight).toBe(470);
+    expect(mockToolsStation.panelLayout$.value.bottomSecondaryHeight).toBe(470);
 
     await fireEvent(screen.getByTestId('bottom'), 'layout', { nativeEvent: { layout: { height: 160 } } });
-    expect(mockToolsStation.panelWidths$.value.bottomSecondaryHeight).toBe(370);
+    expect(mockToolsStation.panelLayout$.value.bottomSecondaryHeight).toBe(370);
 
     await fireEvent(screen.getByTestId('notices'), 'layout', { nativeEvent: { layout: { height: 0 } } });
-    expect(mockToolsStation.panelWidths$.value.bottomSecondaryHeight).toBe(370);
+    expect(mockToolsStation.panelLayout$.value.bottomSecondaryHeight).toBe(370);
     await screen.unmount();
     expect(mockToolsStation.toolbarHeights$.value).toEqual({ topBar: 40, notices: 0, bottomPanel: 0 });
 });
@@ -68,9 +69,9 @@ test("preserves the collapsed panel preference and clamps it when reopened", asy
     const screen = await render(<ToolbarLayout />);
     await fireEvent(screen.getByTestId('bottom'), 'layout', { nativeEvent: { layout: { height: 60 } } });
     await fireEvent(screen.getByTestId('notices'), 'layout', { nativeEvent: { layout: { height: 30 } } });
-    expect(mockToolsStation.panelWidths$.value.bottomSecondaryHeight).toBe(500);
+    expect(mockToolsStation.panelLayout$.value.bottomSecondaryHeight).toBe(500);
 
     await act(() => mockToolsStation.activeBottomSecondaryPanelToolId$.next('controls'));
-    expect(mockToolsStation.panelWidths$.value.bottomSecondaryHeight).toBe(470);
+    expect(mockToolsStation.panelLayout$.value.bottomSecondaryHeight).toBe(470);
     await screen.unmount();
 });

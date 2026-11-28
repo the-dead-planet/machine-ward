@@ -29,19 +29,19 @@ export const useToolPanelSizeClamp = () => {
         const leftState: PanelState = {
             hasToolPanels: leftHasToolPanels,
             isCollapsed: leftActiveId === null,
-            storedSize: toolsStation.panelWidths$.value.leftWidth,
+            storedSize: toolsStation.panelLayout$.value.leftWidth,
         };
         const rightState: PanelState = {
             hasToolPanels: rightHasToolPanels,
             isCollapsed: rightActiveId === null,
-            storedSize: toolsStation.panelWidths$.value.rightWidth,
+            storedSize: toolsStation.panelLayout$.value.rightWidth,
         };
         const bottomSecondaryState: PanelState = {
             hasToolPanels: leftHasToolPanels || rightHasToolPanels,
             isCollapsed: bottomSecondaryActiveId === null,
-            storedSize: toolsStation.panelWidths$.value.bottomSecondaryHeight,
+            storedSize: toolsStation.panelLayout$.value.bottomSecondaryHeight,
         };
-        const prev = toolsStation.panelWidths$.value;
+        const prev = toolsStation.panelLayout$.value;
         const next = clampPanelLayout(
             prev,
             leftState,
@@ -54,7 +54,7 @@ export const useToolPanelSizeClamp = () => {
         );
 
         if (next !== prev) {
-            toolsStation.panelWidths$.next(next);
+            toolsStation.panelLayout$.next(next);
         }
     }, [
         media.windowWidth,

@@ -20,7 +20,7 @@ export const useBottomSecondaryToolPanelResizeHandle = (
         onDraggingChange?.(true);
         const activeBottomSecondaryId = toolsStation.activeBottomSecondaryPanelToolId$.value;
         const isCollapsed = activeBottomSecondaryId === null;
-        const storedHeight = isCollapsed ? LAYOUT_MINS.panels.bottomSecondary : toolsStation.panelWidths$.value.bottomSecondaryHeight;
+        const storedHeight = isCollapsed ? LAYOUT_MINS.panels.bottomSecondary : toolsStation.panelLayout$.value.bottomSecondaryHeight;
         const heightClampMin = LAYOUT_MINS.panels.bottomSecondary;
         const clampedStored = clampBottomSecondaryHeight(storedHeight, theme.media$.value.windowHeight, toolsStation.getReservedToolbarHeight());
         bottomSecondaryDragStateRef.current = {
@@ -48,11 +48,11 @@ export const useBottomSecondaryToolPanelResizeHandle = (
         const willExpand = isCollapsed && newHeight > ds.panelMin && effectivePanels.length > 0;
 
         if (!willCollapse) {
-            const currentStored = toolsStation.panelWidths$.value.bottomSecondaryHeight;
+            const currentStored = toolsStation.panelLayout$.value.bottomSecondaryHeight;
 
             if (newHeight !== currentStored) {
-                toolsStation.panelWidths$.next({
-                    ...toolsStation.panelWidths$.value,
+                toolsStation.panelLayout$.next({
+                    ...toolsStation.panelLayout$.value,
                     bottomSecondaryHeight: newHeight,
                 });
             }
@@ -61,8 +61,8 @@ export const useBottomSecondaryToolPanelResizeHandle = (
         if (willExpand) {
             toolsStation.activeBottomSecondaryPanelToolId$.next(effectivePanels[0].id);
         } else if (willCollapse) {
-            toolsStation.panelWidths$.next({
-                ...toolsStation.panelWidths$.value,
+            toolsStation.panelLayout$.next({
+                ...toolsStation.panelLayout$.value,
                 bottomSecondaryHeight: ds.startHeight,
             });
             toolsStation.activeBottomSecondaryPanelToolId$.next(null);

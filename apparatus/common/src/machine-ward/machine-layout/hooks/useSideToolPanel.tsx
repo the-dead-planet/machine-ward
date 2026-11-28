@@ -15,7 +15,7 @@ export const useSideToolPanel = (
 ) => {
     const { toolsStation, namespace, translationKey } = useMachineWard();
     const theme = useTheme();
-    const [panelWidths, setPanelWidths] = useSubjectState(toolsStation.panelWidths$);
+    const [panelLayout, setPanelLayout] = useSubjectState(toolsStation.panelLayout$);
     const toolPanels = useObservableState(toolsStation.toolPanelsByPlacement$, []);
     const toolPanelsByPlacement = toolsStation.getToolPanelsByPlacement(toolPanels);
     const toolIcons = useObservableState(toolsStation.toolIconsByPlacement$, []);
@@ -27,7 +27,7 @@ export const useSideToolPanel = (
     const isCollapsed = activeId === null;
     const isLeft = placement === 'left';
     const panelMin = isLeft ? LAYOUT_MINS.panels.left : LAYOUT_MINS.panels.right;
-    const currentWidth = !show ? 0 : isCollapsed ? panelMin : (isLeft ? panelWidths.leftWidth : panelWidths.rightWidth);
+    const currentWidth = !show ? 0 : isCollapsed ? panelMin : (isLeft ? panelLayout.leftWidth : panelLayout.rightWidth);
 
     const handleSidePanelActiveIdChange = (newId: string | null) => {
         onActiveIdChange(newId);
@@ -41,16 +41,16 @@ export const useSideToolPanel = (
                 : toolPanelsByPlacement.left.length > 0;
             const otherWidth = otherCollapsed
                 ? (isLeft ? LAYOUT_MINS.panels.right : LAYOUT_MINS.panels.left)
-                : (otherHasPanels ? (isLeft ? panelWidths.rightWidth : panelWidths.leftWidth) : 0);
+                : (otherHasPanels ? (isLeft ? panelLayout.rightWidth : panelLayout.leftWidth) : 0);
             const thisMin = isLeft ? LAYOUT_MINS.panels.left : LAYOUT_MINS.panels.right;
-            const thisStoredWidth = isLeft ? panelWidths.leftWidth : panelWidths.rightWidth;
+            const thisStoredWidth = isLeft ? panelLayout.leftWidth : panelLayout.rightWidth;
             const iconsReserved = (toolIconsByPlacement.left.length > 0 ? LAYOUT_DEFAULTS.icons.left : 0) + (toolIconsByPlacement.right.length > 0 ? LAYOUT_DEFAULTS.icons.right : 0);
             const column3Min = Math.max(LAYOUT_MINS.tools.top, LAYOUT_MINS.remainingArea.width);
             const maxAvailable = theme.media$.value.windowWidth - otherWidth - iconsReserved - column3Min;
             const clampedWidth = Math.min(Math.max(thisStoredWidth, thisMin), maxAvailable);
             const targetWidth = clampedWidth < thisMin * 2 ? LAYOUT_DEFAULTS.panels[placement] : clampedWidth;
 
-            setPanelWidths((prev) => calculateExpandToDefault(
+            setPanelLayout((prev) => calculateExpandToDefault(
                 targetWidth,
                 otherWidth,
                 thisMin,

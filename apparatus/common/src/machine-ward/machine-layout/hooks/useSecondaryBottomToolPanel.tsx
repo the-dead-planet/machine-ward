@@ -9,7 +9,7 @@ export const useSecondaryBottomToolPanel = (
 ) => {
     const { toolsStation } = useMachineWard();
     const theme = useTheme();
-    const [panelWidths, setPanelWidths] = useSubjectState(toolsStation.panelWidths$);
+    const [panelLayout, setPanelLayout] = useSubjectState(toolsStation.panelLayout$);
     const toolPanels = useObservableState(toolsStation.toolPanelsByPlacement$, []);
     const toolPanelsByPlacement = toolsStation.getToolPanelsByPlacement(toolPanels);
     const effectivePanels = toolPanelsByPlacement["left"].concat(toolPanelsByPlacement["right"]);
@@ -21,19 +21,19 @@ export const useSecondaryBottomToolPanel = (
         ? 0
         : isCollapsed
             ? LAYOUT_MINS.panels.bottomSecondary
-            : panelWidths.bottomSecondaryHeight;
+            : panelLayout.bottomSecondaryHeight;
 
     const handleToolSelect = (newId: string | null) => {
         onActiveIdChange(newId);
 
         if (newId !== null) {
             const thisMin = LAYOUT_MINS.panels.bottomSecondary;
-            const requestedHeight = panelWidths.bottomSecondaryHeight < thisMin * 2
+            const requestedHeight = panelLayout.bottomSecondaryHeight < thisMin * 2
                 ? LAYOUT_DEFAULTS.panels.bottomSecondary
-                : panelWidths.bottomSecondaryHeight;
+                : panelLayout.bottomSecondaryHeight;
             const targetHeight = clampBottomSecondaryHeight(requestedHeight, theme.media$.value.windowHeight, toolsStation.getReservedToolbarHeight());
 
-            setPanelWidths((prev) => ({
+            setPanelLayout((prev) => ({
                 ...prev,
                 bottomSecondaryHeight: targetHeight,
             }));

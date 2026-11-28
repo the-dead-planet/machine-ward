@@ -92,7 +92,7 @@ export class ToolsStation<TMap> {
         }
     };
 
-    public panelWidths$ = new BehaviorSubject<PanelLayout>({ leftWidth: 360, rightWidth: 360, bottomSecondaryHeight: 300 });
+    public panelLayout$ = new BehaviorSubject<PanelLayout>({ leftWidth: 360, rightWidth: 360, bottomSecondaryHeight: 300 });
 
     /**
      * Tools to display in icons around the map.
