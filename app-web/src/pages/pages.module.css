@@ -5,9 +5,9 @@
     flex: 1;
     justify-content: center;
     align-items: center;
-    background-color: rgb(30, 31, 31);
-    color: rgb(224, 224, 224);
-    font-family: Sixtyfour, Space Grotesk, Arial, sans-serif;
+    background-color: var(--appearance-default-surface, var(--startup-background));
+    color: var(--appearance-default-glyphs, var(--startup-color));
+    font-family: var(--font-special-messaging, "Syne Mono", monospace);
 }
 
 .text {

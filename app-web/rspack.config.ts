@@ -1,6 +1,20 @@
 import path from "path";
 import rspack, { Configuration } from "@rspack/core";
 import GearRegistryGenerator from "./rspack.gears";
+import { themeSpecifications } from "@the-dead-planet/machine-ward-ui-common/src/design-system/theme/specifications";
+import { RGBColor, ThemeName } from "@the-dead-planet/machine-ward-ui-common/src/design-system/theme/model";
+
+const toCssColor = ({ r, g, b }: RGBColor): string => `rgb(${r}, ${g}, ${b})`;
+const startupThemes = Object.fromEntries(Object.entries(themeSpecifications).map(([name, modes]) => [
+    name,
+    Object.fromEntries(Object.entries(modes).map(([mode, specification]) => [
+        mode,
+        {
+            background: toCssColor(specification.colors.neutral[mode === 'light' ? 100 : 900]),
+            color: toCssColor(specification.colors.neutral[mode === 'light' ? 900 : 100]),
+        },
+    ])),
+]));
 
 export type Env = {
     production?: boolean;
@@ -94,6 +108,10 @@ export const baseConfig = (_env: Env, argv: Argv): Configuration => ({
             filename: 'index.html',
             template: './src/index.html',
             favicon: "./public/favicon.ico",
+            templateParameters: {
+                startupThemes: JSON.stringify(startupThemes).replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll('<', '&lt;'),
+                defaultThemeName: ThemeName.Default,
+            },
             inject: 'body'
         }),
         new rspack.CopyRspackPlugin({

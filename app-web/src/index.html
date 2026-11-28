@@ -10,14 +10,54 @@
     <meta name="description" content="The Dead Planet's Machine Ward" />
     <link rel="apple-touch-icon" href="logo192.png" />
     <link rel="manifest" href="manifest.json" />
+    <link rel="stylesheet" href="/fonts.css" />
     <title>The Dead Planet's Machine Ward</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: var(--startup-background, rgb(30, 31, 31));
+            color: var(--startup-color, rgb(224, 224, 224));
+        }
+
+        #startup-placeholder {
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            min-height: 100svh;
+            flex: 1;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--startup-background, rgb(30, 31, 31));
+            color: var(--startup-color, rgb(224, 224, 224));
+            font-family: "Syne Mono", monospace;
+        }
+
+        #startup-placeholder p {
+            margin: 0;
+        }
+    </style>
+    <script data-themes="<%= startupThemes %>" data-default-theme="<%= defaultThemeName %>">
+        (() => {
+            const themes = JSON.parse(document.currentScript.dataset.themes);
+            const defaultThemeName = document.currentScript.dataset.defaultTheme;
+            let settings;
+            try {
+                settings = JSON.parse(localStorage.getItem('application-settings'));
+            } catch { }
+            const themeName = Object.hasOwn(themes, settings?.themeName) ? settings.themeName : defaultThemeName;
+            const mode = settings?.themeMode === 'light' ? 'light' : 'dark';
+            const colors = themes[themeName][mode];
+            document.documentElement.style.setProperty('--startup-background', colors.background);
+            document.documentElement.style.setProperty('--startup-color', colors.color);
+            document.querySelector('meta[name="theme-color"]').content = colors.background;
+        })();
+    </script>
 </head>
 
-<body style="margin:0;background-color:black;">
+<body>
     <div id="app">
-        <div
-            style="padding:20px;box-sizing:border-box;display:flex;flex:1;align-items:center;justify-content:center;background-color:rgb(30, 31, 31);color:rgb(224, 224, 224);font-family:Sixtyfour,Space Grotesk,Arial,sans-serif">
-            <p style="margin:0">...</p>
+        <div id="startup-placeholder" role="status" aria-label="Loading">
+            <p>...</p>
         </div>
     </div>
 </body>
