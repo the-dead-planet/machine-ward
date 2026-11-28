@@ -72,6 +72,7 @@ export enum MachineTranslationKey {
     Attributions = 'attributions',
     UnderConstruction = 'under-construction',
     PoweringUpMachineWard = 'powering-up-machine-ward',
+    StartupWelcome = 'startup-welcome',
     KeyboardShortcuts = 'keyboard-shortcuts',
     Keysmith = 'keysmith',
     Label = 'label',

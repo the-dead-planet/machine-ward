@@ -85,7 +85,7 @@ export class Individuator {
         timeFormat: this.defaultTimeFormat,
         locale: this.getPreferredLocale(),
         distanceUnit: this.getPreferredDistanceUnit(),
-        language: Translatron.defaultLanguage,
+        language: Translatron.resolveLanguage(undefined, this.getPreferredLocale()),
     });
 
     public constructor(private readonly isDev: boolean) {
@@ -99,11 +99,12 @@ export class Individuator {
     ) => {
         translatron.register(this.namespace, this.translations);
 
-        storageKeeper.synchronizeSubjectWithStorage(this.settings$, this.settingsStorageId, (state): Partial<IndividuatorSettings> => {
+        return storageKeeper.synchronizeSubjectWithStorage(this.settings$, this.settingsStorageId, (state): Partial<IndividuatorSettings> => {
             const maybeSettings = state as IndividuatorSettings;
 
             return {
                 ...maybeSettings,
+                language: Translatron.resolveLanguage(maybeSettings.language, Individuator.getPreferredLocale()),
                 enableKeyboardShortcuts: maybeSettings.enableKeyboardShortcuts !== false,
                 showGuideHints: maybeSettings.showGuideHints !== false,
                 locale: typeof maybeSettings.locale === 'string' && maybeSettings.locale.length > 0

@@ -2,6 +2,7 @@ import { TranslationTable } from "../translatron";
 import { MachineTranslationKey } from "../model";
 
 const pl: TranslationTable<MachineTranslationKey>['pl'] = {
+    'startup-welcome': 'Zarząd martwej planety wita Cię...',
     enabled: 'Włączone',
     disabled: 'Wyłączone',
     status: 'Stan',

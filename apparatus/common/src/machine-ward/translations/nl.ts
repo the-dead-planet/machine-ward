@@ -2,6 +2,7 @@ import { TranslationTable } from "../translatron";
 import { MachineTranslationKey } from "../model";
 
 const nl: TranslationTable<MachineTranslationKey>['nl'] = {
+    'startup-welcome': 'Het bestuur van de dode planeet heet je welkom...',
     enabled: 'Ingeschakeld',
     disabled: 'Uitgeschakeld',
     status: 'Status',

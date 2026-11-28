@@ -3,6 +3,9 @@ import rspack, { Configuration } from "@rspack/core";
 import GearRegistryGenerator from "./rspack.gears";
 import { themeSpecifications } from "@the-dead-planet/machine-ward-ui-common/src/design-system/theme/specifications";
 import { RGBColor, ThemeName } from "@the-dead-planet/machine-ward-ui-common/src/design-system/theme/model";
+import { Translatron } from "@the-dead-planet/machine-ward-apparatus-common/src/machine-ward/translatron/translatron";
+import { MachineTranslationKey } from "@the-dead-planet/machine-ward-apparatus-common/src/machine-ward/model";
+import * as translations from "@the-dead-planet/machine-ward-apparatus-common/src/machine-ward/translations";
 
 const toCssColor = ({ r, g, b }: RGBColor): string => `rgb(${r}, ${g}, ${b})`;
 const startupThemes = Object.fromEntries(Object.entries(themeSpecifications).map(([name, modes]) => [
@@ -14,6 +17,18 @@ const startupThemes = Object.fromEntries(Object.entries(themeSpecifications).map
             color: toCssColor(specification.colors.neutral[mode === 'light' ? 900 : 100]),
         },
     ])),
+]));
+const startupWelcome = translations.en?.[MachineTranslationKey.StartupWelcome];
+if (startupWelcome === undefined) {
+    throw new Error('The English startup welcome translation is required.');
+}
+const startupMessages = Object.fromEntries(Object.entries(Translatron.languageAliases).map(([alias, language]) => [
+    alias,
+    {
+        language,
+        locale: Translatron.languages[language].locale,
+        welcome: translations[language]?.[MachineTranslationKey.StartupWelcome] ?? startupWelcome,
+    },
 ]));
 
 export type Env = {
@@ -111,6 +126,8 @@ export const baseConfig = (_env: Env, argv: Argv): Configuration => ({
             templateParameters: {
                 startupThemes: JSON.stringify(startupThemes).replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll('<', '&lt;'),
                 defaultThemeName: ThemeName.Default,
+                startupMessages: JSON.stringify(startupMessages).replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll('<', '&lt;'),
+                startupWelcome,
             },
             inject: 'body'
         }),

@@ -2,6 +2,7 @@ import { TranslationTable } from "../translatron";
 import { MachineTranslationKey } from "../model";
 
 const jp: TranslationTable<MachineTranslationKey>['jp'] = {
+    'startup-welcome': '死せる惑星の管理部があなたを歓迎します...',
     enabled: '有効',
     disabled: '無効',
     status: '状態',

@@ -56,10 +56,26 @@
 
 <body>
     <div id="app">
-        <div id="startup-placeholder" role="status" aria-label="Loading">
-            <p>...</p>
+        <div id="startup-placeholder" role="status">
+            <p id="startup-message"><%= startupWelcome %></p>
         </div>
     </div>
+    <script data-messages="<%= startupMessages %>">
+        (() => {
+            const messages = JSON.parse(document.currentScript.dataset.messages);
+            let savedLanguage;
+            try {
+                savedLanguage = JSON.parse(localStorage.getItem('application-settings'))?.language;
+            } catch { }
+            const locale = Intl.DateTimeFormat().resolvedOptions().locale.toLowerCase().split(/[-_]/)[0];
+            const language = typeof savedLanguage === 'string' && Object.hasOwn(messages, savedLanguage) && messages[savedLanguage].language === savedLanguage
+                ? savedLanguage
+                : Object.hasOwn(messages, locale) ? locale : 'en';
+            const message = messages[language];
+            document.documentElement.lang = message.locale;
+            document.getElementById('startup-message').textContent = message.welcome;
+        })();
+    </script>
 </body>
 
 </html>

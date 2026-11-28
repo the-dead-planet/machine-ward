@@ -16,6 +16,27 @@ export class Translatron {
 
     public static defaultLanguage: Language = 'en';
 
+    public static languageAliases: Record<string, Language> = Object.fromEntries(
+        (Object.entries(this.languages) as [Language, LanguageInfo][]).flatMap(([language, information]) => [
+            [language, language],
+            [information.locale.split('-')[0], language],
+        ]),
+    );
+
+    public static resolveLanguage = (
+        savedLanguage: unknown,
+        locale: string = Intl.DateTimeFormat().resolvedOptions().locale,
+    ): Language => {
+        if (typeof savedLanguage === 'string' && Object.hasOwn(this.languages, savedLanguage)) {
+            return savedLanguage as Language;
+        }
+
+        const language = locale.toLowerCase().split(/[-_]/)[0];
+        return Object.hasOwn(this.languageAliases, language)
+            ? this.languageAliases[language]
+            : this.defaultLanguage;
+    };
+
     /**
      * Mapping of namespaces to translation tables, for example `Map<'my-namespace', { en: { "title": "Have a good day" }}>`
      */
