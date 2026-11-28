@@ -17,24 +17,24 @@
         "@the-dead-planet/machine-ward-tinker-chest": "*",
         "@the-dead-planet/machine-ward-ui-common": "*",
         "classnames": "^2.5.1",
-        "react-svg": "^19.2.6"
+        "react-svg": "^19.2.7"
     },
     "devDependencies": {
-        "@rsbuild/core": "^2.3.2",
+        "@rsbuild/core": "^2.3.3",
         "@rsbuild/plugin-react": "^2.1.1",
-        "@storybook/addon-docs": "10.6.7",
+        "@storybook/addon-docs": "10.6.8",
         "@types/react-dom": "19.3.0",
         "css-loader": "^7.1.5",
         "cypress": "^16.3.0",
-        "maplibre-gl": "6.18.0",
+        "maplibre-gl": "6.19.0",
         "react": "19.3.1",
         "react-dom": "19.3.1",
-        "storybook": "^10.6.7",
+        "storybook": "^10.6.8",
         "storybook-addon-code-editor": "^6.2.0",
-        "storybook-react-rsbuild": "^3.6.3"
+        "storybook-react-rsbuild": "^3.6.4"
     },
     "peerDependencies": {
-        "maplibre-gl": "6.18.0",
+        "maplibre-gl": "6.19.0",
         "react": "19.3.1",
         "react-dom": "19.3.1",
         "rxjs": "^7.8.2"

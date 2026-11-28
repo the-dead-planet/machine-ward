@@ -11,7 +11,7 @@
         "test:native": "jest --runInBand"
     },
     "dependencies": {
-        "@react-native-documents/viewer": "^4.0.2",
+        "@react-native-documents/viewer": "^4.1.0",
         "@the-dead-planet/machine-ward-apparatus-common": "*",
         "@the-dead-planet/machine-ward-tinker-chest": "*",
         "@the-dead-planet/machine-ward-ui-common": "*",
@@ -20,7 +20,7 @@
     },
     "devDependencies": {
         "@babel/core": "^8.1.2",
-        "@maplibre/maplibre-gl-style-spec": "^26.8.0",
+        "@maplibre/maplibre-gl-style-spec": "^26.9.0",
         "@maplibre/maplibre-react-native": "11.5.1",
         "@react-native/babel-preset": "0.88.1",
         "@react-native/jest-preset": "^0.88.1",
