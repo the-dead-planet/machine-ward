@@ -8,6 +8,7 @@ import { MobileMap } from "@mobile-apparatus";
 import { MobileChronoLens } from "@mobile-apparatus";
 import { navigationRef, RootStackParamList } from "./navigation";
 import { Media, MediaSubscriptionDefinition, Orientation } from "@ui";
+import { StartupLoading } from './StartupLoading';
 
 const AsyncStorage = createAsyncStorage('machine-ward');
 
@@ -55,6 +56,7 @@ export class MobileMachineWard extends MachineWard<MobileMap, MobileChronoLens, 
     }
 
     public components: MachineWardComponents<keyof RootStackParamList> = {
+        loadingComponent: StartupLoading,
         errorFallbackComponent: ErrorFallback,
         layoutComponent: Layout,
         topBarComponent: TopBar,

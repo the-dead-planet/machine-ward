@@ -85,7 +85,7 @@ export class Individuator {
         timeFormat: this.defaultTimeFormat,
         locale: this.getPreferredLocale(),
         distanceUnit: this.getPreferredDistanceUnit(),
-        language: Translatron.defaultLanguage,
+        language: Translatron.resolveLanguage(undefined, this.getPreferredLocale()),
     });
 
     public constructor(private readonly isDev: boolean) {
@@ -96,14 +96,16 @@ export class Individuator {
     public initialize = (
         storageKeeper: StorageKeeper,
         translatron: Translatron,
+        signal?: AbortSignal,
     ) => {
         translatron.register(this.namespace, this.translations);
 
-        storageKeeper.synchronizeSubjectWithStorage(this.settings$, this.settingsStorageId, (state): Partial<IndividuatorSettings> => {
+        return storageKeeper.synchronizeSubjectWithStorage(this.settings$, this.settingsStorageId, (state): Partial<IndividuatorSettings> => {
             const maybeSettings = state as IndividuatorSettings;
 
             return {
                 ...maybeSettings,
+                language: Translatron.resolveLanguage(maybeSettings.language, Individuator.getPreferredLocale()),
                 enableKeyboardShortcuts: maybeSettings.enableKeyboardShortcuts !== false,
                 showGuideHints: maybeSettings.showGuideHints !== false,
                 locale: typeof maybeSettings.locale === 'string' && maybeSettings.locale.length > 0
@@ -116,7 +118,7 @@ export class Individuator {
                 themeMode: themeModeOptions.some(({ value }) => value === maybeSettings.themeMode) ? maybeSettings.themeMode : themeModeOptions[0].value,
                 themeName: themeNameOptions.some(({ value }) => value === maybeSettings.themeName) ? maybeSettings.themeName : themeNameOptions[0].value,
             }
-        })
+        }, signal)
             .then((s) => this.settingsStorageSubscription = s);
     };
 

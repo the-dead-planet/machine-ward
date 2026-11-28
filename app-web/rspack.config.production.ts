@@ -109,6 +109,7 @@ const config = (env: Env, argv: Argv): Configuration => {
                     ['tinker-chest']: {
                         test: /[\\/]tinker-chest[\\/]src[\\/]/,
                         name: 'tinker-chest',
+                        minSize: 0,
                     },
                     ...(Object.fromEntries(
                         gearNames.map((gearName) => [

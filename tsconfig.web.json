@@ -20,7 +20,8 @@
         "**/src/**/*",
         "**/test/**/*",
         "**/types/**/*",
-        "./types/**/*"
+        "./types/**/*",
+        "./app-web/rspack*.ts"
     ],
     "exclude": [
         "**/app-mobile/**/*",

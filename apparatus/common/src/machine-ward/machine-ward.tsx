@@ -1,9 +1,9 @@
 import { ReactElement } from "react";
-import { map, pairwise, Subscription } from "rxjs";
+import { BehaviorSubject, map, pairwise, Subscription } from "rxjs";
 import { MachineWardApp } from "./MachineWardApp";
 import { Individuator } from "./individuator";
 import { ChronoLens } from "./chrono-lens";
-import { AttributionVault, Cartomancer, getActiveShortcutHints, SignaliumBureau, ToolsStation, Translatron } from "..";
+import { AttributionVault, Cartomancer, getActiveShortcutHints, glitchmitter, SignaliumBureau, ToolsStation, Translatron } from "..";
 import { Engine } from "./engine";
 import { Gear } from "./gears";
 import { StorageKeeper } from "./storage-keeper";
@@ -41,6 +41,8 @@ export abstract class MachineWard<TMap = unknown, TChronoLens extends ChronoLens
 
     private attributionVaultSubscription: Subscription | null = null;
     private readonly supportsBackdropBlur: boolean;
+    private readonly isReady$ = new BehaviorSubject(false);
+    private initializationController: AbortController | null = null;
 
     public constructor(
         gears: MachineGear<TMap, TChronoLens>[],
@@ -94,16 +96,30 @@ export abstract class MachineWard<TMap = unknown, TChronoLens extends ChronoLens
     };
 
     private mount = () => {
-        this.individuator.initialize(this.storageKeeper, this.translatron);
+        const controller = new AbortController();
+        this.initializationController = controller;
+        const restoration = Promise.all([
+            this.individuator.initialize(this.storageKeeper, this.translatron, controller.signal),
+            this.cartomancer.initialize(this.storageKeeper, this.translatron, this.toolsStation, controller.signal),
+        ]);
         this.attributionVaultSubscription = this.subscribeAttributionVault();
-        this.cartomancer.initialize(this.storageKeeper, this.translatron, this.toolsStation);
         this.initializeValves();
         this.keysmithHintsSubscription = this.keysmith.shortcuts$
             .pipe(map(getActiveShortcutHints))
             .subscribe((hints) => this.publishKeysmithHints(hints));
+        return restoration
+            .catch((error: unknown) => glitchmitter.transmit('Error restoring startup settings', error))
+            .then(() => {
+                if (!controller.signal.aborted) {
+                    this.isReady$.next(true);
+                }
+            });
     };
 
     public unmount = () => {
+        this.initializationController?.abort();
+        this.initializationController = null;
+        this.isReady$.next(false);
         this.gearsSubscription?.unsubscribe();
         this.cartomancer.cleanUp();
         this.attributionVaultSubscription?.unsubscribe();
@@ -179,6 +195,7 @@ export abstract class MachineWard<TMap = unknown, TChronoLens extends ChronoLens
                 translatron={this.translatron}
                 engine={this.engine}
                 components={this.components}
+                isReady$={this.isReady$}
                 onMount={this.mount}
                 onUnmount={this.unmount}
                 onNavigate={this.navigate}

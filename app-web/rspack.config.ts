@@ -1,6 +1,53 @@
 import path from "path";
 import rspack, { Configuration } from "@rspack/core";
 import GearRegistryGenerator from "./rspack.gears";
+import { themeSpecifications } from "@the-dead-planet/machine-ward-ui-common/src/design-system/theme/specifications";
+import { RGBColor, ThemeName } from "@the-dead-planet/machine-ward-ui-common/src/design-system/theme/model";
+import { Translatron } from "@the-dead-planet/machine-ward-apparatus-common/src/machine-ward/translatron/translatron";
+import { MachineTranslationKey } from "@the-dead-planet/machine-ward-apparatus-common/src/machine-ward/model";
+import * as translations from "@the-dead-planet/machine-ward-apparatus-common/src/machine-ward/translations";
+import { Language } from "@the-dead-planet/machine-ward-apparatus-common/src/machine-ward/translatron/model";
+
+const toCssColor = ({ r, g, b }: RGBColor): string => `rgb(${r}, ${g}, ${b})`;
+const startupThemes = Object.fromEntries(Object.entries(themeSpecifications).map(([name, modes]) => [
+    name,
+    Object.fromEntries(Object.entries(modes).map(([mode, specification]) => [
+        mode,
+        {
+            background: toCssColor(specification.colors.neutral[mode === 'light' ? 100 : 900]),
+            color: toCssColor(specification.colors.neutral[mode === 'light' ? 900 : 100]),
+        },
+    ])),
+]));
+const englishTranslations = translations.en;
+if (englishTranslations === undefined) {
+    throw new Error('English startup translations are required.');
+}
+const getStartupTranslation = (language: Language, key: MachineTranslationKey): string =>
+    translations[language]?.[key] ?? englishTranslations[key];
+const startupWelcome = getStartupTranslation('en', MachineTranslationKey.StartupWelcome);
+const startupMessages = Object.fromEntries(Object.entries(Translatron.languageAliases).map(([alias, language]) => [
+    alias,
+    {
+        language,
+        locale: Translatron.languages[language].locale,
+        welcome: getStartupTranslation(language, MachineTranslationKey.StartupWelcome),
+        title: getStartupTranslation(language, MachineTranslationKey.PoweringUpMachineWard),
+        statuses: {
+            pending: getStartupTranslation(language, MachineTranslationKey.StartupDownloadPending),
+            downloaded: getStartupTranslation(language, MachineTranslationKey.StartupDownloadComplete),
+            failed: getStartupTranslation(language, MachineTranslationKey.StartupDownloadFailed),
+        },
+        sharedLibraries: getStartupTranslation(language, MachineTranslationKey.SharedLibraries),
+        interface: getStartupTranslation(language, MachineTranslationKey.UserInterfaceAssemblyKit),
+        apparatus: getStartupTranslation(language, MachineTranslationKey.Apparatus),
+        tinkerChest: getStartupTranslation(language, MachineTranslationKey.TinkerChest),
+        runtime: getStartupTranslation(language, MachineTranslationKey.InterfaceRuntime),
+        mapEngine: getStartupTranslation(language, MachineTranslationKey.MapEngine),
+        machineWard: getStartupTranslation(language, MachineTranslationKey.MachineWard),
+        aligningGears: getStartupTranslation(language, MachineTranslationKey.AligningGears),
+    },
+]));
 
 export type Env = {
     production?: boolean;
@@ -94,6 +141,13 @@ export const baseConfig = (_env: Env, argv: Argv): Configuration => ({
             filename: 'index.html',
             template: './src/index.html',
             favicon: "./public/favicon.ico",
+            templateParameters: {
+                startupThemes: JSON.stringify(startupThemes).replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll('<', '&lt;'),
+                defaultThemeName: ThemeName.Default,
+                startupMessages: JSON.stringify(startupMessages).replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll('<', '&lt;'),
+                startupWelcome,
+                startupTitle: getStartupTranslation('en', MachineTranslationKey.PoweringUpMachineWard),
+            },
             inject: 'body'
         }),
         new rspack.CopyRspackPlugin({

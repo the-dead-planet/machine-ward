@@ -17,14 +17,16 @@ export class StorageKeeper {
      * @param storageId Object ID to look for in `storage`.
      * @param storage Storage to get the state from.
      * @param cleanUp Optionally, clean up function to adjust the state from storage to fit into current model `T`.
+     * @param signal Stops restoration and persistence when the owner unmounts.
      */
     public synchronizeSubjectWithStorage = async <T extends {}>(
         state$: BehaviorSubject<T>,
         storageId: string,
-        cleanUp: (state: unknown) => Partial<T> = ((state) => state as Partial<T>)
+        cleanUp: (state: unknown) => Partial<T> = ((state) => state as Partial<T>),
+        signal?: AbortSignal,
     ): Promise<Subscription> => {
         const setState = (savedData: string | null) => {
-            if (savedData) {
+            if (savedData && !signal?.aborted) {
                 let sanitized = {};
                 try {
                     sanitized = cleanUp(JSON.parse(savedData));
@@ -45,12 +47,23 @@ export class StorageKeeper {
             glitchmitter.transmit(`Error getting ${storageId} storage state`, err);
         }
 
-        return state$.subscribe((next) => {
+        if (signal?.aborted) {
+            return Subscription.EMPTY;
+        }
+
+        const subscription = state$.subscribe((next) => {
             try {
                 this.storage.setItem(storageId, JSON.stringify(next));
             } catch (err) {
                 glitchmitter.transmit(`Error setting ${storageId} storage state`, err);
             }
         });
+        const unsubscribe = () => subscription.unsubscribe();
+        signal?.addEventListener('abort', unsubscribe, { once: true });
+        subscription.add(() => signal?.removeEventListener('abort', unsubscribe));
+        if (signal?.aborted) {
+            subscription.unsubscribe();
+        }
+        return subscription;
     };
 }

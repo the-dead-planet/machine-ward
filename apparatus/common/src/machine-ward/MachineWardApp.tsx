@@ -1,4 +1,5 @@
 import { StrictMode, useEffect, useMemo } from "react";
+import { BehaviorSubject } from "rxjs";
 import { ErrorBoundary, MediaSubscriptionDefinition, Theme, ThemeContext, themeSpecifications } from "@ui";
 import { AttributionVault, Cartomancer, ChronoLens, Engine, SignaliumBureau, ToolsStation, Translatron } from "..";
 import { Individuator } from "./individuator";
@@ -26,7 +27,8 @@ interface MachineWardProps<TMap, TChronoLens extends ChronoLens, TNavigationPath
     translatron: Translatron;
     engine: Engine<TMap, TChronoLens>
     components: MachineWardComponents<TNavigationPath>;
-    onMount: () => void;
+    isReady$: BehaviorSubject<boolean>;
+    onMount: () => Promise<void>;
     onUnmount: () => void;
     onNavigate: (path: TNavigationPath) => void;
     onNavigateBack: () => void;
@@ -50,15 +52,17 @@ export function MachineWardApp<TMap, TChronoLens extends ChronoLens, TNavigation
     translatron,
     engine,
     components,
+    isReady$,
     onMount,
     onUnmount,
     onNavigate,
     onNavigateBack,
 }: MachineWardProps<TMap, TChronoLens, TNavigationPath>) {
     const [settings] = useSubjectState(individuator.settings$);
+    const [isReady] = useSubjectState(isReady$);
 
     useEffect(() => {
-        onMount();
+        void onMount();
 
         return () => {
             onUnmount();
@@ -98,8 +102,14 @@ export function MachineWardApp<TMap, TChronoLens extends ChronoLens, TNavigation
                         engine: engine as unknown as Engine<unknown, ChronoLens>,
                     }}>
                         <components.layoutComponent>
-                            <components.topBarComponent title={title} description={description} onNavigate={onNavigate} onNavigateBack={onNavigateBack} />
-                            <components.machineComponent onNavigate={onNavigate} onNavigateBack={onNavigateBack} />
+                            {components.loadingComponent && !isReady ? (
+                                <components.loadingComponent />
+                            ) : (
+                                <>
+                                    <components.topBarComponent title={title} description={description} onNavigate={onNavigate} onNavigateBack={onNavigateBack} />
+                                    <components.machineComponent onNavigate={onNavigate} onNavigateBack={onNavigateBack} />
+                                </>
+                            )}
                         </components.layoutComponent>
                     </MachineWardContext.Provider>
                 </ErrorBoundary>
