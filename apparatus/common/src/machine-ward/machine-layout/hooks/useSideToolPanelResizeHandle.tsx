@@ -28,8 +28,8 @@ export const useSideToolPanelResizeHandle = (
             startX: clientX,
             currentX: clientX,
             startWidth: isLeft
-                ? (activeLeftToolId === null ? LAYOUT_MINS.panels.left : toolsStation.panelWidths$.value.leftWidth)
-                : (activeRightToolId === null ? LAYOUT_MINS.panels.right : toolsStation.panelWidths$.value.rightWidth),
+                ? (activeLeftToolId === null ? LAYOUT_MINS.panels.left : toolsStation.panelLayout$.value.leftWidth)
+                : (activeRightToolId === null ? LAYOUT_MINS.panels.right : toolsStation.panelLayout$.value.rightWidth),
             panelMin: isLeft ? LAYOUT_MINS.panels.left : LAYOUT_MINS.panels.right,
             hasLeftIcons: toolIconsByPlacement.left.length > 0,
             hasRightIcons: toolIconsByPlacement.right.length > 0,
@@ -50,8 +50,8 @@ export const useSideToolPanelResizeHandle = (
         const otherHasPanels = isLeft ? ds.hasRightPanels : ds.hasLeftPanels;
         const otherCollapsed = isLeft ? activeRightToolId === null : activeLeftToolId === null;
         const otherWidth = isLeft
-            ? (otherHasPanels && activeRightToolId !== null ? toolsStation.panelWidths$.value.rightWidth : 0)
-            : (otherHasPanels && activeLeftToolId !== null ? toolsStation.panelWidths$.value.leftWidth : 0);
+            ? (otherHasPanels && activeRightToolId !== null ? toolsStation.panelLayout$.value.rightWidth : 0)
+            : (otherHasPanels && activeLeftToolId !== null ? toolsStation.panelLayout$.value.leftWidth : 0);
         const otherMin = isLeft
             ? (otherHasPanels ? (otherCollapsed ? LAYOUT_MINS.panels.right : otherWidth) : 0)
             : (otherHasPanels ? (otherCollapsed ? LAYOUT_MINS.panels.left : otherWidth) : 0);
@@ -67,12 +67,12 @@ export const useSideToolPanelResizeHandle = (
         const clampedWidth = Math.max(Math.min(ds.startWidth + (isLeft ? totalDelta : -totalDelta), maxWidth), ds.panelMin);
 
         const currentStored = isLeft
-            ? toolsStation.panelWidths$.value.leftWidth
-            : toolsStation.panelWidths$.value.rightWidth;
+            ? toolsStation.panelLayout$.value.leftWidth
+            : toolsStation.panelLayout$.value.rightWidth;
 
         if (clampedWidth !== currentStored) {
-            toolsStation.panelWidths$.next({
-                ...toolsStation.panelWidths$.value,
+            toolsStation.panelLayout$.next({
+                ...toolsStation.panelLayout$.value,
                 [isLeft ? 'leftWidth' : 'rightWidth']: clampedWidth,
             });
         }

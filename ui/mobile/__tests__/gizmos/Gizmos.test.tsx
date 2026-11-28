@@ -11,9 +11,11 @@ import {
     ThemeMode,
     ThemeName,
     themeSpecifications,
+    typographyUsageSpecifications,
 } from "@ui";
 import { Button } from "../../src/gizmos/button";
 import { Chip } from "../../src/gizmos/chip";
+import { Keycap } from "../../src/gizmos/keycap";
 import { ResizeHandle } from "../../src/gizmos/resize-handle";
 
 const media = {
@@ -100,6 +102,54 @@ describe("Gizmo interaction ownership", () => {
             theme.destroy();
         },
     );
+
+    test("keycap uses caption typography and the selected appearance state", async () => {
+        const theme = new Theme(
+            themeSpecifications[ThemeName.Default].light,
+            media,
+        );
+        const content = (highlighted = false, disabled = false) => (
+            <ThemeContext.Provider value={theme}>
+                <Keycap
+                    color="primary"
+                    variant="outline"
+                    highlightColor="intel"
+                    highlighted={highlighted}
+                    disabled={disabled}
+                >
+                    Ctrl
+                </Keycap>
+            </ThemeContext.Provider>
+        );
+        const screen = await render(content());
+        const label = screen.getByText("Ctrl");
+        expect(label.parent).toHaveStyle({ minHeight: 20, minWidth: 20 });
+        expect(label).toHaveStyle({
+            fontSize: typographyUsageSpecifications.caption.fontSize,
+            lineHeight: typographyUsageSpecifications.caption.lineHeight,
+            color: theme.resolveAppearance("outline", "primary", "intel").glyphs,
+        });
+        await screen.rerender(content(true));
+        expect(label).toHaveStyle({
+            color: theme.resolveAppearance(
+                "outline",
+                "primary",
+                "intel",
+                "active-pressed",
+            ).glyphs,
+        });
+        await screen.rerender(content(false, true));
+        expect(label).toHaveStyle({
+            color: theme.resolveAppearance(
+                "outline",
+                "primary",
+                "intel",
+                "disabled",
+            ).glyphs,
+        });
+        await screen.unmount();
+        theme.destroy();
+    });
 
     test("the real resize grip follows its handle without owning interaction", async () => {
         const variant = "fill-translucent";

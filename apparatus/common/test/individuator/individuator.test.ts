@@ -4,6 +4,10 @@ import { DateFormat } from "@tinker-chest";
 import { Individuator, IndividuatorSettings } from "../../src";
 
 describe("Individuator", () => {
+    it("shows guide hints by default", () => {
+        expect(new Individuator(false).settings$.value.showGuideHints).to.equal(true);
+    });
+
     it("uses the runtime locale by default", () => {
         expect(new Individuator(false).settings$.value.locale).to.equal(Intl.DateTimeFormat().resolvedOptions().locale);
     });

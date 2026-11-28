@@ -6,6 +6,7 @@ import { useSubjectState } from "@tinker-chest";
 import { SideToolPanel } from "../tool-panels/side-panels/SideToolPanel";
 import { ToolIcons } from "./tool-icons/ToolIcons";
 import { TopToolsGridArea } from "./TopToolsGridArea";
+import { MapGuideHints } from "./MapGuideHints";
 import { PlaceholderToolPanel } from "../tool-panels/PlaceholderToolPanel";
 import { SecondaryBottomToolPanel } from "../tool-panels/bottom-panels/secondary-bottom-panel/SecondaryBottomToolPanel";
 import { BottomToolPanel } from "../tool-panels/bottom-panels/primary-bottom-panel/BottomToolPanel";
@@ -43,6 +44,7 @@ export const MapToolsGridAreas: FC<Props> = ({
                 <ToolIcons placement="left" map={map} />
                 <TopToolsGridArea map={map} />
                 <ToolIcons placement="right" map={map} />
+                {map && <MapGuideHints />}
             </ThemeContext.Provider>
             {groupSidePanelsInBottomSecondaryToolbar
                 ? <PlaceholderToolPanel placement="right" />

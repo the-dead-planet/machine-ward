@@ -7,6 +7,7 @@ import { GeoJson } from "@tinker-chest";
 import {
     draggingImage$,
     draggingPlacement$,
+    getRoutePlacement,
     RouteGeometryData,
     updateImageDistanceFraction,
 } from "@the-dead-planet/machine-ward-gears-route-story-common";
@@ -27,7 +28,7 @@ jest.mock("@the-dead-planet/machine-ward-gears-route-story-common", () => {
         isInsideImageMarker: jest.requireActual("../../common/src/tinkers/images").isInsideImageMarker,
         MAP_IMAGE_COUNT_BADGE_OFFSET: [20, -20],
         THUMBNAIL_IMAGE_SIZE: 50,
-        getRoutePlacement: () => ({ distanceFraction: 0.5 }),
+        getRoutePlacement: jest.fn(() => ({ distanceFraction: 0.5 })),
         updateImageDistanceFraction: jest.fn(),
     };
 });
@@ -148,9 +149,29 @@ test("claims cached hits only after animation, leaves the pager active, and pres
     expect(draggingImage$.value?.id).toBe(1);
     expect(map.panResponderOffset).toEqual([0, 35]);
     expect(map.onPanResponderStartHandlers$.value.get(id)).toBe(startHandler);
-    await act(() => map.onPanResponderEndHandlers$.value.get(id)?.(touch(110, 65), false));
-    expect(unproject).toHaveBeenCalledWith([110, 100]);
-    expect(updateImageDistanceFraction).toHaveBeenCalledWith(images, 1, 0.5);
+    unproject.mockClear();
+    jest.mocked(updateImageDistanceFraction).mockImplementationOnce(() => {
+        expect(draggingImage$.value?.id).toBe(1);
+        expect(draggingPlacement$.value?.distanceFraction).toBe(0.5);
+    });
+    let finishFinalMove: (coordinate: number[]) => void = () => {
+        throw new Error("Final move projection was not started");
+    };
+    unproject.mockImplementationOnce(() => new Promise((resolve) => {
+        finishFinalMove = resolve;
+    }));
+    const finalMove = map.onPanResponderMoveHandlers$.value.get(id)?.(touch(120, 65));
+    jest.mocked(getRoutePlacement).mockReturnValueOnce({ distanceFraction: 0.7, lngLat: { lng: 130, lat: 100 } });
+    await act(() => map.onPanResponderEndHandlers$.value.get(id)?.(touch(130, 65), false));
+    expect(unproject).toHaveBeenLastCalledWith([130, 100]);
+    expect(updateImageDistanceFraction).toHaveBeenCalledWith(images, 1, 0.7);
+    await act(async () => {
+        finishFinalMove([120, 100]);
+        await finalMove;
+    });
+    expect(updateImageDistanceFraction).toHaveBeenCalledTimes(1);
+    expect(draggingImage$.value).toBeNull();
+    expect(draggingPlacement$.value).toBeNull();
     expect(map.dragPan$.value).toBe(true);
     await rerender({ markersReady: true });
     jest.mocked(updateImageDistanceFraction).mockClear();

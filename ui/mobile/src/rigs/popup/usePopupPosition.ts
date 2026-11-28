@@ -25,7 +25,7 @@ export const usePopupPosition = ({
     triggerAnchor: MenuAnchor;
     popupAnchor: MenuAnchor;
 }) => {
-    const [popupPosition, setPopupPosition] = useState<MenuPosition>({});
+    const [popupPosition, setPopupPosition] = useState<MenuPosition | null>(null);
     const [popupSize, setPopupSize] = useState<{
         width: number;
         height: number;
@@ -35,13 +35,21 @@ export const usePopupPosition = ({
 
     useEffect(() => {
         if (!visible) {
+            setPopupPosition(null);
             return;
         }
+        if (!popupSize) {
+            return;
+        }
+        let active = true;
         const updatePosition = (
             point: { x: number; y: number },
             width: number,
             height: number,
         ) => {
+            if (!active || width <= 0 || height <= 0) {
+                return;
+            }
             const nextPosition = placePopup(
                 popupAnchor,
                 point,
@@ -50,7 +58,7 @@ export const usePopupPosition = ({
                 height,
             ).position;
             setPopupPosition((current) =>
-                menuPositionsMatch(current, nextPosition)
+                current && menuPositionsMatch(current, nextPosition)
                     ? current
                     : nextPosition,
             );
@@ -82,7 +90,10 @@ export const usePopupPosition = ({
         };
         computePosition();
         const followInterval = setInterval(computePosition, 100);
-        return () => clearInterval(followInterval);
+        return () => {
+            active = false;
+            clearInterval(followInterval);
+        };
     }, [
         visible,
         anchor,

@@ -34,6 +34,7 @@ import { ImageCountBadges } from './ImageCountBadges';
 import { ImageGroupPager } from "./ImageGroupPager";
 import { ImageGroupPagerDimensions } from "./model";
 import { useImageDragFeatureState } from "./useImageDragFeatureState";
+import { useMapImageDragSource } from "./useMapImageDragSource";
 
 export const ImagesLayer: FC<OverlayComponentProps<MobileMap> & MobileRouteStoryProps> = ({
     map,
@@ -65,13 +66,19 @@ export const ImagesLayer: FC<OverlayComponentProps<MobileMap> & MobileRouteStory
     const { groupedSource: targetSource, hitTargets, paginationTarget } = useImageMarkerSource(map, originalSource, displayImageId !== null, imageMarkerOperator);
     const reducedMotion = useReducedMotion();
     const paginationDimensions = useRef<ImageGroupPagerDimensions | null>(null);
-    const groupedSource = useAnimatedImageMarkerSource(targetSource, reducedMotion);
+    const { dragSource, dragOrigin } = useMapImageDragSource(targetSource, originalSource, routeGeometryData);
+    const groupedSource = useAnimatedImageMarkerSource(dragSource, reducedMotion);
     const visibleSource = useMemo(() => getImageSourceWithMarkerVisibility(groupedSource, markerLayerVisibility), [groupedSource, markerLayerVisibility]);
     const connections = useImageMarkerConnections(originalSource, visibleSource);
     useMapImageInteraction(map, images$, geojson, routeGeometryData, markerLayerVisibility, hitTargets, paginationTarget, paginationDimensions, groupedSource === targetSource, imageMarkerOperator);
     const renderedSource = useMemo(
-        () => getImageSourceWithAnchors(originalSource, visibleSource, highlightIdsBySourceId.get(imageSourceIds.thumbnails)),
-        [originalSource, visibleSource, highlightIdsBySourceId],
+        () => {
+            const source = getImageSourceWithAnchors(originalSource, visibleSource, highlightIdsBySourceId.get(imageSourceIds.thumbnails));
+            return markerLayerVisibility && dragOrigin.length > 0
+                ? { ...source, features: [...dragOrigin, ...source.features] }
+                : source;
+        },
+        [originalSource, visibleSource, highlightIdsBySourceId, markerLayerVisibility, dragOrigin],
     );
 
     const imageSources: Record<string, ImageEntry> = Object.fromEntries(

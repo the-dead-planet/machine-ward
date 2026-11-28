@@ -123,7 +123,7 @@ const thumbnailOffset = (
     1,
     ["literal", [0, MAP_THUMBNAIL_SIZE]],
 ] satisfies ExpressionSpecification;
-const dragOpacity = 0.4;
+export const IMAGE_DRAG_ORIGIN_OPACITY = 0.4;
 const thumbnailDraggingOpacity = [
     "*",
     ["coalesce", ["get", "markerOpacity"], 1],
@@ -134,7 +134,7 @@ const thumbnailDraggingOpacity = [
             ["==", ["feature-state", FeatureStateProps.Dragging], true],
             ["==", ["get", FeatureStateProps.Dragging], true],
         ],
-        dragOpacity,
+        IMAGE_DRAG_ORIGIN_OPACITY,
         1,
     ],
 ] satisfies ExpressionSpecification;

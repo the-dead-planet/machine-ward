@@ -1,0 +1,23 @@
+.hints {
+    position: absolute;
+    grid-area: left-icons-start / left-icons-start / left-icons-end / right-icons-start;
+    left: 20px;
+    right: 8px;
+    display: grid;
+    gap: 4px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    pointer-events: none;
+}
+
+.row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    overflow-wrap: anywhere;
+}
+
+.row > kbd {
+    flex-shrink: 0;
+}

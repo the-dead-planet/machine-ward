@@ -1,0 +1,113 @@
+.notice-row {
+    display: flex;
+}
+
+.ticker-viewport {
+    flex: 1;
+    min-width: 0;
+    container-type: inline-size;
+    overflow: hidden;
+    background-image: radial-gradient(circle, rgb(from var(--appearance-default-glyphs) r g b / 0.12) 0.85px, transparent 1.1px);
+    background-size: 4px 4px;
+}
+
+.notice-summary {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    border-inline-start: 1px solid var(--color-secondary);
+}
+
+.notice-summary > button {
+    height: 100%;
+    padding-inline: 10px;
+}
+
+.notice-summary > button:focus-visible {
+    outline-offset: -2px;
+}
+
+.notice-counts,
+.notice-count {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.notice-counts {
+    gap: 10px;
+}
+
+.notice-popup {
+    box-sizing: border-box;
+    width: min(24rem, calc(100vw - 16px));
+}
+
+.notice-list {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    max-height: 50vh;
+    overflow: auto;
+    overflow-wrap: anywhere;
+}
+
+.notice-card {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+}
+
+.notice-card > :not(.notice-card-text) {
+    flex-shrink: 0;
+}
+
+.notice-card-text {
+    flex: 1;
+    min-width: 0;
+}
+
+.ticker {
+    display: flex;
+    align-items: center;
+    width: max-content;
+    height: 29px;
+    white-space: nowrap;
+    animation: scroll-notices 0s linear infinite;
+}
+
+.ticker:hover,
+.ticker:active,
+.ticker:focus-within {
+    animation-play-state: paused;
+}
+
+.ticker:has(:focus-visible) {
+    animation-name: none;
+}
+
+@keyframes scroll-notices {
+    from { transform: translateX(100cqw); }
+    to { transform: translateX(-100%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ticker { animation-name: none; }
+}
+
+.notice {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding-inline: 12px;
+}
+
+.message {
+    margin: 0;
+}
+
+.ticker .message {
+    font-size: 14px;
+}

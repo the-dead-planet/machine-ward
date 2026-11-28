@@ -92,17 +92,23 @@
 .toolbar.top {
     grid-area: top-toolbar;
     z-index: 2;
+    min-height: 0;
+    box-sizing: content-box;
+    border-bottom: 1px solid var(--color-secondary);
+    box-shadow: var(--elevation-raised-down-shadow);
+    overflow: hidden;
+    transition: height 0.25s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .toolbar.top {
+        transition: none;
+    }
 }
 
 .toolbar.top .content {
-    height: 40px;
-    border-bottom: 1px solid var(--color-secondary);
-    box-shadow: var(--elevation-raised-down-shadow);
-}
-
-.toolbar.top .content.has-captions {
-    align-items: flex-start;
-    padding-top: 1px;
+    box-sizing: border-box;
+    container-type: inline-size;
 }
 
 .toolbar.left .content,
@@ -204,8 +210,9 @@
 }
 
 .toolbar.bottom .component {
+    max-height: 30dvh;
     min-height: 0;
-    overflow: hidden;
+    overflow: auto;
 }
 
 .secondary-bottom-toolbar {
@@ -282,16 +289,6 @@
     align-items: flex-start;
 }
 
-.gears-heading {
-    font-size: 14px;
-    font-weight: 400;
-    height: 100%;
-    align-items: center;
-    display: flex;
-    gap: 10px;
-    padding: 0 15px;
-    border-right: 1px solid var(--appearance-default-border);
-}
 
 .spacer-line {
     width: 1px;

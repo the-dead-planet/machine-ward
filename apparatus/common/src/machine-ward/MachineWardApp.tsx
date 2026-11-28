@@ -1,6 +1,5 @@
 import { StrictMode, useEffect, useMemo } from "react";
 import { ErrorBoundary, MediaSubscriptionDefinition, Theme, ThemeContext, themeSpecifications } from "@ui";
-import { MachineWardNotices } from "./MachineWardNotices";
 import { AttributionVault, Cartomancer, ChronoLens, Engine, SignaliumBureau, ToolsStation, Translatron } from "..";
 import { Individuator } from "./individuator";
 import { StorageKeeper } from "./storage-keeper";
@@ -101,7 +100,6 @@ export function MachineWardApp<TMap, TChronoLens extends ChronoLens, TNavigation
                         <components.layoutComponent>
                             <components.topBarComponent title={title} description={description} onNavigate={onNavigate} onNavigateBack={onNavigateBack} />
                             <components.machineComponent onNavigate={onNavigate} onNavigateBack={onNavigateBack} />
-                            <MachineWardNotices noticesComponent={components.noticesComponent} />
                         </components.layoutComponent>
                     </MachineWardContext.Provider>
                 </ErrorBoundary>

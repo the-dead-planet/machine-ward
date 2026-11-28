@@ -12,6 +12,7 @@ const jp: TranslationTable<IndividuatorTranslationKey>['jp'] = {
     theme: 'テーマ',
     "confirm-before-leave": 'ページを離れる前に確認',
     "enable-keyboard-shortcuts": 'キーボードショートカットを有効にする',
+    "show-guide-hints": 'ガイドのヒントを表示する',
     "go-to-keysmith": 'キー工房を表示',
     "go-to-individuator": 'インディヴィデュエーターを開く',
     "debug-mode": 'デバッグモード',

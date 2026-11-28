@@ -6,6 +6,7 @@ import { useSubjectState } from "@tinker-chest";
 import { SideToolPanel } from "../tool-panels/side-panels/SideToolPanel";
 import { ToolIcons } from "../map-tools-grid/ToolIcons";
 import { TopToolsGridArea } from "../map-tools-grid/TopToolsGridArea";
+import { MapGuideHints } from "./MapGuideHints";
 import { SecondaryBottomToolPanel } from "../tool-panels/bottom-panels/secondary-bottom-panel/SecondaryBottomToolPanel";
 import { BottomToolPanel } from "../tool-panels/bottom-panels/primary-bottom-panel/BottomToolPanel";
 import { MobileMap } from "@mobile-apparatus";
@@ -14,6 +15,10 @@ import { Theme, ThemeContext } from "@ui";
 
 const styles = StyleSheet.create({
     mainArea: {
+        flex: 1,
+        flexDirection: 'row',
+    },
+    mapArea: {
         flex: 1,
         flexDirection: 'row',
     },
@@ -49,8 +54,11 @@ export const MapToolsGridAreas: FC<Props> = ({
                         />
                     )}
                 <ThemeContext.Provider value={selectedStyleTheme}>
-                    <ToolIcons placement="left" map={map} />
-                    <TopToolsGridArea map={map} />
+                    <View pointerEvents="box-none" style={styles.mapArea}>
+                        <ToolIcons placement="left" map={map} />
+                        <TopToolsGridArea map={map} />
+                        {map && <MapGuideHints />}
+                    </View>
                     <Attributions />
                     <ToolIcons placement="right" map={map} />
                 </ThemeContext.Provider>

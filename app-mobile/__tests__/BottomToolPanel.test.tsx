@@ -3,7 +3,6 @@ import { StyleSheet } from "react-native";
 import { BottomToolPanel } from "../src/machine/tool-panels/bottom-panels/primary-bottom-panel/BottomToolPanel";
 
 jest.mock("@apparatus", () => ({
-    assignBottomToolPanelRef: () => () => undefined,
     useBottomToolPanel: () => ({ show: true }),
     PANEL_HEADER_CURVE_SIZES: jest.requireActual(
         "../../apparatus/common/src/machine-ward/machine-layout/tinkers/tool-panel-size",
@@ -11,7 +10,7 @@ jest.mock("@apparatus", () => ({
 }));
 
 jest.mock("@mobile-apparatus", () => ({
-    useMobileMachineWard: () => ({ toolsStation: {} }),
+    useReservedToolbarSize: () => () => undefined,
 }));
 
 jest.mock("@ui", () => ({

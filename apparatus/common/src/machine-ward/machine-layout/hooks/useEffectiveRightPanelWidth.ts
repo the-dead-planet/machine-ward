@@ -7,7 +7,7 @@ export const useEffectiveRightPanelWidth = (): number => {
     const theme = useTheme();
     const [media] = useSubjectState(theme.media$);
     const { toolsStation } = useMachineWard();
-    const [panelWidths] = useSubjectState(toolsStation.panelWidths$);
+    const [panelLayout] = useSubjectState(toolsStation.panelLayout$);
     const activeRightPanelToolId = useObservableState(toolsStation.activeRightPanelToolId$, null);
     const toolPanels = useObservableState(toolsStation.toolPanelsByPlacement$, []);
     const rightToolPanels = toolsStation.getToolPanelsByPlacement(toolPanels).right;
@@ -19,6 +19,6 @@ export const useEffectiveRightPanelWidth = (): number => {
     return computeEffectiveWidth({
         hasToolPanels: rightToolPanels.length > 0,
         isCollapsed: activeRightPanelToolId === null,
-        storedSize: panelWidths.rightWidth,
+        storedSize: panelLayout.rightWidth,
     }, LAYOUT_MINS.panels.right);
 };

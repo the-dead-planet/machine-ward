@@ -72,6 +72,18 @@
     font-weight: var(--appearance-default-font-weight, inherit);
 }
 
+.label-after {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+}
+
+.label-after .label {
+    margin-bottom: 0;
+}
+
 /* ── Orientation ── */
 
 .toggle-row {

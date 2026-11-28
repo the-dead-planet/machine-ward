@@ -51,7 +51,7 @@ export const useImageDragFeatureState = () => {
         };
     }, []);
     
-    useImageDragState(apply);
+    useImageDragState(apply, "player");
 
     return sourceRef;
 };

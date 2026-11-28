@@ -19,6 +19,7 @@ export const Popup: FC<Props> = ({
     position,
     triggerAnchor = 'top-left',
     popupAnchor = 'bottom-left',
+    slide = popupAnchor.startsWith('top') ? 'to-bottom' : 'to-top',
     dismissOnClickAway = true,
     variant = DEFAULT_FILL_VARIANT,
     visible,
@@ -52,7 +53,7 @@ export const Popup: FC<Props> = ({
     return createPortal(
         <div className={classNames(styles.overlay, overlayClassName)}>
             <Transition
-                slide={popupAnchor.startsWith('top') ? 'to-bottom' : 'to-top'}
+                slide={slide}
                 render
             >
                 <Panel

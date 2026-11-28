@@ -4,6 +4,7 @@ import { TranslationId } from "../translatron";
 
 export type ToolPanelPlacement = 'right' | 'left' | 'bottom';
 export type ToolIconPlacement = 'right' | 'left';
+export type ReservedToolbar = 'topBar' | 'notices' | 'bottomPanel';
 
 export interface ToolPanelProps<TMap> {
     map: TMap;

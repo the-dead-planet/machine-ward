@@ -1,7 +1,7 @@
 import { useTheme } from "@ui";
 import { useMachineWard } from "../../useMachineWard";
 import { useObservableState, useSubjectState } from "@tinker-chest";
-import { LAYOUT_DEFAULTS, LAYOUT_MINS } from "../tinkers";
+import { clampBottomSecondaryHeight, LAYOUT_DEFAULTS, LAYOUT_MINS } from "../tinkers";
 
 export const useSecondaryBottomToolPanel = (
     activeId: string | null,
@@ -9,7 +9,7 @@ export const useSecondaryBottomToolPanel = (
 ) => {
     const { toolsStation } = useMachineWard();
     const theme = useTheme();
-    const [panelWidths, setPanelWidths] = useSubjectState(toolsStation.panelWidths$);
+    const [panelLayout, setPanelLayout] = useSubjectState(toolsStation.panelLayout$);
     const toolPanels = useObservableState(toolsStation.toolPanelsByPlacement$, []);
     const toolPanelsByPlacement = toolsStation.getToolPanelsByPlacement(toolPanels);
     const effectivePanels = toolPanelsByPlacement["left"].concat(toolPanelsByPlacement["right"]);
@@ -21,18 +21,19 @@ export const useSecondaryBottomToolPanel = (
         ? 0
         : isCollapsed
             ? LAYOUT_MINS.panels.bottomSecondary
-            : panelWidths.bottomSecondaryHeight;
+            : panelLayout.bottomSecondaryHeight;
 
     const handleToolSelect = (newId: string | null) => {
         onActiveIdChange(newId);
 
         if (newId !== null) {
             const thisMin = LAYOUT_MINS.panels.bottomSecondary;
-            const maxAvailable = theme.media$.value.windowHeight - LAYOUT_MINS.remainingArea.height;
-            const clampedHeight = Math.min(Math.max(panelWidths.bottomSecondaryHeight, thisMin), maxAvailable);
-            const targetHeight = clampedHeight < thisMin * 2 ? LAYOUT_DEFAULTS.panels.bottomSecondary : clampedHeight;
+            const requestedHeight = panelLayout.bottomSecondaryHeight < thisMin * 2
+                ? LAYOUT_DEFAULTS.panels.bottomSecondary
+                : panelLayout.bottomSecondaryHeight;
+            const targetHeight = clampBottomSecondaryHeight(requestedHeight, theme.media$.value.windowHeight, toolsStation.getReservedToolbarHeight());
 
-            setPanelWidths((prev) => ({
+            setPanelLayout((prev) => ({
                 ...prev,
                 bottomSecondaryHeight: targetHeight,
             }));

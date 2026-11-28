@@ -32,6 +32,11 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         alignItems: 'flex-start',
     },
+    labelAfter: {
+        flexDirection: 'row-reverse',
+        justifyContent: 'flex-end',
+        alignItems: 'center',
+    },
     toggleRow: {
         alignItems: 'center',
     },
@@ -98,6 +103,7 @@ export const ToggleSwitch: FC<ToggleSwitchProps> = ({
     disabled = false,
     highlighted = false,
     label,
+    labelPlacement = 'before',
     ariaLabel,
     children,
 }) => {
@@ -243,7 +249,7 @@ export const ToggleSwitch: FC<ToggleSwitchProps> = ({
             accessibilityState={{ checked, disabled }}
             disabled={disabled}
             onPress={() => onChange(!checked)}
-            style={[styles.container, { gap }]}
+            style={[styles.container, labelPlacement === 'after' && styles.labelAfter, { gap }]}
         >
             {({ pressed }) => {
                 const appearanceState = disabled

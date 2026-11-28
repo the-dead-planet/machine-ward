@@ -1,7 +1,7 @@
 import { FC, useState } from "react";
-import { Animated, StyleSheet, View } from "react-native";
-import { assignBottomToolPanelRef, useBottomToolPanel } from "@apparatus";
-import { useMobileMachineWard } from "@mobile-apparatus";
+import { Animated, ScrollView, StyleSheet, useWindowDimensions, View } from "react-native";
+import { useBottomToolPanel } from "@apparatus";
+import { useReservedToolbarSize } from "@mobile-apparatus";
 import { BottomToolPanelHeader } from "./BottomToolPanelHeader";
 import { MobileMap } from "@mobile-apparatus";
 import { useTheme, withColorOpacity } from "@ui";
@@ -12,12 +12,6 @@ const styles = StyleSheet.create({
     componentHeader: {
         flexDirection: 'row',
         paddingHorizontal: 8,
-    },
-    measuredContent: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
     },
 });
 
@@ -35,19 +29,17 @@ export const BottomToolPanel: FC<Props> = ({
     joinHeaderButtons,
 }) => {
     const theme = useTheme();
-    const { toolsStation } = useMobileMachineWard();
+    const onToolbarLayout = useReservedToolbarSize('bottomPanel');
     const { show, toolPanel } = useBottomToolPanel(activeId);
+    const { height: windowHeight } = useWindowDimensions();
 
     const [naturalHeight, setNaturalHeight] = useState(0);
-    const animatedHeight = useAnimatedSize(toolPanel !== undefined ? naturalHeight : 0);
-
-    if (!show) {
-        return null;
-    }
+    const maxHeight = windowHeight * 0.30;
+    const animatedHeight = useAnimatedSize(toolPanel ? Math.min(naturalHeight, maxHeight) : 0);
 
     return (
-        <View ref={assignBottomToolPanelRef(toolsStation)}>
-            <View>
+        <View onLayout={onToolbarLayout}>
+            {show ? <View>
                 <View
                     pointerEvents="none"
                     style={[
@@ -64,11 +56,12 @@ export const BottomToolPanel: FC<Props> = ({
                     joinHeaderButtons={joinHeaderButtons}
                 />
                 <Animated.View style={{ height: animatedHeight, overflow: 'hidden' }}>
-                    <View
-                        style={styles.measuredContent}
-                        onLayout={(event) => {
+                    <ScrollView
+                        style={StyleSheet.absoluteFill}
+                        scrollEnabled={naturalHeight > maxHeight}
+                        onContentSizeChange={(_width, height) => {
                             if (toolPanel) {
-                                setNaturalHeight(event.nativeEvent.layout.height);
+                                setNaturalHeight(height);
                             }
                         }}
                     >
@@ -84,9 +77,9 @@ export const BottomToolPanel: FC<Props> = ({
                                 </View>
                             </>
                         ) : null}
-                    </View>
+                    </ScrollView>
                 </Animated.View>
-            </View>
+            </View> : null}
         </View>
     );
 };

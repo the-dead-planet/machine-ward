@@ -74,14 +74,14 @@ export class WebRouteStoryGear extends RouteStoryGear<maplibregl.Map, WebChronoL
    };
 
    public fitBounds = (map: maplibregl.Map, sw: [number, number], ne: [number, number]) => {
-      const { topToolbarSizeRef, rightToolPanelSizeRef, leftToolPanelSizeRef, bottomToolPanelSizeRef, bottomSecondaryToolPanelSizeRef } = this.apparatus.toolsStation;
+      const { measuredToolbarHeights$, rightToolPanelSizeRef, leftToolPanelSizeRef, bottomSecondaryToolPanelSizeRef } = this.apparatus.toolsStation;
       const offset = 50;
 
       map.fitBounds([sw, ne], {
          animate: true, padding: {
-            top: (topToolbarSizeRef.current?.clientHeight ?? 0) + offset,
+            top: measuredToolbarHeights$.value.notices + offset,
             right: (rightToolPanelSizeRef.current?.clientWidth ?? 0) + offset,
-            bottom: (bottomToolPanelSizeRef.current?.clientHeight ?? 0) + (bottomSecondaryToolPanelSizeRef.current?.clientHeight ?? 0) + offset,
+            bottom: measuredToolbarHeights$.value.bottomPanel + (bottomSecondaryToolPanelSizeRef.current?.clientHeight ?? 0) + offset,
             left: (leftToolPanelSizeRef.current?.clientWidth ?? 0) + offset,
          }
       });

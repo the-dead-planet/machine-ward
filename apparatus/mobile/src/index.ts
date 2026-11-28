@@ -3,3 +3,4 @@ export * from "./machine-ward";
 export * from "./model";
 export * from "./translatron";
 export * from "./storage-debug";
+export * from "./useReservedToolbarSize";

@@ -28,10 +28,12 @@ const styles = StyleSheet.create({
     },
     menuList: {
         minWidth: 160,
+        maxHeight: "100%",
     },
 });
 
-interface MobileMenuProps extends MenuProps {
+interface MobileMenuProps extends Omit<MenuProps, "icon"> {
+    icon?: ComponentProps<typeof Button>["icon"];
     triggerStyle?: StyleProp<ViewStyle>;
 }
 
@@ -41,6 +43,7 @@ export const Menu: FC<MobileMenuProps> = ({
     iconSize,
     placement = "bottom-right",
     color = DEFAULT_COLOR,
+    iconColor = color,
     size = iconSize ?? DEFAULT_SIZE,
     variant = "ghost",
     highlightColor = color,
@@ -72,8 +75,8 @@ export const Menu: FC<MobileMenuProps> = ({
             <View ref={triggerRef} collapsable={false}>
                 <Button
                     variant={variant}
-                    icon={icon as ComponentProps<typeof Button>["icon"]}
-                    color={color}
+                    icon={icon}
+                    color={iconColor ?? color}
                     highlightColor={iconActiveColor ?? highlightColor}
                     glyphsShade={glyphsShade}
                     highlightGlyphsShade={highlightGlyphsShade}

@@ -38,6 +38,7 @@ export const SettingsDialog: FC<Props> = ({ onClose, onOpenKeyboardShortcuts }) 
         themeName: pendingSettings.themeName !== savedSettings.themeName,
         confirmBeforeLeave: pendingSettings.confirmBeforeLeave !== savedSettings.confirmBeforeLeave,
         enableKeyboardShortcuts: pendingSettings.enableKeyboardShortcuts !== savedSettings.enableKeyboardShortcuts,
+        showGuideHints: pendingSettings.showGuideHints !== savedSettings.showGuideHints,
         debugMode: isDev && pendingSettings.debugMode !== savedSettings.debugMode,
     };
     const unsavedFor = (key: keyof typeof changed) => changed[key] ? unsaved : undefined;
@@ -209,6 +210,15 @@ export const SettingsDialog: FC<Props> = ({ onClose, onOpenKeyboardShortcuts }) 
                         onClick={onOpenKeyboardShortcuts}
                     />
                 </div>
+                <SettingsCheckbox
+                    wide={isWide}
+                    id="individuator-show-guide-hints-label"
+                    checked={pendingSettings.showGuideHints}
+                    unsaved={unsavedFor('showGuideHints')}
+                    onChange={(showGuideHints) => setPendingSettings((previous) => ({ ...previous, showGuideHints }))}
+                >
+                    {translateIndividuator(IndividuatorTranslationKey.ShowGuideHints)}
+                </SettingsCheckbox>
                 {isDev ? (
                     <SettingsCheckbox
                         wide={isWide}

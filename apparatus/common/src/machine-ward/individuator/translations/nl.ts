@@ -12,6 +12,7 @@ const nl: TranslationTable<IndividuatorTranslationKey>['nl'] = {
     theme: 'Thema',
     "confirm-before-leave": 'Bevestigen voor vertrek',
     "enable-keyboard-shortcuts": 'Sneltoetsen inschakelen',
+    "show-guide-hints": 'Gebruikstips tonen',
     "go-to-keysmith": 'Ga naar toetsensmid',
     "go-to-individuator": 'Ga naar individuator',
     "debug-mode": 'Debugmodus',

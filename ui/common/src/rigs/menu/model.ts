@@ -19,6 +19,7 @@ export interface MenuProps extends AppearanceProps {
     /** Where the menu opens relative to its trigger. Placement may flip to stay inside the viewport. */
     placement?: MenuAnchor;
     icon?: string;
+    iconColor?: ColorVariant;
     /** Trigger and list size when size is not supplied. */
     iconSize?: SizeVariant;
     /** Overrides the trigger highlight palette without changing menu item colors. */
