@@ -17,7 +17,7 @@ describe('Startup placeholder', () => {
         });
         const neutral = themeSpecifications[ThemeName.Batman].light.colors.neutral;
         cy.get('#startup-placeholder')
-            .should('have.css', 'background-color', `rgb(${neutral[50].r}, ${neutral[50].g}, ${neutral[50].b})`)
+            .should('have.css', 'background-color', `rgb(${neutral[100].r}, ${neutral[100].g}, ${neutral[100].b})`)
             .and('have.css', 'color', `rgb(${neutral[900].r}, ${neutral[900].g}, ${neutral[900].b})`);
         cy.document().then((document) => document.fonts.load('16px "Syne Mono"'));
         cy.document().should((document) => {

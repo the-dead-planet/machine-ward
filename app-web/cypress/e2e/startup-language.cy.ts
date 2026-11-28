@@ -13,8 +13,14 @@ describe('Startup language', () => {
             },
         });
         cy.get('#startup-message').should('have.text', 'Zarząd martwej planety wita Cię...');
-        cy.get('#startup-manifest-title').should('have.text', 'Włączanie zasilania oddziału maszyn…');
+        cy.get('#startup-manifest-title').should('have.text', 'Włączanie zasilania oddziału maszyn:');
         cy.get('#startup-progress').should('have.attr', 'aria-labelledby', 'startup-manifest-title');
+        cy.get('#startup-manifest').then(($manifest) => {
+            const bounds = $manifest[0].getBoundingClientRect();
+            cy.window().then((window) => {
+                expect(bounds.left + bounds.width / 2).to.be.closeTo(window.innerWidth / 2, 1);
+            });
+        });
         cy.get('html').should('have.attr', 'lang', 'pl-PL');
     });
 
@@ -56,7 +62,7 @@ describe('Startup language', () => {
         const snapshots: {
             names: string[];
             states: Record<string, string>;
-            nameStarts: number[];
+            nameOffsets: number[];
         }[] = [];
         cy.viewport(390, 844);
         cy.intercept('GET', /\/(?:vendors-react|react-vendors)[^/]*\.js$/, {
@@ -77,7 +83,12 @@ describe('Startup language', () => {
                 const observer = new window.MutationObserver(() => {
                     const names: string[] = [];
                     const states: Record<string, string> = {};
-                    const nameStarts: number[] = [];
+                    const nameOffsets: number[] = [];
+                    const manifest = window.document.getElementById('startup-manifest');
+                    if (!manifest) {
+                        return;
+                    }
+                    const manifestLeft = manifest.getBoundingClientRect().left;
                     for (const item of window.document.querySelectorAll('#startup-progress li')) {
                         const nameElement = item.lastElementChild;
                         const name = nameElement?.textContent;
@@ -85,11 +96,11 @@ describe('Startup language', () => {
                         if (nameElement && name && state) {
                             names.push(name);
                             states[name] = state;
-                            nameStarts.push(nameElement.getBoundingClientRect().left);
+                            nameOffsets.push(nameElement.getBoundingClientRect().left - manifestLeft);
                         }
                     }
                     if (names.length > 0) {
-                        snapshots.push({ names, states, nameStarts });
+                        snapshots.push({ names, states, nameOffsets });
                     }
                 });
                 observer.observe(window.document, {
@@ -131,13 +142,13 @@ describe('Startup language', () => {
             const finalOrder = snapshots.at(-1)?.names ?? [];
             expect(finalOrder[0]).to.equal('Kora jednostki centralnej');
             expect(finalOrder.at(-2)).to.equal('Oddział maszyn');
-            expect(finalOrder.at(-1)).to.equal('Ustawianie zębatek oddziału maszyn');
+            expect(finalOrder.at(-1)).to.equal('Ustawianie zębatek');
             expect(finalOrder).to.include('Skrzynia majsterkowicza');
             expect(finalOrder.indexOf('Skrzynia majsterkowicza')).to.be.lessThan(finalOrder.indexOf('Zestaw do budowy interfejsu użytkownika'));
             expect(finalOrder.indexOf('Zestaw do budowy interfejsu użytkownika')).to.be.lessThan(finalOrder.indexOf('Aparatura'));
             for (const snapshot of snapshots) {
                 expect(snapshot.names).to.deep.equal(finalOrder);
-                expect(snapshot.nameStarts).to.deep.equal(snapshots[0].nameStarts);
+                expect(snapshot.nameOffsets).to.deep.equal(snapshots[0].nameOffsets);
             }
         });
         cy.get('#startup-progress')
@@ -197,7 +208,7 @@ describe('Gear-loading handoff', () => {
             },
         });
         cy.then(() => {
-            expect(loadingMessages).to.include('Ustawianie zębatek oddziału maszyn');
+            expect(loadingMessages).to.include('Ustawianie zębatek');
             expect(loadingScreens.size).to.equal(1);
         });
         cy.get('#startup-placeholder').should('not.exist');

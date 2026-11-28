@@ -66,7 +66,7 @@ const createProps = () => {
 test('does not mount the app until saved theme and language are ready', async () => {
     const props = createProps();
     const screen = await render(<MachineWardApp {...props} />);
-    expect(screen.getByText('Powering up the machine ward…')).toBeVisible();
+    expect(screen.getByText('Powering up the machine ward:')).toBeVisible();
     expect(screen.queryByText('Toolbar')).toBeNull();
     expect(screen.queryByText('App: dark/en')).toBeNull();
 
@@ -76,7 +76,7 @@ test('does not mount the app until saved theme and language are ready', async ()
     });
     expect(screen.getByText('App: light/pl')).toBeVisible();
     expect(screen.getByText('Toolbar')).toBeVisible();
-    expect(screen.queryByText('Powering up the machine ward…')).toBeNull();
+    expect(screen.queryByText('Powering up the machine ward:')).toBeNull();
 });
 
 test('keeps the existing immediate rendering when no startup screen is configured', async () => {
