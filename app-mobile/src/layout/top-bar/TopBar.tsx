@@ -4,7 +4,7 @@ import { useTheme, FontType, Icons } from "@ui";
 import { Button, resolveElevationStyle, Text, ThemeModeToggle, topBarBackAction$ } from '@mobile-ui';
 import { MachineWardTopBarProps, useMultipleTranslations } from "@apparatus";
 import { useSubjectState } from "@tinker-chest";
-import { useMobileMachineWard } from "@mobile-apparatus";
+import { useMobileMachineWard, useReservedToolbarSize } from "@mobile-apparatus";
 import { RootStackParamList } from "../../navigation";
 import { UnderConstructionChip } from "./UnderConstructionChip";
 import { TOP_BAR_HEIGHT } from "../../machine-sizes";
@@ -49,6 +49,7 @@ export const TopBar: FC<MachineWardTopBarProps<keyof RootStackParamList>> = ({
     const theme = useTheme();
     const appearance = theme.resolveAppearance();
     const { individuator, namespace, translationKey, toolsStation } = useMobileMachineWard();
+    const onToolbarLayout = useReservedToolbarSize('topBar');
     const [topBarTools] = useSubjectState(toolsStation.topBarTools$);
     const [topBarBackAction] = useSubjectState(topBarBackAction$);
     const [goBackTooltip, lightModeTooltip, darkModeTooltip] = useMultipleTranslations([
@@ -59,7 +60,7 @@ export const TopBar: FC<MachineWardTopBarProps<keyof RootStackParamList>> = ({
 
     return (
         <View
-            ref={instance => { toolsStation.topBarSizeRef.current = instance; }}
+            onLayout={onToolbarLayout}
             style={[styles.container, {
                 backgroundColor: appearance.surface,
                 ...resolveElevationStyle(theme, 'raised'),

@@ -2,6 +2,7 @@ import { describe, it } from "mocha";
 import { expect } from "chai";
 import {
     clampPanelLayout,
+    clampBottomSecondaryHeight,
     clampPanelWidth,
     computeEffectiveWidth,
     LAYOUT_DEFAULTS,
@@ -11,6 +12,10 @@ import {
 } from "../../src";
 
 describe("panel-layout", () => {
+    it("keeps the secondary panel header usable when reserved chrome leaves too little room", () => {
+        expect(clampBottomSecondaryHeight(300, 150, 100)).to.equal(LAYOUT_MINS.panels.bottomSecondary);
+        expect(clampBottomSecondaryHeight(10, 700, 100)).to.equal(LAYOUT_MINS.panels.bottomSecondary);
+    });
     for (const { hasToolPanels, isCollapsed, expected } of [
         { hasToolPanels: false, isCollapsed: false, expected: 0 },
         { hasToolPanels: false, isCollapsed: true, expected: 0 },

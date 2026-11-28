@@ -36,8 +36,8 @@ beforeEach(() => {
 });
 
 jest.mock("@mobile-apparatus", () => ({
+    useReservedToolbarSize: () => () => undefined,
     useMobileMachineWard: () => ({
-        toolsStation: { topToolbarSizeRef: {} },
         translationKey: { Notices: "notices", RemoveNotice: "remove-notice" },
     }),
 }));

@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import { FC, useId, useRef } from "react";
 import { useNoticeReader, useNoticeToolbarContent, useTranslate } from "@apparatus";
-import { useWebMachineWard } from "@web-apparatus";
+import { useReservedToolbarSize, useWebMachineWard } from "@web-apparatus";
 import machineStyles from "../machine.module.css";
 import { NoticePopup } from "./NoticePopup";
 import { NoticeSummary } from "./NoticeSummary";
@@ -11,7 +11,8 @@ import styles from "./notices.module.css";
 
 export const NoticesTopToolbar: FC = () => {
     const { notices, onRemove, language } = useNoticeToolbarContent();
-    const { toolsStation, namespace, translationKey } = useWebMachineWard();
+    const { namespace, translationKey } = useWebMachineWard();
+    const toolbarRef = useReservedToolbarSize('notices');
     const translate = useTranslate();
     const reader = useNoticeReader(notices, onRemove, language);
     const summaryRef = useRef<HTMLButtonElement>(null);
@@ -19,7 +20,7 @@ export const NoticesTopToolbar: FC = () => {
     const title = translate({ n: namespace, t: translationKey.Notices });
     const hasNotices = notices.length > 0;
     const showNoticeRow = hasNotices || reader.snapshot !== null;
-    const { toolbarRef, bodyRef, height } = useToolbarHeight(showNoticeRow);
+    const { bodyRef, height } = useToolbarHeight(showNoticeRow);
 
     return (
         <>
@@ -27,10 +28,7 @@ export const NoticesTopToolbar: FC = () => {
                 data-testid="notices-toolbar"
                 className={classNames(machineStyles.toolbar, machineStyles.top)}
                 style={{ height }}
-                ref={(instance) => {
-                    toolsStation.topToolbarSizeRef.current = instance;
-                    toolbarRef.current = instance;
-                }}
+                ref={toolbarRef}
             >
                 <div className={machineStyles.content}>
                     <div data-testid="notices-body" ref={bodyRef}>

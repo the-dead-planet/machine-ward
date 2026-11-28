@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
 export const useToolbarHeight = (hasContent: boolean) => {
-    const toolbarRef = useRef<HTMLDivElement>(null);
     const bodyRef = useRef<HTMLDivElement>(null);
     const [height, setHeight] = useState(0);
 
@@ -28,5 +27,5 @@ export const useToolbarHeight = (hasContent: boolean) => {
         };
     }, [hasContent]);
 
-    return { toolbarRef, bodyRef, height };
+    return { bodyRef, height };
 };

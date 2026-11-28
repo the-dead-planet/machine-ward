@@ -1,7 +1,7 @@
 import { FC, useState } from "react";
 import { Animated, ScrollView, StyleSheet, useWindowDimensions, View } from "react-native";
-import { assignBottomToolPanelRef, useBottomToolPanel } from "@apparatus";
-import { useMobileMachineWard } from "@mobile-apparatus";
+import { useBottomToolPanel } from "@apparatus";
+import { useReservedToolbarSize } from "@mobile-apparatus";
 import { BottomToolPanelHeader } from "./BottomToolPanelHeader";
 import { MobileMap } from "@mobile-apparatus";
 import { useTheme, withColorOpacity } from "@ui";
@@ -29,7 +29,7 @@ export const BottomToolPanel: FC<Props> = ({
     joinHeaderButtons,
 }) => {
     const theme = useTheme();
-    const { toolsStation } = useMobileMachineWard();
+    const onToolbarLayout = useReservedToolbarSize('bottomPanel');
     const { show, toolPanel } = useBottomToolPanel(activeId);
     const { height: windowHeight } = useWindowDimensions();
 
@@ -37,13 +37,9 @@ export const BottomToolPanel: FC<Props> = ({
     const maxHeight = windowHeight * 0.30;
     const animatedHeight = useAnimatedSize(toolPanel ? Math.min(naturalHeight, maxHeight) : 0);
 
-    if (!show) {
-        return null;
-    }
-
     return (
-        <View ref={assignBottomToolPanelRef(toolsStation)}>
-            <View>
+        <View onLayout={onToolbarLayout}>
+            {show ? <View>
                 <View
                     pointerEvents="none"
                     style={[
@@ -83,7 +79,7 @@ export const BottomToolPanel: FC<Props> = ({
                         ) : null}
                     </ScrollView>
                 </Animated.View>
-            </View>
+            </View> : null}
         </View>
     );
 };

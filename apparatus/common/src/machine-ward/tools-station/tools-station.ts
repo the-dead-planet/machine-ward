@@ -10,6 +10,7 @@ import {
     ToolIconPlacement,
     TopToolsProps,
     ToolbarSizeRef,
+    ReservedToolbar,
     ToolIconAnchorRef,
     ToolPopup,
     ToolPopupProps,
@@ -63,11 +64,13 @@ export class ToolsStation<TMap> {
     public activeBottomPanelToolId$ = new BehaviorSubject<string | null>(null);
     public activeBottomSecondaryPanelToolId$ = new BehaviorSubject<string | null>(null);
 
-    public topBarSizeRef: ToolbarSizeRef = { current: null };
-    public topToolbarSizeRef: ToolbarSizeRef = { current: null };
+    public readonly toolbarHeights$ = new BehaviorSubject<Record<ReservedToolbar, number>>({
+        topBar: 0,
+        notices: 0,
+        bottomPanel: 0,
+    });
     public rightToolPanelSizeRef: ToolbarSizeRef = { current: null };
     public leftToolPanelSizeRef: ToolbarSizeRef = { current: null };
-    public bottomToolPanelSizeRef: ToolbarSizeRef = { current: null };
     public bottomSecondaryToolPanelSizeRef: ToolbarSizeRef = { current: null };
 
     /**
@@ -81,9 +84,13 @@ export class ToolsStation<TMap> {
      * (top bar, notice toolbar and bottom tool panel).
      */
     public getReservedToolbarHeight = (): number =>
-        (this.topBarSizeRef.current?.clientHeight ?? 0)
-        + (this.topToolbarSizeRef.current?.clientHeight ?? 0)
-        + (this.bottomToolPanelSizeRef.current?.clientHeight ?? 0);
+        Object.values(this.toolbarHeights$.value).reduce((total, height) => total + height, 0);
+
+    public setToolbarHeight = (toolbar: ReservedToolbar, height: number): void => {
+        if (this.toolbarHeights$.value[toolbar] !== height) {
+            this.toolbarHeights$.next({ ...this.toolbarHeights$.value, [toolbar]: height });
+        }
+    };
 
     public panelWidths$ = new BehaviorSubject<PanelLayout>({ leftWidth: 360, rightWidth: 360, bottomSecondaryHeight: 300 });
 

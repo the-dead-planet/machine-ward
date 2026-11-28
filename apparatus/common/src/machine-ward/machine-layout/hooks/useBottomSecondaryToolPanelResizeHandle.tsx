@@ -3,7 +3,7 @@ import { useObservableState } from "@tinker-chest";
 import { useTheme } from "@ui";
 import { useMachineWard } from "../../useMachineWard";
 import { BottomSecondaryDragState } from "../model";
-import { LAYOUT_MINS } from "../tinkers";
+import { clampBottomSecondaryHeight, LAYOUT_MINS } from "../tinkers";
 
 export const useBottomSecondaryToolPanelResizeHandle = (
     onDraggingChange?: (isDragging: boolean) => void
@@ -22,8 +22,7 @@ export const useBottomSecondaryToolPanelResizeHandle = (
         const isCollapsed = activeBottomSecondaryId === null;
         const storedHeight = isCollapsed ? LAYOUT_MINS.panels.bottomSecondary : toolsStation.panelWidths$.value.bottomSecondaryHeight;
         const heightClampMin = LAYOUT_MINS.panels.bottomSecondary;
-        const heightClampMax = theme.media$.value.windowHeight - LAYOUT_MINS.remainingArea.height;
-        const clampedStored = Math.min(Math.max(storedHeight, heightClampMin), heightClampMax);
+        const clampedStored = clampBottomSecondaryHeight(storedHeight, theme.media$.value.windowHeight, toolsStation.getReservedToolbarHeight());
         bottomSecondaryDragStateRef.current = {
             startY: clientY,
             currentY: clientY,
@@ -40,7 +39,7 @@ export const useBottomSecondaryToolPanelResizeHandle = (
 
         ds.currentY += delta;
         const totalDelta = ds.currentY - ds.startY;
-        const newHeight = Math.max(Math.min(ds.startHeight - totalDelta, theme.media$.value.windowHeight - LAYOUT_MINS.remainingArea.height - toolsStation.getReservedToolbarHeight()), ds.panelMin);
+        const newHeight = clampBottomSecondaryHeight(ds.startHeight - totalDelta, theme.media$.value.windowHeight, toolsStation.getReservedToolbarHeight());
 
         const activeBottomSecondaryId = toolsStation.activeBottomSecondaryPanelToolId$.value;
         const isCollapsed = activeBottomSecondaryId === null;

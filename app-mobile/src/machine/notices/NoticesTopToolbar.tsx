@@ -1,7 +1,7 @@
-import { FC, useId, useRef } from "react";
+import { FC, useRef } from "react";
 import { Animated, type HostInstance, StyleSheet, View } from "react-native";
 import { useNoticeReader, useNoticeToolbarContent, useTranslate } from "@apparatus";
-import { useMobileMachineWard } from "@mobile-apparatus";
+import { useMobileMachineWard, useReservedToolbarSize } from "@mobile-apparatus";
 import { useReducedMotion } from "@mobile-ui";
 import { useTheme, withColorOpacity } from "@ui";
 import { NoticePopup } from "./NoticePopup";
@@ -30,7 +30,8 @@ export const NoticesTopToolbar: FC = () => {
     const { notices, onRemove, language } = useNoticeToolbarContent();
     const theme = useTheme();
     const appearance = theme.resolveAppearance();
-    const { toolsStation, namespace, translationKey } = useMobileMachineWard();
+    const { namespace, translationKey } = useMobileMachineWard();
+    const onToolbarLayout = useReservedToolbarSize('notices');
     const translate = useTranslate();
     const reader = useNoticeReader(notices, onRemove, language);
     const summaryRef = useRef<HostInstance>(null);
@@ -44,7 +45,7 @@ export const NoticesTopToolbar: FC = () => {
     return (
         <>
             <Animated.View
-                ref={instance => { toolsStation.topToolbarSizeRef.current = instance; }}
+                onLayout={onToolbarLayout}
                 testID="notices-toolbar"
                 style={[styles.container, { height, borderBottomColor: secondary }]}
             >

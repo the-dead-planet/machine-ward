@@ -23,6 +23,7 @@ export const useToolPanelSizeClamp = () => {
     const leftActiveId = useObservableState(toolsStation.activeLeftPanelToolId$, null);
     const rightActiveId = useObservableState(toolsStation.activeRightPanelToolId$, null);
     const bottomSecondaryActiveId = useObservableState(toolsStation.activeBottomSecondaryPanelToolId$, null);
+    const [toolbarHeights] = useSubjectState(toolsStation.toolbarHeights$);
 
     useEffect(() => {
         const leftState: PanelState = {
@@ -65,6 +66,7 @@ export const useToolPanelSizeClamp = () => {
         leftActiveId,
         rightActiveId,
         bottomSecondaryActiveId,
+        toolbarHeights,
     ]);
 
     const groupSidePanelsInBottomSecondaryToolbar = media.isLessThanSm;

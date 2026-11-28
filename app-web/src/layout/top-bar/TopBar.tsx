@@ -1,7 +1,7 @@
 import { FC } from "react";
 import classNames from "classnames";
 import { MachineWardTopBarProps, useMultipleTranslations } from "@apparatus";
-import { useWebMachineWard } from "@web-apparatus";
+import { useReservedToolbarSize, useWebMachineWard } from "@web-apparatus";
 import { FontType, useTheme } from "@ui";
 import { H1, ThemeModeToggle } from "@web-ui";
 import { LayoutMenu } from "./menu/LayoutMenu";
@@ -15,6 +15,7 @@ export const TopBar: FC<MachineWardTopBarProps> = ({
     description,
 }) => {
     const { namespace, translationKey, individuator, toolsStation } = useWebMachineWard();
+    const toolbarRef = useReservedToolbarSize<HTMLElement>('topBar');
     const [media] = useSubjectState(useTheme().media$);
     const compact = media.isLessThanSm;
     const controlSize = compact ? "sm" : "md";
@@ -27,9 +28,7 @@ export const TopBar: FC<MachineWardTopBarProps> = ({
     // TODO: Icons: sound, geolocation on/off
     return (
         <nav
-            ref={(instance) => {
-                toolsStation.topBarSizeRef.current = instance;
-            }}
+            ref={toolbarRef}
             className={classNames(styles["top-bar"], compact && styles.compact)}
         >
             <div className={classNames(styles["section"], styles["left"])}>
