@@ -3,6 +3,8 @@ import { MachineTranslationKey } from "../model";
 
 const ru: TranslationTable<MachineTranslationKey>['ru'] = {
     'startup-welcome': 'Администрация мёртвой планеты приветствует вас...',
+    'aligning-machine-ward-gears': 'Выравнивание шестерён отделения машин...',
+    'gear-load-errors': 'Некоторые шестерни заклинило, и их не удалось выровнять: {{gears}}.',
     enabled: 'Включены',
     disabled: 'Отключены',
     status: 'Состояние',
@@ -51,7 +53,7 @@ const ru: TranslationTable<MachineTranslationKey>['ru'] = {
     'go-back': 'Назад',
     'switch-to-light-mode': 'Переключиться на светлый режим',
     'switch-to-dark-mode': 'Переключиться на темный режим',
-    gears: 'Механизмы',
+    gears: 'Шестерни',
     collapse: 'Свернуть',
     expand: 'Развернуть',
     'panel-menu': 'Panel options',

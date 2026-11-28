@@ -1,6 +1,6 @@
 import type * as maplibregl from "maplibre-gl";
 import { createRoot } from 'react-dom/client';
-import { MachineGear } from '@apparatus';
+import { MachineGear, Translatron } from '@apparatus';
 import { WebMachineWard } from './machine-ward';
 import { ErrorFallbackPage, LoadingPage } from './pages';
 import "./index.css";
@@ -12,7 +12,8 @@ const container = document.getElementById('app');
 const root = createRoot(container!);
 
 async function initializeApp() {
-    root.render(<LoadingPage stage="machine ward gears" />);
+    const startupLanguage = Translatron.resolveLanguage(undefined, document.documentElement.lang);
+    root.render(<LoadingPage language={startupLanguage} />);
 
     try {
         const modules = await Promise.allSettled(__GEAR_REGISTRY__.map((gearName) => import(`../../gears/${gearName}/web/src`)));
@@ -34,11 +35,17 @@ async function initializeApp() {
         root.render(machineWard.render());
 
         if (rejected.length > 0) {
-            console.warn('Some gears could not be engaged:', rejected);
+            console.warn('Some gears failed to load:', rejected);
             machineWard.signaliumBureau.addNotice({
                 id: 'gear-load-errors',
                 type: 'hazard',
-                text: `Some gears could not be engaged: ${rejected.join(', ')}.`,
+                text: machineWard.translatron.translate(startupLanguage, machineWard.translatron.registry$.value, {
+                    n: machineWard.namespace,
+                    t: machineWard.translationKey.GearLoadErrors,
+                    p: {
+                        gears: rejected.join(', '),
+                    },
+                }),
             });
         }
     } catch (err) {

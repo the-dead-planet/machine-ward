@@ -3,6 +3,8 @@ import { MachineTranslationKey } from "../model";
 
 const nl: TranslationTable<MachineTranslationKey>['nl'] = {
     'startup-welcome': 'Het bestuur van de dode planeet heet je welkom...',
+    'aligning-machine-ward-gears': 'Tandwielen van de machineafdeling uitlijnen...',
+    'gear-load-errors': 'Sommige tandwielen zitten vast en konden niet worden uitgelijnd: {{gears}}.',
     enabled: 'Ingeschakeld',
     disabled: 'Uitgeschakeld',
     status: 'Status',
@@ -51,7 +53,7 @@ const nl: TranslationTable<MachineTranslationKey>['nl'] = {
     'go-back': 'Ga terug',
     'switch-to-light-mode': 'Overschakelen naar lichte modus',
     'switch-to-dark-mode': 'Overschakelen naar donkere modus',
-    gears: 'Versnellingen',
+    gears: 'Tandwielen',
     collapse: 'Inklappen',
     expand: 'Uitklappen',
     'panel-menu': 'Panel options',

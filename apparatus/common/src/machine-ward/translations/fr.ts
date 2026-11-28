@@ -3,6 +3,8 @@ import { MachineTranslationKey } from "../model";
 
 const fr: TranslationTable<MachineTranslationKey>['fr'] = {
     'startup-welcome': 'La direction de la planète morte vous souhaite la bienvenue...',
+    'aligning-machine-ward-gears': 'Alignement des engrenages du pavillon des machines...',
+    'gear-load-errors': 'Certains engrenages sont bloqués et n’ont pas pu être alignés : {{gears}}.',
     enabled: 'Activés',
     disabled: 'Désactivés',
     status: 'État',

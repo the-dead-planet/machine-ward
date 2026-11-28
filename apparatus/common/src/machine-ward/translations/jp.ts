@@ -3,6 +3,8 @@ import { MachineTranslationKey } from "../model";
 
 const jp: TranslationTable<MachineTranslationKey>['jp'] = {
     'startup-welcome': '死せる惑星の管理部があなたを歓迎します...',
+    'aligning-machine-ward-gears': '機械病棟のギアの位置を調整中...',
+    'gear-load-errors': '一部のギアが引っ掛かり、位置を調整できませんでした：{{gears}}。',
     enabled: '有効',
     disabled: '無効',
     status: '状態',

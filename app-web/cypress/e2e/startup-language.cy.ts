@@ -50,3 +50,58 @@ describe('Startup language', () => {
         cy.get('#startup-message').should('have.text', 'Die Verwaltung des toten Planeten heißt dich willkommen...');
     });
 });
+
+describe('React loading language', () => {
+    it('keeps the saved language when the welcome screen hands over to React', () => {
+        const loadingMessages: string[] = [];
+        cy.intercept('GET', /\/(?:gear-|gears_).*\.js$/, (request) => {
+            request.continue((response) => {
+                response.setDelay(500);
+            });
+        });
+        cy.visit('/', {
+            onBeforeLoad: (window) => {
+                window.localStorage.setItem('application-settings', JSON.stringify({
+                    language: 'pl',
+                }));
+                cy.stub(window.Intl.DateTimeFormat.prototype, 'resolvedOptions').returns({ locale: 'de-DE' });
+                const observer = new window.MutationObserver(() => {
+                    const loadingPage = window.document.querySelector('#app > [role="status"]:not(#startup-placeholder)');
+                    if (loadingPage?.textContent) {
+                        loadingMessages.push(loadingPage.textContent.trim());
+                        observer.disconnect();
+                    }
+                });
+                observer.observe(window.document, {
+                    childList: true,
+                    subtree: true,
+                });
+                window.addEventListener('pagehide', () => observer.disconnect(), { once: true });
+            },
+        });
+        cy.then(() => {
+            expect(loadingMessages).to.include('Ustawianie zębatek oddziału maszyn...');
+        });
+    });
+
+    it('translates gear-load warnings and preserves the failed gear details', () => {
+        cy.intercept('GET', /\/(?:gear-submit-data[.-]|gears_submit-data_).*\.js$/, {
+            statusCode: 404,
+            body: '',
+        });
+        cy.visit('/', {
+            onBeforeLoad: (window) => {
+                window.localStorage.setItem('application-settings', JSON.stringify({
+                    language: 'pl',
+                }));
+                window.localStorage.setItem('cartomancer:map-style', JSON.stringify({
+                    id: 'background',
+                }));
+            },
+        });
+        cy.contains('Niektóre zębatki się zacięły i nie udało się ich ustawić:')
+            .should('be.visible')
+            .and('contain.text', 'submit-data (')
+            .and('not.contain.text', '{{gears}}');
+    });
+});

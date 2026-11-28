@@ -3,6 +3,8 @@ import { MachineTranslationKey } from "../model";
 
 const de: TranslationTable<MachineTranslationKey>['de'] = {
     'startup-welcome': 'Die Verwaltung des toten Planeten heißt dich willkommen...',
+    'aligning-machine-ward-gears': 'Zahnräder der Maschinenstation werden ausgerichtet...',
+    'gear-load-errors': 'Einige Zahnräder sind verklemmt und konnten nicht ausgerichtet werden: {{gears}}.',
     enabled: 'Aktiviert',
     disabled: 'Deaktiviert',
     status: 'Status',
@@ -51,7 +53,7 @@ const de: TranslationTable<MachineTranslationKey>['de'] = {
     'go-back': 'Zurück',
     'switch-to-light-mode': 'Zum hellen Modus wechseln',
     'switch-to-dark-mode': 'Zum dunklen Modus wechseln',
-    gears: 'Getriebe',
+    gears: 'Zahnräder',
     collapse: 'Einklappen',
     expand: 'Ausklappen',
     'panel-menu': 'Paneloptionen',

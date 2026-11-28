@@ -3,6 +3,8 @@ import { MachineTranslationKey } from "../model";
 
 const pl: TranslationTable<MachineTranslationKey>['pl'] = {
     'startup-welcome': 'Zarząd martwej planety wita Cię...',
+    'aligning-machine-ward-gears': 'Ustawianie zębatek oddziału maszyn...',
+    'gear-load-errors': 'Niektóre zębatki się zacięły i nie udało się ich ustawić: {{gears}}.',
     enabled: 'Włączone',
     disabled: 'Wyłączone',
     status: 'Stan',
@@ -51,7 +53,7 @@ const pl: TranslationTable<MachineTranslationKey>['pl'] = {
     'go-back': 'Wróć',
     'switch-to-light-mode': 'Przełącz na tryb jasny',
     'switch-to-dark-mode': 'Przełącz na tryb ciemny',
-    gears: 'Tryby',
+    gears: 'Zębatki',
     collapse: 'Zwiń',
     expand: 'Rozwiń',
     'panel-menu': 'Panel options',

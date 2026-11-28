@@ -1,15 +1,18 @@
 import { FC } from "react";
+import { Language, MachineTranslationKey } from '@apparatus';
+import * as translations from '@the-dead-planet/machine-ward-apparatus-common/src/machine-ward/translations';
 import styles from './pages.module.css';
 
 interface Props {
-    stage?: string;
+    language: Language;
 }
 
-export const LoadingPage: FC<Props> = ({ stage }) => {
+export const LoadingPage: FC<Props> = ({ language }) => {
     return (
-        <div className={styles['page']}>
+        <div className={styles['page']} role="status">
             <p className={styles['text']}>
-                {['Loading', stage].filter(Boolean).join(' ')}...
+                {translations[language]?.[MachineTranslationKey.AligningMachineWardGears]
+                    ?? translations.en?.[MachineTranslationKey.AligningMachineWardGears]}
             </p>
         </div>
     );

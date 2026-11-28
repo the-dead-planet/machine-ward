@@ -73,6 +73,8 @@ export enum MachineTranslationKey {
     UnderConstruction = 'under-construction',
     PoweringUpMachineWard = 'powering-up-machine-ward',
     StartupWelcome = 'startup-welcome',
+    AligningMachineWardGears = 'aligning-machine-ward-gears',
+    GearLoadErrors = 'gear-load-errors',
     KeyboardShortcuts = 'keyboard-shortcuts',
     Keysmith = 'keysmith',
     Label = 'label',
