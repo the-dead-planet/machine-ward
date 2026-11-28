@@ -2,8 +2,19 @@ import { TranslationTable } from "../translatron";
 import { MachineTranslationKey } from "../model";
 
 const it: TranslationTable<MachineTranslationKey>['it'] = {
+    'user-interface-assembly-kit': 'Kit di assemblaggio delle interfacce utente',
+    apparatus: 'Apparato',
+    'tinker-chest': 'Baule del tuttofare',
+    'interface-runtime': 'Corteccia del mainframe',
+    'map-engine': 'Strumenti del cartomante',
+    'startup-download-pending': 'Download in corso',
+    'startup-download-complete': 'Scaricato',
+    'startup-download-failed': 'Download non riuscito',
+    'shared-libraries': 'Pezzi recuperati',
+    'loading-map': 'Caricamento della mappa...',
+    'map-loading-failed': 'Impossibile caricare la mappa.',
     'startup-welcome': 'La direzione del pianeta morto ti dà il benvenuto...',
-    'aligning-machine-ward-gears': 'Allineamento degli ingranaggi del reparto macchine...',
+    'aligning-gears': 'Allineamento degli ingranaggi del reparto macchine',
     'gear-load-errors': 'Alcuni ingranaggi sono inceppati e non è stato possibile allinearli: {{gears}}.',
     enabled: 'Abilitate',
     disabled: 'Disabilitate',

@@ -8,6 +8,8 @@ import { MobileMap, useMobileMachineWard } from "@mobile-apparatus";
 import { useMapTools } from "./useMapTools";
 import { useMapPanResponder } from "./useMapPanResponder";
 import { MapCanvasContainer } from "./MapCanvasContainer";
+import { MapLoadingIndicator } from './MapLoadingIndicator';
+import { useMapLoading } from './useMapLoading';
 
 const styles = StyleSheet.create({
     recordingView: {
@@ -46,9 +48,7 @@ export const MapCanvas: FC<Props> = ({
 }) => {
     const { cartomancer, signaliumBureau, toolsStation } = useMobileMachineWard();
     const [dragPan] = useSubjectState(map.dragPan$);
-    const [isInitialised, setIsInitialised] = useSubjectState(cartomancer.isInitialised$);
-    const [isStyleLoaded, setIsStyleLoaded] = useSubjectState(cartomancer.isStyleLoaded$);
-    const [selectedStyle] = useSubjectState(cartomancer.selectedStyle$);
+    const loading = useMapLoading();
     const [onPressHandlers] = useSubjectState(map.onPressHandlers$);
     const [onLongPressHandlers] = useSubjectState(map.onLongPressHandlers$);
     const clickedZoom = useRef<number>(null);
@@ -82,55 +82,51 @@ export const MapCanvas: FC<Props> = ({
     useMapTools(map);
 
     return (
-        <MapCanvasContainer map={map}>
-            <View style={styles.mapView} {...panResponder.panHandlers}>
-                <MaplibreMap
-                    ref={(r) => map.map$.next(r)}
-                    style={styles.mapView}
-                    androidView="texture"
-                    dragPan={dragPan}
-                    mapStyle={Cartomancer.styles[selectedStyle.id]?.style as StyleSpecification}
-                    onDidFinishRenderingMapFully={() => setIsInitialised(true)}
-                    onDidFinishLoadingStyle={() => setIsStyleLoaded(true)}
-                    logo={false}
-                    scaleBar={false}
-                    onDidFailLoadingMap={() => {
-                        signaliumBureau.addNotice({
-                            id: 'map-failed',
-                            type: 'glitch',
-                            error: new Error('Map loading failed'),
-                            text: 'Something went wrong'
-                        })
-                    }}
-                    onRegionWillChange={() => {
-                        cartomancer.bounds$.next(null);
-                        map.cameraMoving$.next(true);
-                    }}
-                    onRegionDidChange={(event) => {
-                        cartomancer.bounds$.next(event.nativeEvent.bounds);
-                        const bearing = event.nativeEvent.bearing;
-                        const pitch = event.nativeEvent.pitch;
-                        cartomancer.zoom$.next(parseFloat(event.nativeEvent.zoom.toFixed(1)));
-                        cartomancer.bearing$.next(bearing);
-                        updateCompassIcon(toolsStation, { bearing, pitch });
-                        updateCurrentZoomIcon(toolsStation, clickedZoom, map.map$.value?.getZoom);
-                        map.cameraMoving$.next(false);
-                    }}
-                    onPress={(event) => {
-                        for (const [_handlerId, handler] of onPressHandlers) {
-                            handler(event.nativeEvent);
-                        }
-                    }}
-                    onLongPress={(event) => {
-                        for (const [_handlerId, handler] of onLongPressHandlers) {
-                            handler(event.nativeEvent);
-                        }
-                    }}
-                >
-                    <Camera ref={(r) => map.camera$.next(r)} />
-                    {isInitialised && isStyleLoaded ? children : null}
-                </MaplibreMap>
-            </View>
-        </MapCanvasContainer>
+        <>
+            <MapCanvasContainer map={map}>
+                <View style={styles.mapView} {...panResponder.panHandlers}>
+                    <MaplibreMap
+                        ref={(r) => map.map$.next(r)}
+                        style={styles.mapView}
+                        androidView="texture"
+                        dragPan={dragPan}
+                        mapStyle={Cartomancer.styles[loading.selectedStyle.id]?.style as StyleSpecification}
+                        onDidFinishRenderingMapFully={loading.onMapRendered}
+                        onDidFinishLoadingStyle={loading.onStyleLoaded}
+                        logo={false}
+                        scaleBar={false}
+                        onDidFailLoadingMap={loading.onMapFailed}
+                        onRegionWillChange={() => {
+                            cartomancer.bounds$.next(null);
+                            map.cameraMoving$.next(true);
+                        }}
+                        onRegionDidChange={(event) => {
+                            cartomancer.bounds$.next(event.nativeEvent.bounds);
+                            const bearing = event.nativeEvent.bearing;
+                            const pitch = event.nativeEvent.pitch;
+                            cartomancer.zoom$.next(parseFloat(event.nativeEvent.zoom.toFixed(1)));
+                            cartomancer.bearing$.next(bearing);
+                            updateCompassIcon(toolsStation, { bearing, pitch });
+                            updateCurrentZoomIcon(toolsStation, clickedZoom, map.map$.value?.getZoom);
+                            map.cameraMoving$.next(false);
+                        }}
+                        onPress={(event) => {
+                            for (const [_handlerId, handler] of onPressHandlers) {
+                                handler(event.nativeEvent);
+                            }
+                        }}
+                        onLongPress={(event) => {
+                            for (const [_handlerId, handler] of onLongPressHandlers) {
+                                handler(event.nativeEvent);
+                            }
+                        }}
+                    >
+                        <Camera ref={(r) => map.camera$.next(r)} />
+                        {loading.isReady ? children : null}
+                    </MaplibreMap>
+                </View>
+            </MapCanvasContainer>
+            {loading.isVisible ? <MapLoadingIndicator hasFailed={loading.hasFailed} onDismiss={loading.dismiss} /> : null}
+        </>
     );
 };

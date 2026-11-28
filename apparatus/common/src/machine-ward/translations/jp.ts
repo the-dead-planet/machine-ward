@@ -2,8 +2,19 @@ import { TranslationTable } from "../translatron";
 import { MachineTranslationKey } from "../model";
 
 const jp: TranslationTable<MachineTranslationKey>['jp'] = {
+    'user-interface-assembly-kit': 'ユーザーインターフェース組み立てキット',
+    apparatus: '制御機構',
+    'tinker-chest': '工作道具箱',
+    'interface-runtime': 'メインフレームの大脳皮質',
+    'map-engine': '地図魔術師の道具',
+    'startup-download-pending': 'ダウンロード中',
+    'startup-download-complete': 'ダウンロード済み',
+    'startup-download-failed': 'ダウンロード失敗',
+    'shared-libraries': '回収部品',
+    'loading-map': '地図を読み込み中...',
+    'map-loading-failed': '地図を読み込めませんでした。',
     'startup-welcome': '死せる惑星の管理部があなたを歓迎します...',
-    'aligning-machine-ward-gears': '機械病棟のギアの位置を調整中...',
+    'aligning-gears': '機械病棟のギアの位置を調整中',
     'gear-load-errors': '一部のギアが引っ掛かり、位置を調整できませんでした：{{gears}}。',
     enabled: '有効',
     disabled: '無効',

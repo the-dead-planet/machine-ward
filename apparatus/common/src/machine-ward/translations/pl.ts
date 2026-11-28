@@ -2,8 +2,19 @@ import { TranslationTable } from "../translatron";
 import { MachineTranslationKey } from "../model";
 
 const pl: TranslationTable<MachineTranslationKey>['pl'] = {
+    'user-interface-assembly-kit': 'Zestaw do budowy interfejsu użytkownika',
+    apparatus: 'Aparatura',
+    'tinker-chest': 'Skrzynia majsterkowicza',
+    'interface-runtime': 'Kora jednostki centralnej',
+    'map-engine': 'Przyrządy kartomanty',
+    'startup-download-pending': 'Pobieranie',
+    'startup-download-complete': 'Pobrano',
+    'startup-download-failed': 'Pobieranie nie powiodło się',
+    'shared-libraries': 'Odzyskane części',
+    'loading-map': 'Ładowanie mapy...',
+    'map-loading-failed': 'Nie udało się wczytać mapy.',
     'startup-welcome': 'Zarząd martwej planety wita Cię...',
-    'aligning-machine-ward-gears': 'Ustawianie zębatek oddziału maszyn...',
+    'aligning-gears': 'Ustawianie zębatek oddziału maszyn',
     'gear-load-errors': 'Niektóre zębatki się zacięły i nie udało się ich ustawić: {{gears}}.',
     enabled: 'Włączone',
     disabled: 'Wyłączone',

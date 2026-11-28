@@ -2,8 +2,19 @@ import { TranslationTable } from "../translatron";
 import { MachineTranslationKey } from "../model";
 
 const nl: TranslationTable<MachineTranslationKey>['nl'] = {
+    'user-interface-assembly-kit': 'Bouwpakket voor gebruikersinterfaces',
+    apparatus: 'Apparatuur',
+    'tinker-chest': 'Knutselkist',
+    'interface-runtime': 'Mainframecortex',
+    'map-engine': 'Instrumenten van de kaartenmagiër',
+    'startup-download-pending': 'Wordt gedownload',
+    'startup-download-complete': 'Gedownload',
+    'startup-download-failed': 'Download mislukt',
+    'shared-libraries': 'Geborgen onderdelen',
+    'loading-map': 'Kaart laden...',
+    'map-loading-failed': 'De kaart kon niet worden geladen.',
     'startup-welcome': 'Het bestuur van de dode planeet heet je welkom...',
-    'aligning-machine-ward-gears': 'Tandwielen van de machineafdeling uitlijnen...',
+    'aligning-gears': 'Tandwielen van de machineafdeling uitlijnen',
     'gear-load-errors': 'Sommige tandwielen zitten vast en konden niet worden uitgelijnd: {{gears}}.',
     enabled: 'Ingeschakeld',
     disabled: 'Uitgeschakeld',

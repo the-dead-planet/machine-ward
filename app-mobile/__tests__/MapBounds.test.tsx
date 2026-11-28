@@ -26,6 +26,7 @@ jest.mock("@apparatus", () => ({
     Cartomancer: { styles: { background: { style: {} } } },
     updateCompassIcon: jest.fn(),
     updateCurrentZoomIcon: jest.fn(),
+    useTranslate: () => () => '',
 }));
 jest.mock("@maplibre/maplibre-react-native", () => {
     const { View } = jest.requireActual<typeof import("react-native")>("react-native");
@@ -41,6 +42,7 @@ jest.mock("@maplibre/maplibre-react-native", () => {
 jest.mock("../src/machine/map-canvas/useMapTools", () => ({ useMapTools: () => {} }));
 jest.mock("../src/machine/map-canvas/useMapPanResponder", () => ({ useMapPanResponder: () => ({ panHandlers: {} }) }));
 jest.mock("../src/machine/map-canvas/MapCanvasContainer", () => ({ MapCanvasContainer: ({ children }: { children: React.ReactNode }) => children }));
+jest.mock("../src/machine/map-canvas/MapLoadingIndicator", () => ({ MapLoadingIndicator: () => null }));
 
 test("clears native bounds during movement, publishes them at region end, and clears them on unmount", async () => {
     const map = {

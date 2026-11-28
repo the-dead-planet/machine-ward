@@ -2,8 +2,19 @@ import { TranslationTable } from "../translatron";
 import { MachineTranslationKey } from "../model";
 
 const ru: TranslationTable<MachineTranslationKey>['ru'] = {
+    'user-interface-assembly-kit': 'Набор для сборки пользовательского интерфейса',
+    apparatus: 'Аппаратура',
+    'tinker-chest': 'Сундук мастера',
+    'interface-runtime': 'Кора центрального компьютера',
+    'map-engine': 'Инструменты картоманта',
+    'startup-download-pending': 'Скачивание',
+    'startup-download-complete': 'Скачано',
+    'startup-download-failed': 'Ошибка скачивания',
+    'shared-libraries': 'Детали из утиля',
+    'loading-map': 'Загрузка карты...',
+    'map-loading-failed': 'Не удалось загрузить карту.',
     'startup-welcome': 'Администрация мёртвой планеты приветствует вас...',
-    'aligning-machine-ward-gears': 'Выравнивание шестерён отделения машин...',
+    'aligning-gears': 'Выравнивание шестерён отделения машин',
     'gear-load-errors': 'Некоторые шестерни заклинило, и их не удалось выровнять: {{gears}}.',
     enabled: 'Включены',
     disabled: 'Отключены',

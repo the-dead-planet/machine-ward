@@ -20,6 +20,7 @@ export interface MachineWardMachineProps<TNavigationPath extends string = string
 }
 
 export interface MachineWardComponents<TNavigationPath extends string = string> {
+    loadingComponent?: ComponentType;
     errorFallbackComponent: ErrorBoundaryProps['fallbackComponent'];
     layoutComponent: ComponentType<MachineWardLayoutProps>;
     topBarComponent: ComponentType<MachineWardTopBarProps<TNavigationPath>>;
@@ -72,8 +73,19 @@ export enum MachineTranslationKey {
     Attributions = 'attributions',
     UnderConstruction = 'under-construction',
     PoweringUpMachineWard = 'powering-up-machine-ward',
+    LoadingMap = 'loading-map',
+    MapLoadingFailed = 'map-loading-failed',
     StartupWelcome = 'startup-welcome',
-    AligningMachineWardGears = 'aligning-machine-ward-gears',
+    StartupDownloadPending = 'startup-download-pending',
+    StartupDownloadComplete = 'startup-download-complete',
+    StartupDownloadFailed = 'startup-download-failed',
+    SharedLibraries = 'shared-libraries',
+    UserInterfaceAssemblyKit = 'user-interface-assembly-kit',
+    Apparatus = 'apparatus',
+    TinkerChest = 'tinker-chest',
+    InterfaceRuntime = 'interface-runtime',
+    MapEngine = 'map-engine',
+    AligningGears = 'aligning-gears',
     GearLoadErrors = 'gear-load-errors',
     KeyboardShortcuts = 'keyboard-shortcuts',
     Keysmith = 'keysmith',

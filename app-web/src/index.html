@@ -23,6 +23,8 @@
             padding: 20px;
             box-sizing: border-box;
             display: flex;
+            flex-direction: column;
+            gap: 20px;
             min-height: 100svh;
             flex: 1;
             align-items: center;
@@ -35,6 +37,43 @@
         #startup-placeholder p {
             margin: 0;
         }
+
+        #startup-manifest {
+            width: 100%;
+            max-width: 32rem;
+        }
+
+        #startup-manifest-title {
+            margin: 0 0 12px;
+            font-size: 0.875rem;
+            font-weight: 400;
+            line-height: 1.5;
+        }
+
+        #startup-progress {
+            height: 16em;
+            margin: 0;
+            padding: 0;
+            overflow: auto;
+            list-style: none;
+            font-size: 0.75rem;
+            line-height: 1.5;
+        }
+
+        #startup-progress li {
+            display: grid;
+            grid-template-columns: 1.5em 1fr;
+            align-items: start;
+            gap: 0.75em;
+            margin-bottom: 0.5em;
+        }
+
+        #startup-progress [role="img"] {
+            text-align: center;
+            font-family: Arial, sans-serif;
+            font-weight: 700;
+        }
+
     </style>
     <script data-themes="<%= startupThemes %>" data-default-theme="<%= defaultThemeName %>">
         (() => {
@@ -56,8 +95,12 @@
 
 <body>
     <div id="app">
-        <div id="startup-placeholder" role="status">
+        <div id="startup-placeholder">
             <p id="startup-message"><%= startupWelcome %></p>
+            <section id="startup-manifest">
+                <h1 id="startup-manifest-title"><%= startupTitle %></h1>
+                <ul id="startup-progress" aria-labelledby="startup-manifest-title" aria-live="polite"></ul>
+            </section>
         </div>
     </div>
     <script data-messages="<%= startupMessages %>">
@@ -74,6 +117,137 @@
             const message = messages[language];
             document.documentElement.lang = message.locale;
             document.getElementById('startup-message').textContent = message.welcome;
+            document.getElementById('startup-manifest-title').textContent = message.title;
+            const progress = document.getElementById('startup-progress');
+            const loaded = new Set();
+            const failed = new Set();
+            const indicators = new Map();
+            const symbols = {
+                pending: '⏳',
+                downloaded: '✓',
+                failed: '!',
+            };
+            const resourceObserver = typeof PerformanceObserver === 'function' ? new PerformanceObserver(updateProgress) : null;
+            const bundleLabels = {
+                'vendors-react': message.runtime,
+                'react-vendors': message.runtime,
+                'vendors-maplibre': message.mapEngine,
+                'vendors-node-modules': message.sharedLibraries,
+                'tinker-chest': message.tinkerChest,
+                ui: message.interface,
+                'web-ui': message.interface,
+                apparatus: message.apparatus,
+                'web-apparatus': message.apparatus,
+                machine: message.machineWard,
+            };
+            const libraryOrder = new Set(Object.values(bundleLabels));
+            const gears = createProgressItem(message.aligningGears);
+            gears.item.id = 'startup-gears';
+            setProgressState(gears.indicator, 'pending');
+
+            function createProgressItem(label) {
+                const item = document.createElement('li');
+                item.setAttribute('aria-atomic', 'true');
+                const indicator = document.createElement('span');
+                indicator.setAttribute('role', 'img');
+                const name = document.createElement('span');
+                name.textContent = label;
+                item.append(indicator, name);
+                return { item, indicator };
+            }
+
+            function setProgressState(indicator, state, accessibleLabel = message.statuses[state]) {
+                if (indicator.dataset.state !== state || indicator.getAttribute('aria-label') !== accessibleLabel) {
+                    indicator.dataset.state = state;
+                    indicator.setAttribute('aria-label', accessibleLabel);
+                    indicator.textContent = symbols[state];
+                }
+            }
+
+            function stopTracking() {
+                resourceObserver?.disconnect();
+                document.removeEventListener('load', onResource, true);
+                document.removeEventListener('error', onResource, true);
+                document.removeEventListener('readystatechange', updateProgress);
+                if (!progress.isConnected) {
+                    window.removeEventListener('startup-gears', onGearStatus);
+                }
+            }
+
+            function updateProgress() {
+                if (!progress.isConnected) {
+                    stopTracking();
+                    return;
+                }
+                if (document.readyState === 'loading') {
+                    return;
+                }
+                const scripts = [...document.scripts].filter((script) => script.src && script.defer);
+                if (scripts.length === 0) {
+                    return;
+                }
+                const groups = new Map();
+                const downloads = new Map(performance.getEntriesByType('resource').map((entry) => [entry.name, entry]));
+                for (const script of scripts) {
+                    const name = script.src.split('/').pop().split('.')[0];
+                    const label = Object.hasOwn(bundleLabels, name) ? bundleLabels[name] : message.sharedLibraries;
+                    if (!groups.has(label)) {
+                        groups.set(label, []);
+                    }
+                    groups.get(label).push(script);
+                }
+                for (const label of libraryOrder) {
+                    const resources = groups.get(label);
+                    if (!resources) {
+                        continue;
+                    }
+                    let indicator = indicators.get(label);
+                    if (!indicator) {
+                        const row = createProgressItem(label);
+                        indicator = row.indicator;
+                        progress.insertBefore(row.item, gears.item.isConnected ? gears.item : null);
+                        indicators.set(label, indicator);
+                    }
+                    let state = 'pending';
+                    if (resources.some((script) => failed.has(script) || downloads.get(script.src)?.responseStatus >= 400)) {
+                        state = 'failed';
+                    } else if (resources.every((script) => loaded.has(script) || downloads.has(script.src))) {
+                        state = 'downloaded';
+                    }
+                    setProgressState(indicator, state);
+                }
+                if (!gears.item.isConnected) {
+                    progress.append(gears.item);
+                }
+                if (document.readyState === 'complete') {
+                    stopTracking();
+                }
+            }
+
+            function onResource(event) {
+                const script = event.target;
+                if (script instanceof HTMLScriptElement && script.src && script.defer) {
+                    (event.type === 'load' ? loaded : failed).add(script);
+                    updateProgress();
+                }
+            }
+
+            function onGearStatus(event) {
+                if (!(event instanceof CustomEvent) || typeof event.detail !== 'string' || !Object.hasOwn(symbols, event.detail)) {
+                    return;
+                }
+                updateProgress();
+                setProgressState(gears.indicator, event.detail);
+                if (event.detail !== 'pending') {
+                    window.removeEventListener('startup-gears', onGearStatus);
+                }
+            }
+
+            document.addEventListener('load', onResource, true);
+            document.addEventListener('error', onResource, true);
+            document.addEventListener('readystatechange', updateProgress);
+            window.addEventListener('startup-gears', onGearStatus);
+            resourceObserver?.observe({ entryTypes: ['resource'] });
         })();
     </script>
 </body>

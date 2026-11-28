@@ -96,6 +96,7 @@ export class Individuator {
     public initialize = (
         storageKeeper: StorageKeeper,
         translatron: Translatron,
+        signal?: AbortSignal,
     ) => {
         translatron.register(this.namespace, this.translations);
 
@@ -117,7 +118,7 @@ export class Individuator {
                 themeMode: themeModeOptions.some(({ value }) => value === maybeSettings.themeMode) ? maybeSettings.themeMode : themeModeOptions[0].value,
                 themeName: themeNameOptions.some(({ value }) => value === maybeSettings.themeName) ? maybeSettings.themeName : themeNameOptions[0].value,
             }
-        })
+        }, signal)
             .then((s) => this.settingsStorageSubscription = s);
     };
 

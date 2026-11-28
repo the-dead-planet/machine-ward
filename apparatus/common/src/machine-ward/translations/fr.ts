@@ -2,8 +2,19 @@ import { TranslationTable } from "../translatron";
 import { MachineTranslationKey } from "../model";
 
 const fr: TranslationTable<MachineTranslationKey>['fr'] = {
+    'user-interface-assembly-kit': 'Kit d’assemblage d’interfaces utilisateur',
+    apparatus: 'Appareillage',
+    'tinker-chest': 'Coffre du bricoleur',
+    'interface-runtime': 'Cortex de l’ordinateur central',
+    'map-engine': 'Instruments du cartomancien',
+    'startup-download-pending': 'Téléchargement en cours',
+    'startup-download-complete': 'Téléchargé',
+    'startup-download-failed': 'Échec du téléchargement',
+    'shared-libraries': 'Pièces récupérées',
+    'loading-map': 'Chargement de la carte...',
+    'map-loading-failed': 'La carte n’a pas pu être chargée.',
     'startup-welcome': 'La direction de la planète morte vous souhaite la bienvenue...',
-    'aligning-machine-ward-gears': 'Alignement des engrenages du pavillon des machines...',
+    'aligning-gears': 'Alignement des engrenages du pavillon des machines',
     'gear-load-errors': 'Certains engrenages sont bloqués et n’ont pas pu être alignés : {{gears}}.',
     enabled: 'Activés',
     disabled: 'Désactivés',

@@ -98,16 +98,19 @@ export class Cartomancer<TMap> {
     public initialize = (
         storageKeeper: StorageKeeper,
         translatron: Translatron,
-        _toolsStation: ToolsStation<TMap>
+        _toolsStation: ToolsStation<TMap>,
+        signal?: AbortSignal,
     ) => {
         translatron.register(this.namespace, this.translations);
 
-        storageKeeper.synchronizeSubjectWithStorage(this.selectedStyle$, this.selectedStyleStorageId, this.cleanUpSelectedStyle)
-            .then((s) => this.selectedStyleStorageSubscription = s);
-        storageKeeper.synchronizeSubjectWithStorage(this.gaugeControls$, this.gaugeControlsStorageId)
-            .then((s) => this.gaugeControlsStorageSubscription = s);
-        storageKeeper.synchronizeSubjectWithStorage(this.mapLayout$, this.mapLayoutStorageId)
-            .then((s) => this.mapLayoutStorageSubscription = s);
+        return Promise.all([
+            storageKeeper.synchronizeSubjectWithStorage(this.selectedStyle$, this.selectedStyleStorageId, this.cleanUpSelectedStyle, signal)
+                .then((subscription) => this.selectedStyleStorageSubscription = subscription),
+            storageKeeper.synchronizeSubjectWithStorage(this.gaugeControls$, this.gaugeControlsStorageId, undefined, signal)
+                .then((subscription) => this.gaugeControlsStorageSubscription = subscription),
+            storageKeeper.synchronizeSubjectWithStorage(this.mapLayout$, this.mapLayoutStorageId, undefined, signal)
+                .then((subscription) => this.mapLayoutStorageSubscription = subscription),
+        ]);
     };
 
     public cleanUp = () => {

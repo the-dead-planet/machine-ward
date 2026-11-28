@@ -2,8 +2,22 @@ import { TranslationTable } from "../translatron";
 import { MachineTranslationKey } from "../model";
 
 const en: TranslationTable<MachineTranslationKey>['en'] = {
+    // Startup library names.
+    'machine-ward': 'Machine ward',
+    apparatus: 'Apparatus',
+    'tinker-chest': 'Tinker Chest',
+    'user-interface-assembly-kit': 'User interface assembly kit',
+    'interface-runtime': 'Mainframe cortex', // React.
+    'map-engine': 'Cartomancer’s instruments', // MapLibre.
+    'shared-libraries': 'Salvaged parts', // Other vendor dependencies.
+
+    'startup-download-pending': 'Downloading',
+    'startup-download-complete': 'Downloaded',
+    'startup-download-failed': 'Download failed',
+    'loading-map': 'Loading map...',
+    'map-loading-failed': 'The map could not be loaded.',
     'startup-welcome': 'The management of the dead planet welcomes you...',
-    'aligning-machine-ward-gears': 'Aligning the machine ward gears...',
+    'aligning-gears': 'Aligning the machine ward gears',
     'gear-load-errors': 'Some gears are jammed and could not be aligned: {{gears}}.',
     enabled: 'Enabled',
     disabled: 'Disabled',
@@ -18,7 +32,6 @@ const en: TranslationTable<MachineTranslationKey>['en'] = {
     'shortcut-keys': 'Key combination',
     description: 'Description',
     'no-keyboard-shortcuts': 'No keyboard shortcuts are currently registered.',
-    'machine-ward': 'Machine ward',
     'powering-up-machine-ward': 'Powering up the machine ward…',
     'component-library': 'Component library',
     'icon-creators': 'Icon creators',

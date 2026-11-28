@@ -13,6 +13,8 @@ describe('Startup language', () => {
             },
         });
         cy.get('#startup-message').should('have.text', 'Zarząd martwej planety wita Cię...');
+        cy.get('#startup-manifest-title').should('have.text', 'Włączanie zasilania oddziału maszyn…');
+        cy.get('#startup-progress').should('have.attr', 'aria-labelledby', 'startup-manifest-title');
         cy.get('html').should('have.attr', 'lang', 'pl-PL');
     });
 
@@ -49,11 +51,123 @@ describe('Startup language', () => {
         });
         cy.get('#startup-message').should('have.text', 'Die Verwaltung des toten Planeten heißt dich willkommen...');
     });
+
+    it('reports completed downloads while an earlier deferred script is still pending', () => {
+        const snapshots: {
+            names: string[];
+            states: Record<string, string>;
+            nameStarts: number[];
+        }[] = [];
+        cy.viewport(390, 844);
+        cy.intercept('GET', /\/(?:vendors-react|react-vendors)[^/]*\.js$/, {
+            body: '',
+            delay: 600,
+        });
+        cy.intercept('GET', '**/web-ui*.js', {
+            body: '',
+            delay: 300,
+        });
+        cy.intercept('GET', '**/web-apparatus*.js', {
+            body: '',
+            delay: 350,
+        });
+        cy.visit('/', {
+            onBeforeLoad: (window) => {
+                window.localStorage.setItem('application-settings', JSON.stringify({ language: 'pl' }));
+                const observer = new window.MutationObserver(() => {
+                    const names: string[] = [];
+                    const states: Record<string, string> = {};
+                    const nameStarts: number[] = [];
+                    for (const item of window.document.querySelectorAll('#startup-progress li')) {
+                        const nameElement = item.lastElementChild;
+                        const name = nameElement?.textContent;
+                        const state = item.querySelector('[role="img"]')?.getAttribute('data-state');
+                        if (nameElement && name && state) {
+                            names.push(name);
+                            states[name] = state;
+                            nameStarts.push(nameElement.getBoundingClientRect().left);
+                        }
+                    }
+                    if (names.length > 0) {
+                        snapshots.push({ names, states, nameStarts });
+                    }
+                });
+                observer.observe(window.document, {
+                    childList: true,
+                    subtree: true,
+                    attributes: true,
+                    attributeFilter: ['data-state'],
+                });
+                window.addEventListener('load', () => observer.disconnect(), { once: true });
+            },
+        });
+        cy.document().then((document) => {
+            const expectedDownloads = ['Zestaw do budowy interfejsu użytkownika', 'Aparatura'];
+            if ([...document.scripts].some((script) => /\/tinker-chest\./.test(script.src))) {
+                expectedDownloads.push('Skrzynia majsterkowicza');
+            }
+            const groupedLibraries = [
+                {
+                    bundle: '/web-ui.',
+                    label: 'Zestaw do budowy interfejsu użytkownika',
+                },
+                {
+                    bundle: '/web-apparatus.',
+                    label: 'Aparatura',
+                },
+            ];
+            for (const group of groupedLibraries) {
+                if ([...document.scripts].some((script) => script.src.includes(group.bundle))) {
+                    expect(snapshots.some((snapshot) => {
+                        return snapshot.states['Skrzynia majsterkowicza'] === 'downloaded'
+                            && snapshot.states[group.label] === 'pending';
+                    }), group.label).to.equal(true);
+                }
+            }
+            expect(snapshots.some((snapshot) => {
+                return expectedDownloads.every((name) => snapshot.states[name] === 'downloaded')
+                    && snapshot.states['Kora jednostki centralnej'] === 'pending';
+            })).to.equal(true);
+            const finalOrder = snapshots.at(-1)?.names ?? [];
+            expect(finalOrder[0]).to.equal('Kora jednostki centralnej');
+            expect(finalOrder.at(-2)).to.equal('Oddział maszyn');
+            expect(finalOrder.at(-1)).to.equal('Ustawianie zębatek oddziału maszyn');
+            expect(finalOrder).to.include('Skrzynia majsterkowicza');
+            expect(finalOrder.indexOf('Skrzynia majsterkowicza')).to.be.lessThan(finalOrder.indexOf('Zestaw do budowy interfejsu użytkownika'));
+            expect(finalOrder.indexOf('Zestaw do budowy interfejsu użytkownika')).to.be.lessThan(finalOrder.indexOf('Aparatura'));
+            for (const snapshot of snapshots) {
+                expect(snapshot.names).to.deep.equal(finalOrder);
+                expect(snapshot.nameStarts).to.deep.equal(snapshots[0].nameStarts);
+            }
+        });
+        cy.get('#startup-progress')
+            .should('contain.text', 'Zestaw do budowy interfejsu użytkownika')
+            .and('contain.text', 'Aparatura')
+            .and('not.contain.text', 'React');
+        cy.get('#startup-progress li:not(#startup-gears) [role="img"]').each((indicator) => {
+            expect(indicator).to.have.attr('aria-label', 'Pobrano');
+            expect(indicator).to.have.text('✓');
+        });
+    });
+
+    it('names failed libraries instead of reporting them as loaded', () => {
+        cy.intercept('GET', '**/ui*.js', { statusCode: 404, body: '' });
+        cy.visit('/', {
+            onBeforeLoad: (window) => {
+                window.localStorage.setItem('application-settings', JSON.stringify({ language: 'pl' }));
+            },
+        });
+        cy.contains('#startup-progress li', 'Zestaw do budowy interfejsu użytkownika')
+            .find('[role="img"]')
+            .should('have.attr', 'aria-label', 'Pobieranie nie powiodło się')
+            .and('have.text', '!');
+    });
 });
 
-describe('React loading language', () => {
-    it('keeps the saved language when the welcome screen hands over to React', () => {
+describe('Gear-loading handoff', () => {
+    it('keeps one translated loading screen until the React app is ready', () => {
         const loadingMessages: string[] = [];
+        const loadingScreens = new Set<Element>();
         cy.intercept('GET', /\/(?:gear-|gears_).*\.js$/, (request) => {
             request.continue((response) => {
                 response.setDelay(500);
@@ -66,22 +180,27 @@ describe('React loading language', () => {
                 }));
                 cy.stub(window.Intl.DateTimeFormat.prototype, 'resolvedOptions').returns({ locale: 'de-DE' });
                 const observer = new window.MutationObserver(() => {
-                    const loadingPage = window.document.querySelector('#app > [role="status"]:not(#startup-placeholder)');
-                    if (loadingPage?.textContent) {
-                        loadingMessages.push(loadingPage.textContent.trim());
-                        observer.disconnect();
+                    const loadingPage = window.document.getElementById('startup-placeholder');
+                    const message = window.document.querySelector('#startup-gears')?.lastElementChild?.textContent;
+                    if (loadingPage && message) {
+                        loadingScreens.add(loadingPage);
+                        loadingMessages.push(message);
                     }
                 });
                 observer.observe(window.document, {
                     childList: true,
                     subtree: true,
+                    attributes: true,
+                    attributeFilter: ['aria-label'],
                 });
                 window.addEventListener('pagehide', () => observer.disconnect(), { once: true });
             },
         });
         cy.then(() => {
-            expect(loadingMessages).to.include('Ustawianie zębatek oddziału maszyn...');
+            expect(loadingMessages).to.include('Ustawianie zębatek oddziału maszyn');
+            expect(loadingScreens.size).to.equal(1);
         });
+        cy.get('#startup-placeholder').should('not.exist');
     });
 
     it('translates gear-load warnings and preserves the failed gear details', () => {

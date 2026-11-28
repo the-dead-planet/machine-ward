@@ -9,7 +9,3 @@
     color: var(--appearance-default-glyphs, var(--startup-color));
     font-family: var(--font-special-messaging, "Syne Mono", monospace);
 }
-
-.text {
-    margin: 0;
-}

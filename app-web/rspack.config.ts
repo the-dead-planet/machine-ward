@@ -6,6 +6,7 @@ import { RGBColor, ThemeName } from "@the-dead-planet/machine-ward-ui-common/src
 import { Translatron } from "@the-dead-planet/machine-ward-apparatus-common/src/machine-ward/translatron/translatron";
 import { MachineTranslationKey } from "@the-dead-planet/machine-ward-apparatus-common/src/machine-ward/model";
 import * as translations from "@the-dead-planet/machine-ward-apparatus-common/src/machine-ward/translations";
+import { Language } from "@the-dead-planet/machine-ward-apparatus-common/src/machine-ward/translatron/model";
 
 const toCssColor = ({ r, g, b }: RGBColor): string => `rgb(${r}, ${g}, ${b})`;
 const startupThemes = Object.fromEntries(Object.entries(themeSpecifications).map(([name, modes]) => [
@@ -18,16 +19,33 @@ const startupThemes = Object.fromEntries(Object.entries(themeSpecifications).map
         },
     ])),
 ]));
-const startupWelcome = translations.en?.[MachineTranslationKey.StartupWelcome];
-if (startupWelcome === undefined) {
-    throw new Error('The English startup welcome translation is required.');
+const englishTranslations = translations.en;
+if (englishTranslations === undefined) {
+    throw new Error('English startup translations are required.');
 }
+const getStartupTranslation = (language: Language, key: MachineTranslationKey): string =>
+    translations[language]?.[key] ?? englishTranslations[key];
+const startupWelcome = getStartupTranslation('en', MachineTranslationKey.StartupWelcome);
 const startupMessages = Object.fromEntries(Object.entries(Translatron.languageAliases).map(([alias, language]) => [
     alias,
     {
         language,
         locale: Translatron.languages[language].locale,
-        welcome: translations[language]?.[MachineTranslationKey.StartupWelcome] ?? startupWelcome,
+        welcome: getStartupTranslation(language, MachineTranslationKey.StartupWelcome),
+        title: getStartupTranslation(language, MachineTranslationKey.PoweringUpMachineWard),
+        statuses: {
+            pending: getStartupTranslation(language, MachineTranslationKey.StartupDownloadPending),
+            downloaded: getStartupTranslation(language, MachineTranslationKey.StartupDownloadComplete),
+            failed: getStartupTranslation(language, MachineTranslationKey.StartupDownloadFailed),
+        },
+        sharedLibraries: getStartupTranslation(language, MachineTranslationKey.SharedLibraries),
+        interface: getStartupTranslation(language, MachineTranslationKey.UserInterfaceAssemblyKit),
+        apparatus: getStartupTranslation(language, MachineTranslationKey.Apparatus),
+        tinkerChest: getStartupTranslation(language, MachineTranslationKey.TinkerChest),
+        runtime: getStartupTranslation(language, MachineTranslationKey.InterfaceRuntime),
+        mapEngine: getStartupTranslation(language, MachineTranslationKey.MapEngine),
+        machineWard: getStartupTranslation(language, MachineTranslationKey.MachineWard),
+        aligningGears: getStartupTranslation(language, MachineTranslationKey.AligningGears),
     },
 ]));
 
@@ -128,6 +146,7 @@ export const baseConfig = (_env: Env, argv: Argv): Configuration => ({
                 defaultThemeName: ThemeName.Default,
                 startupMessages: JSON.stringify(startupMessages).replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll('<', '&lt;'),
                 startupWelcome,
+                startupTitle: getStartupTranslation('en', MachineTranslationKey.PoweringUpMachineWard),
             },
             inject: 'body'
         }),

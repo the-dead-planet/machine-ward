@@ -2,8 +2,19 @@ import { TranslationTable } from "../translatron";
 import { MachineTranslationKey } from "../model";
 
 const de: TranslationTable<MachineTranslationKey>['de'] = {
+    'user-interface-assembly-kit': 'Bausatz für Benutzeroberflächen',
+    apparatus: 'Apparatur',
+    'tinker-chest': 'Bastlerkiste',
+    'interface-runtime': 'Mainframe-Kortex',
+    'map-engine': 'Instrumente des Kartomanten',
+    'startup-download-pending': 'Wird heruntergeladen',
+    'startup-download-complete': 'Heruntergeladen',
+    'startup-download-failed': 'Download fehlgeschlagen',
+    'shared-libraries': 'Geborgene Bauteile',
+    'loading-map': 'Karte wird geladen...',
+    'map-loading-failed': 'Die Karte konnte nicht geladen werden.',
     'startup-welcome': 'Die Verwaltung des toten Planeten heißt dich willkommen...',
-    'aligning-machine-ward-gears': 'Zahnräder der Maschinenstation werden ausgerichtet...',
+    'aligning-gears': 'Zahnräder der Maschinenstation werden ausgerichtet',
     'gear-load-errors': 'Einige Zahnräder sind verklemmt und konnten nicht ausgerichtet werden: {{gears}}.',
     enabled: 'Aktiviert',
     disabled: 'Deaktiviert',
